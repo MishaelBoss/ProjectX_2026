@@ -1,11 +1,27 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import localFont from 'next/font/local';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
+
+const sbLight = localFont({
+  src: '../public/fonts/SBSansDisplay-Light.ttf',
+  variable: '--font-sb-light',
+  weight: '300',
+  display: 'swap',
+});
+
+const sbSemibold = localFont({
+  src: '../public/fonts/SBSansDisplay-Semibold.ttf',
+  variable: '--font-sb-semibold',
+  weight: '600',
+  display: 'swap',
+});
+
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -25,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${sbLight.variable} ${sbSemibold.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
