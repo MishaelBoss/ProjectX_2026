@@ -240,8 +240,9 @@ export default function Home() {
         .nav-links a { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: 0.3s; padding-bottom: 4px; border-bottom: 2px solid transparent; }
         .nav-links a.active-link { color: var(--peach); border-bottom-color: var(--peach); }
         .nav-links a:hover { color: var(--text); }
-        .nav-cta { font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 100px; border: 1px solid rgba(244,165,130,0.5); background: transparent; color: var(--peach); text-decoration: none; transition: 0.3s; }
-        .nav-cta:hover { background: rgba(244,165,130,0.12); }
+        .nav-cta { font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 100px; border: 1px solid rgba(244,165,130,0.5); background: transparent; color: var(--peach); text-decoration: none; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .nav-cta:hover { background: rgba(244,165,130,0.12); transform: translateY(-2px) scale(1.05); box-shadow: 0 4px 20px rgba(244,165,130,0.25); border-color: rgba(244,165,130,0.8); }
+        .nav-cta:active { transform: scale(0.97); }
         
         .mobile-sticky-bar {
           position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -263,19 +264,43 @@ export default function Home() {
         .hero-title { font-family: 'SBSansDisplay', sans-serif; font-size: clamp(48px, 8vw, 100px); font-weight: 600; line-height: 1.0; margin-bottom: 32px; }
         .hero-title-line2 { background: linear-gradient(90deg, var(--peach), var(--pink), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { font-size: 18px; color: var(--muted); line-height: 1.75; margin-bottom: 52px; max-width: 560px; margin-left: auto; margin-right: auto; }
-        .btn-primary, .btn-secondary { display: inline-flex; padding: 16px 36px; border-radius: 100px; font-weight: 600; text-decoration: none; transition: 0.3s; }
-        .btn-primary { background: linear-gradient(135deg, var(--peach), var(--pink)); color: #12001a; box-shadow: 0 0 40px rgba(244,165,130,0.3); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 60px rgba(244,165,130,0.45); }
-        .btn-secondary { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
-        .btn-secondary:hover { background: rgba(255,255,255,0.10); transform: translateY(-3px); }
+        .btn-primary, .btn-secondary { display: inline-flex; padding: 16px 36px; border-radius: 100px; font-weight: 600; text-decoration: none; }
+        .btn-primary {
+          background: linear-gradient(135deg, var(--peach), var(--pink));
+          color: #12001a;
+          box-shadow: 0 0 40px rgba(244,165,130,0.3);
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        .btn-primary::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+        .btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 60px rgba(244,165,130,0.55); }
+        .btn-primary:hover::after { opacity: 1; }
+        .btn-primary:active { transform: translateY(-1px) scale(0.98); }
+        .btn-secondary {
+          background: rgba(255,255,255,0.05);
+          color: var(--text);
+          border: 1px solid var(--border);
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.25); transform: translateY(-4px) scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+        .btn-secondary:active { transform: translateY(-1px) scale(0.98); }
         
         .section-label { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--peach); margin-bottom: 16px; }
         .section-title { font-family: 'SBSansDisplay', sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 600; line-height: 1.1; }
         .features-grid, .contacts-grid { display: grid; gap: 24px; max-width: 1100px; margin: 0 auto; }
         .features-grid { grid-template-columns: repeat(3,1fr); }
         .contacts-grid { grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); }
-        .card { background: var(--bg3); border: 1px solid var(--border); border-radius: 24px; padding: 32px; transition: 0.3s; }
-        .card:hover { transform: translateY(-6px); border-color: rgba(244,165,130,0.3); }
+        .card { background: var(--bg3); border: 1px solid var(--border); border-radius: 24px; padding: 32px; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .card:hover { transform: translateY(-8px); border-color: rgba(244,165,130,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .card:hover > div:first-child { transform: scale(1.2) rotate(-6deg); }
         
         .contact-avatar {
           width: 80px;
@@ -301,8 +326,9 @@ export default function Home() {
         .testimonial-card { text-align: center; padding: 40px; }
         .testimonial-avatar { font-size: 64px; margin-bottom: 16px; }
         .stars { color: gold; font-size: 24px; margin: 12px 0; }
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 28px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; backdrop-filter: blur(4px); }
-        .slider-btn:hover { background: var(--peach); color: black; }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 28px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; backdrop-filter: blur(4px); transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .slider-btn:hover { background: var(--peach); color: black; transform: translateY(-50%) scale(1.15); box-shadow: 0 4px 20px rgba(244,165,130,0.4); }
+        .slider-btn:active { transform: translateY(-50%) scale(0.95); }
         .slider-btn-left { left: -60px; } .slider-btn-right { right: -60px; }
         
         .faq-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 16px; overflow: hidden; }
@@ -310,9 +336,10 @@ export default function Home() {
         .faq-question:hover { background: rgba(244,165,130,0.05); }
         .faq-icon { font-size: 28px; transition: transform 0.2s; }
         
-        .checklist-item { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg3); border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-        .checklist-item:hover { background: rgba(244,165,130,0.05); }
-        .checklist-checkbox { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--peach); background: transparent; display: flex; align-items: center; justify-content: center; }
+        .checklist-item { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg3); border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border); cursor: pointer; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .checklist-item:hover { background: rgba(244,165,130,0.05); border-color: rgba(244,165,130,0.25); transform: translateX(8px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .checklist-item:hover .checklist-checkbox { transform: scale(1.15) rotate(-5deg); }
+        .checklist-checkbox { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--peach); background: transparent; display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .checklist-checkbox.checked { background: var(--peach); color: black; }
         .checklist-text { flex: 1; font-size: 15px; }
         .checklist-day { font-size: 12px; color: var(--peach); font-weight: 600; min-width: 70px; }
