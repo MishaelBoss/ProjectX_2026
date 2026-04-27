@@ -136,6 +136,7 @@ const faqItems = [
 
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [officeIdx, setOfficeIdx] = useState(0);
   const [testimonialIdx, setTestimonialIdx] = useState(0);
@@ -170,8 +171,17 @@ export default function Home() {
 
   // Применяем тему
   useEffect(() => {
+    setIsClient(true);
+    const saved = localStorage.getItem('hubTheme');
+    if (saved === 'light') setIsDark(false);
+    else if (saved === 'dark') setIsDark(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
+    localStorage.setItem('hubTheme', isDark ? 'dark' : 'light');
+  }, [isDark, isClient]);
 
   // Прогресс скролла
   useEffect(() => {
@@ -238,7 +248,7 @@ export default function Home() {
     { id: 'contacts', label: 'Контакты' },
     { id: 'faq', label: 'FAQ' },
   ];
-
+  
   return (
     <>
       <style jsx global>{`
