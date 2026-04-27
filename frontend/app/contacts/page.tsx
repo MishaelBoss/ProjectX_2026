@@ -145,9 +145,39 @@ export default function Contacts() {
         }
         .contacts-grid {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 60px;
-          margin-top: 48px;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 24px;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+        .contact-card {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
+        }
+        .contact-card .contact-content {
+          flex: 1;
+        }
+        .contact-card .btn-s,
+        .contact-card .btn-p {
+          margin-top: 16px;
+          align-self: center;
+          width: fit-content;
+          margin-right: auto;
+        }
+        @media (max-width: 1024px) {
+          .contacts-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+          .contacts-grid { grid-template-columns: 1fr; }
+        }
+        .contact-card {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          height: 100%;
         }
         .contact-info {
           display: flex;
