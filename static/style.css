@@ -1,0 +1,79 @@
+/* Региональный центр - Брендбук цвета */
+
+:root {
+  /* Базовые цвета */
+  --base-light: #e3e0e0;
+  --base-dark: #706f6f;
+  --base-primary: #21396c;
+  
+  /* Официальные акцентные цвета */
+  --accent-blue: #217bc0;
+  --accent-cyan: #32beef;
+  --accent-purple: #8562a7;
+  
+  /* Неофициальные акцентные цвета */
+  --accent-peach: #ffe5af;
+  --accent-orange: #f49b6d;
+  --accent-pink: #ea5599;
+  
+  /* Алиасы для удобства */
+  --blue: #217bc0;
+  --dark: #21396c;
+  --light: #e3e0e0;
+  --gray: #706f6f;
+  --cyan: #32beef;
+  --purple: #8562a7;
+  --peach: #ffe5af;
+  --orange: #f49b6d;
+  --pink: #ea5599;
+  
+  /* Дополнительные цвета */
+  --bg: #f7f8fc;
+  --white: #ffffff;
+  --black: #1a1a1a;
+}
+
+/* Градиенты брендбука */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--base-primary) 0%, var(--accent-blue) 60%, var(--accent-cyan) 100%);
+}
+
+.gradient-blue {
+  background: linear-gradient(135deg, var(--base-primary), var(--accent-blue));
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+}
+
+.gradient-warm {
+  background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));
+}
+
+.gradient-cyan {
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+}
+
+/* Цветовые классы для текста */
+.text-primary { color: var(--base-primary); }
+.text-blue { color: var(--accent-blue); }
+.text-cyan { color: var(--accent-cyan); }
+.text-purple { color: var(--accent-purple); }
+.text-orange { color: var(--accent-orange); }
+.text-pink { color: var(--accent-pink); }
+.text-gray { color: var(--base-dark); }
+
+/* Цветовые классы для фона */
+.bg-primary { background-color: var(--base-primary); }
+.bg-blue { background-color: var(--accent-blue); }
+.bg-light { background-color: var(--base-light); }
+.bg-cyan { background-color: var(--accent-cyan); }
+.bg-purple { background-color: var(--accent-purple); }
+.bg-peach { background-color: var(--accent-peach); }
+.bg-orange { background-color: var(--accent-orange); }
+.bg-pink { background-color: var(--accent-pink); }
+
+/* Цветовые классы для границ */
+.border-blue { border-color: var(--accent-blue); }
+.border-primary { border-color: var(--base-primary); }
+.border-light { border-color: var(--base-light); }
