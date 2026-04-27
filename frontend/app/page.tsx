@@ -628,17 +628,22 @@ export default function Home() {
         </div>
         <div className="grid-3">
           {[
-            { icon:'🎁', name:'Программа лояльности', desc:'Бонусы и скидки для активных сотрудников' },
-            { icon:'🍎', name:'Снеки и фрукты', desc:'Бесплатные напитки, яблоки, сливы, груши' },
-            { icon:'💆', name:'Массажное кресло', desc:'Relax-зона с массажными креслами' },
-            { icon:'🏋️', name:'Спортзал', desc:'07:00–21:00, современное оборудование' },
-            { icon:'💼', name:'Коворкинг + Переговорные', desc:'Рабочие места и комнаты для встреч' },
-            { icon:'📚', name:'Обучение', desc:'Тренинги, курсы на Пульсе, мастер-классы' },
-            { icon:'🚇', name:'Удобное расположение', desc:'Центр города, рядом метро Горьковская' },
-            { icon:'🖨️', name:'Печать и канцтовары', desc:'Всё необходимое на ресепшене' },
-          ].map((f,i) => (
+            { img:'sber_present.png',  name:'Программа лояльности', desc:'Бонусы, скидки у партнёров и приоритетное бронирование за активность' },
+            { img:'sber_food.png',   name:'Снеки и напитки',       desc:'Бесплатный кофе, фрукты, яблоки, груши, сливы каждый день' },
+            { img:'sber_rest.png',  name:'Массажное кресло',      desc:'Relax-зона с профессиональными массажными креслами' },
+            { img:'sber_man_sport.png',      name:'Спортзал',              desc:'Открыт 07:00–21:00, современное оборудование, душевые' },
+            { img:'/features/cowork.png',   name:'Коворкинг',             desc:'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
+            { img:'sber_books.png', name:'Обучение',              desc:'Мастер-классы, тренинги, курсы на Пульсе — постоянный рост' },
+            { img:'/features/location.png', name:'Удобное расположение',  desc:'Центр города, рядом с метро Горьковская' },
+            { img:'/features/print.png',    name:'Печать и канцтовары',   desc:'Цветной МФУ в коворкинге, всё необходимое на ресепшене' },
+          ].map((f, i) => (
             <div className="card anim" key={i} style={{ transitionDelay:`${i*0.06}s` }}>
-              <div style={{ fontSize:48, marginBottom:20 }}>{f.icon}</div>
+              {/* ВОТ ЭТО МЕНЯЕМ — вместо эмодзи просто img того же размера */}
+              <img
+                src={f.img}
+                alt={f.name}
+                style={{ width:48, height:48, objectFit:'contain', marginBottom:20, display:'block' }}
+              />
               <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:16, fontWeight:700, marginBottom:10 }}>{f.name}</h3>
               <p style={{ color:'var(--muted)', lineHeight:1.6, fontSize:14 }}>{f.desc}</p>
             </div>
