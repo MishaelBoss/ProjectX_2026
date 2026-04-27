@@ -2,13 +2,150 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+interface ThemeSwitcherProps {
+  isDark: boolean;
+  onToggle: () => void;
+}
+
+function ThemeSwitcher({ isDark, onToggle }: ThemeSwitcherProps) {
+  return (
+    <div
+      onClick={onToggle}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && onToggle()}
+      aria-label={isDark ? 'Включить светлую тему' : 'Включить тёмную тему'}
+      style={{
+        position: 'relative',
+        width: 56,
+        height: 28,
+        cursor: 'pointer',
+        flexShrink: 0,
+      }}
+    >
+      {/* Track */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        borderRadius: 100,
+        border: '1px solid',
+        borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(255,200,100,0.5)',
+        background: isDark
+          ? 'linear-gradient(135deg, #1a1a2e, #16213e)'
+          : 'linear-gradient(135deg, #87ceeb, #ffd89b)',
+        transition: 'all 0.4s ease',
+        overflow: 'hidden',
+      }}>
+        {/* Звёзды (только в тёмной теме) */}
+        {isDark && (
+          <>
+            <div style={{ position:'absolute', width:2, height:2, borderRadius:'50%', background:'white', opacity:0.8, top:6, left:10 }} />
+            <div style={{ position:'absolute', width:2, height:2, borderRadius:'50%', background:'white', opacity:0.6, top:14, left:20 }} />
+            <div style={{ position:'absolute', width:2, height:2, borderRadius:'50%', background:'white', opacity:0.9, top:8, left:32 }} />
+          </>
+        )}
+      </div>
+
+      {/* Knob */}
+      <div style={{
+        position: 'absolute',
+        top: 3,
+        left: isDark ? 3 : 31,
+        width: 22,
+        height: 22,
+        borderRadius: '50%',
+        background: isDark ? '#1e2a4a' : '#fff7e6',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.35)',
+        transition: 'left 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.4s',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        {isDark ? (
+          // Луна
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#a0b4d6">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        ) : (
+          // Солнце
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+        )}
+      </div>
+    </div>
+  );
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+const officePhotos = [
+  { url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80', title: 'Современный коворкинг' },
+  { url: 'https://images.unsplash.com/photo-1497366811353-6ec8a6f99f65?w=900&q=80', title: 'Переговорная' },
+  { url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=900&q=80', title: 'Зона отдыха' },
+  { url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&q=80', title: 'Команда за работой' },
+  { url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&q=80', title: 'Спортзал' },
+];
+
+const lifeEvents = [
+  { emoji: '🎨', title: 'Мастер-классы', desc: 'Каждую среду в 18:00 — дизайн-мышление, публичные выступления, продуктовый подход' },
+  { emoji: '🎤', title: 'Выступления экспертов', desc: 'Приглашённые спикеры из IT, бизнеса и науки делятся опытом' },
+  { emoji: '🍷', title: 'Дегустации', desc: 'Тематические вечера с дегустацией кофе, чая, локальных продуктов' },
+  { emoji: '🤝', title: 'Командообразование', desc: 'Квизы, хакатоны, спортивные челленджи и выезды' },
+];
+
+const testimonials = [
+  { name: 'Анна К.', role: 'Аналитик', text: 'Отличное пространство! Удобные переговорные, всегда есть место для работы.', avatar: '👩‍💼' },
+  { name: 'Дмитрий В.', role: 'Руководитель проектов', text: 'Программа лояльности приятно удивляет. Кофе и снеки — отличный бонус каждый день.', avatar: '👨‍💻' },
+  { name: 'Елена М.', role: 'Дизайнер', text: 'Мастер-классы и события помогают прокачивать навыки и знакомиться с коллегами.', avatar: '🎨' },
+  { name: 'Сергей П.', role: 'Разработчик', text: 'Спортзал и массажное кресло — то, что нужно после долгого кодинга!', avatar: '💪' },
+];
+
+const checklistItems = [
+  { day: 'День 1', text: 'Пройти курсы адаптации на платформе «Пульс»' },
+  { day: 'День 1', text: 'Заполнить анкету новичка' },
+  { day: 'День 1', text: 'Получить технику и все доступы' },
+  { day: 'День 2', text: 'Пройти экскурсию по центру' },
+  { day: 'День 2', text: 'Инструктаж по кибербезопасности и охране труда' },
+  { day: 'День 3', text: 'Встреча с куратором / бадди' },
+  { day: 'День 3', text: 'Познакомиться с командой' },
+  { day: 'День 3', text: 'Посетить первый дейлик / стендап' },
+  { day: 'Доп.', text: 'Самостоятельные курсы: ИИ-агенты, GigaChat на Пульсе' },
+  { day: 'Доп.', text: 'Активировать бонусы программы лояльности' },
+  { day: 'Доп.', text: 'Предложить свои идеи для улучшения центра' },
+];
+
+const contacts = [
+  { name: 'Александра Иванова', role: 'Специалист по адаптации',  tg: 'alex_hub',      emoji: '👩‍💼', avatarImg: '/people/ava-nadya-v@2x.png' },
+  { name: 'Михаил Смирнов',    role: 'Технический специалист',    tg: 'michael_tech',  emoji: '👨‍💻', avatarImg: '/people/ava-azat@2x.png'    },
+  { name: 'Ирина Кузнецова',   role: 'Менеджер по бронированию', tg: 'irina_booking', emoji: '📅',   avatarImg: '/people/ava-nastya@2x.png'  },
+  { name: 'Фёдор Петров',      role: 'Бадди-наставник',           tg: 'fedor_buddy',   emoji: '🤝',   avatarImg: '/people/ava-vlad@2x.png'    },
+];
+
+const faqItems = [
+  { q: 'Как посетить спортзал?', a: 'Спортзал открыт ежедневно с 07:00 до 21:00. Вход свободный для всех сотрудников. Есть раздевалки, душевые, тренажёры и свободные веса.' },
+  { q: 'Когда обед?', a: 'Обеденный перерыв — 50 минут. В столовой горячие обеды, зона с микроволновками и кулерами. Можно приносить еду или заказывать доставку.' },
+  { q: 'Как забронировать переговорную или коворкинг?', a: 'Через внутренний портал (раздел «Бронирование») или напрямую Ирине Кузнецовой в Telegram: @irina_booking.' },
+  { q: 'Какой период адаптации?', a: 'Базовая адаптация — 1 неделя. За каждым новичком закрепляется бадди-наставник. Полное погружение занимает около месяца.' },
+  { q: 'Как записаться на мероприятия?', a: 'Через Telegram-бот @HubEventMatch_bot или у Александры Ивановой. Расписание публикуется в корпоративном канале каждый понедельник.' },
+  { q: 'Как составить график работы?', a: 'График согласовывается с руководителем в первую неделю. Возможен гибкий формат: core-часы 10:00–16:00, остальное — по договорённости.' },
+  { q: 'Как воспользоваться программой лояльности?', a: 'Активируйте личный кабинет в разделе «Бонусы» на корпоративном портале. Баллы начисляются за активность и посещение мероприятий.' },
+  { q: 'Где взять канцтовары?', a: 'На ресепшене: ручки, блокноты, стикеры, скрепки. Запрашивайте у администратора или берите самостоятельно из общего шкафа.' },
+  { q: 'Как распечатать документ?', a: 'В зоне коворкинга стоит цветной МФУ. Печать доступна с баланса бонусов или бесплатно первые 20 страниц в день.' },
+];
+
 export default function Home() {
+  const [isDark, setIsDark] = useState(true);
   const [activeSection, setActiveSection] = useState('hero');
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({ title: '', body: '' });
+  const [officeIdx, setOfficeIdx] = useState(0);
+  const [testimonialIdx, setTestimonialIdx] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [checklist, setChecklist] = useState<boolean[]>(new Array(checklistItems.length).fill(false));
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [modal, setModal] = useState<{ open: boolean; title: string; body: string }>({ open: false, title: '', body: '' });
+  const [applyOpen, setApplyOpen] = useState(false);
   const [applyForm, setApplyForm] = useState({ name: '', role: '', tg: '', message: '' });
+  const [applyDone, setApplyDone] = useState(false);
   const [applySubmitted, setApplySubmitted] = useState(false);
   const [showVideo, setShowVideo] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -19,7 +156,6 @@ export default function Home() {
     setApplySubmitted(true);
     setTimeout(() => {
       setApplySubmitted(false);
-      setApplyModalOpen(false);
       setApplyForm({ name: '', role: '', tg: '', message: '' });
     }, 2500);
   };
@@ -31,425 +167,438 @@ export default function Home() {
   const [checklistState, setChecklistState] = useState<boolean[]>(new Array(12).fill(false));
   
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
-  
-  const officePhotos = [
-    { url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800', title: 'Современный коворкинг' },
-    { url: 'https://images.unsplash.com/photo-1497366811353-2a2e6d7e8b0a?w=800', title: 'Переговорная' },
-    { url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800', title: 'Зона отдыха' },
-    { url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800', title: 'Команда за работой' },
-    { url: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800', title: 'Спортзал' }
-  ];
-  
-  const smoothScrollToCustom = (targetElementId: string) => {
-    const target = document.getElementById(targetElementId);
-    if (!target) return;
-    const targetPosition = target.getBoundingClientRect().top + window.scrollY;
-    const startPosition = window.scrollY;
-    const distance = targetPosition - startPosition;
-    const duration = 800;
-    let startTime: number | null = null;
-    
-    const easeInOutCubic = (t: number) => {
-      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    };
-    
-    const animation = (currentTime: number) => {
-      if (startTime === null) startTime = currentTime;
-      const timeElapsed = currentTime - startTime;
-      const progress = Math.min(timeElapsed / duration, 1);
-      const ease = easeInOutCubic(progress);
-      window.scrollTo(0, startPosition + distance * ease);
-      if (timeElapsed < duration) requestAnimationFrame(animation);
-    };
-    requestAnimationFrame(animation);
-  };
-  
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    smoothScrollToCustom(id);
-  };
-  
+
+  // Применяем тему
   useEffect(() => {
-    const sections = document.querySelectorAll('section[id], div[id]');
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveSection(entry.target.id);
-        });
-      },
-      { threshold: 0.3, rootMargin: '0px 0px -30% 0px' }
-    );
-    sections.forEach(section => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
-  
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  // Прогресс скролла
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('animated-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(h > 0 ? (window.scrollY / h) * 100 : 0);
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
-  
-  const nextTestimonial = () => setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
-  const prevTestimonial = () => setTestimonialIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  const nextOfficeSlide = () => setOfficeSlideIndex((prev) => (prev + 1) % officePhotos.length);
-  const prevOfficeSlide = () => setOfficeSlideIndex((prev) => (prev - 1 + officePhotos.length) % officePhotos.length);
-  const toggleFaq = (idx: number) => setOpenFaq(openFaq === idx ? null : idx);
-  const toggleChecklist = (idx: number) => {
-    const newState = [...checklistState];
-    newState[idx] = !newState[idx];
-    setChecklistState(newState);
+
+  // Активная секция
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }),
+      { threshold: 0.3 }
+    );
+    document.querySelectorAll('section[id]').forEach((s) => obs.observe(s));
+    return () => obs.disconnect();
+  }, []);
+
+  // Анимация при скролле
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.anim').forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const start = window.scrollY;
+    const end = el.getBoundingClientRect().top + start - 80;
+    const dist = end - start;
+    const t0 = performance.now();
+    const dur = 700;
+    const ease = (t: number) => t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+    const step = (now: number) => {
+      const p = Math.min((now - t0) / dur, 1);
+      window.scrollTo(0, start + dist * ease(p));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   };
-  const openModal = (title: string, body: string) => {
-    setModalContent({ title, body });
-    setModalOpen(true);
-  };
-  const closeModal = () => setModalOpen(false);
-  const handleApplySubmit = (e: React.FormEvent) => {
+
+  const openModal = (title: string, body: string) => setModal({ open: true, title, body });
+  const closeModal = () => setModal({ open: false, title: '', body: '' });
+
+  const handleApply = (e: React.FormEvent) => {
     e.preventDefault();
-    setApplySubmitted(true);
-    setTimeout(() => {
-      setApplySubmitted(false);
-      setApplyModalOpen(false);
-      setApplyForm({ name: '', role: '', tg: '', message: '' });
-    }, 2500);
+    setApplyDone(true);
+    setTimeout(() => { setApplyDone(false); setApplyOpen(false); setApplyForm({ name:'', role:'', tg:'', message:'' }); }, 2500);
   };
-  
-  const testimonials = [
-    { name: 'Анна К.', role: 'Аналитик', text: 'Отличное пространство! Удобные переговорные, всегда есть место для работы.', rating: 5, avatar: '👩‍💼' },
-    { name: 'Дмитрий В.', role: 'Руководитель проектов', text: 'Программа лояльности приятно удивляет. Кофе и снеки — отличный бонус.', rating: 5, avatar: '👨‍💻' },
-    { name: 'Елена М.', role: 'Дизайнер', text: 'Мастер-классы и события помогают прокачивать навыки и знакомиться с коллегами.', rating: 5, avatar: '🎨' },
-    { name: 'Сергей П.', role: 'Разработчик', text: 'Спортзал и массажное кресло — то, что нужно после долгого кодинга.', rating: 5, avatar: '💪' }
+
+  const navLinks = [
+    { id: 'hero', label: 'О центре' },
+    { id: 'possibilities', label: 'Возможности' },
+    { id: 'life', label: 'Жизнь' },
+    { id: 'testimonials', label: 'Отзывы' },
+    { id: 'checklist', label: 'Чек-лист' },
+    { id: 'contacts', label: 'Контакты' },
+    { id: 'faq', label: 'FAQ' },
   ];
-  
-  const checklistItems = [
-    { day: 'День 1', text: 'Заполнить анкету новичка' },
-    { day: 'День 1', text: 'Получить ноутбук и доступы' },
-    { day: 'День 1', text: 'Пройти экскурсию по центру' },
-    { day: 'День 2', text: 'Встреча с куратором / бадди' },
-    { day: 'День 2', text: 'Инструктаж по кибербезопасности' },
-    { day: 'День 2', text: 'Инструктаж по охране труда' },
-    { day: 'День 3', text: 'Изучить курсы на «Пульсе» (ИИ-агенты, GigaChat)' },
-    { day: 'День 3', text: 'Познакомиться с командой' },
-    { day: 'День 3', text: 'Первый дейлик / стендап' },
-    { day: 'Доп.', text: 'Самостоятельные курсы в АС ПУЛЬС' },
-    { day: 'Доп.', text: 'Предложить идеи для улучшения' },
-    { day: 'Доп.', text: 'Программа лояльности: активировать бонусы' }
-  ];
-  
-  const faqItems = [
-    { q: 'Какие часы работы спортзала?', a: 'Спортзал открыт ежедневно с 07:00 до 21:00.' },
-    { q: 'Сколько времени длится обеденный перерыв?', a: 'Обед — 50 минут, в столовой предусмотрены горячие блюда.' },
-    { q: 'Как забронировать переговорную?', a: 'Через внутренний портал или у менеджера (Ирина Кузнецова).' },
-    { q: 'Какой период адаптации для новичков?', a: 'Базовая адаптация — 1 неделя, полное погружение — до месяца.' },
-    { q: 'Что входит в программу лояльности?', a: 'Скидки на услуги партнёров, бонусы за активность, приоритетное бронирование.' },
-    { q: 'Где взять канцтовары и распечатать документы?', a: 'На ресепшене есть всё необходимое, печать — в зоне коворкинга.' }
-  ];
-  
-  const contacts = [
-    { name: 'Александра Иванова', role: 'Специалист по адаптации', tg: '@alex_hub', avatarImg: '/people/ava-nadya-v@2x.png', avatarEmoji: '👩' },
-    { name: 'Михаил Смирнов', role: 'Технический специалист', tg: '@michael_tech', avatarImg: '/people/ava-azat@2x.png', avatarEmoji: '🔧' },
-    { name: 'Ирина Кузнецова', role: 'Менеджер по бронированию', tg: '@irina_booking', avatarImg: '/people/ava-nastya@2x.png', avatarEmoji: '📅' },
-    { name: 'Фёдор Петров', role: 'Бадди', tg: '@fedor_buddy', avatarImg: '/people/ava-vlad@2x.png', avatarEmoji: '🤝' }
-  ];
-  
+
   return (
     <>
       <style jsx global>{`
-        @font-face {
-          font-family: 'SBSansDisplay';
-          src: url('/fonts/SBSansDisplay-Light.woff2') format('woff2');
-          font-weight: 300;
-          font-style: normal;
-          font-display: swap;
-        }
-        @font-face {
-          font-family: 'SBSansDisplay';
-          src: url('/fonts/SBSansDisplay-SemiBold.woff2') format('woff2');
-          font-weight: 600;
-          font-style: normal;
-          font-display: swap;
-        }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        :root {
-          --peach: #f4a582;
-          --pink: #e8609a;
-          --blue: #5bc8f5;
-          --purple: #b388f7;
-          --bg: #07070e;
-          --bg2: #0d0d18;
-          --bg3: #11111f;
-          --text: #f0eef8;
+        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@400;500;600&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* ── ТЕМЫ ── */
+        [data-theme="dark"] {
+          --bg:    #07070e;
+          --bg2:   #0d0d18;
+          --bg3:   #11111f;
+          --text:  #f0eef8;
           --muted: rgba(240,238,248,0.45);
           --border: rgba(255,255,255,0.08);
+          --peach: #f4a582;
+          --pink:  #e8609a;
+          --blue:  #5bc8f5;
+          --purple:#b388f7;
+          --card:  rgba(255,255,255,0.04);
+          --card-border: rgba(255,255,255,0.09);
+          --input-bg: rgba(0,0,0,0.35);
+          --input-border: rgba(255,255,255,0.14);
+          --nav-bg: rgba(7,7,14,0.85);
         }
-        
+        [data-theme="light"] {
+          --bg:    #f4f4f8;
+          --bg2:   #eceef5;
+          --bg3:   #ffffff;
+          --text:  #111420;
+          --muted: rgba(0,0,0,0.52);
+          --border: rgba(0,0,0,0.07);
+          --peach: #d4845e;
+          --pink:  #c84d82;
+          --blue:  #3a9ec9;
+          --purple:#7b5cb8;
+          --card:  rgba(255,255,255,0.75);
+          --card-border: rgba(0,0,0,0.08);
+          --input-bg: #ffffff;
+          --input-border: #d0d5dd;
+          --nav-bg: rgba(244,244,248,0.88);
+        }
+
         html { scroll-behavior: auto; }
         body {
-          font-family: 'SBSansDisplay', 'Manrope', sans-serif;
+          font-family: 'Manrope', sans-serif;
           background: var(--bg);
           color: var(--text);
           overflow-x: hidden;
-          font-weight: 300;
+          transition: background 0.35s, color 0.25s;
         }
-        h1, h2, h3, .bold-text { font-weight: 600; }
-        
-        .animate-on-scroll {
-          opacity: 0;
-          transform: translateY(30px);
-          transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.7s ease;
+
+        /* ── АНИМАЦИИ ПОЯВЛЕНИЯ ── */
+        .anim { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(.2,.9,.4,1), transform 0.65s ease; }
+        .anim.vis { opacity: 1; transform: none; }
+
+        /* ── ПРОГРЕСС-БАР ── */
+        .progress {
+          position: fixed; left: 18px; top: 50%; transform: translateY(-50%);
+          width: 3px; height: 180px; background: rgba(255,255,255,0.1);
+          border-radius: 3px; z-index: 99; overflow: hidden;
         }
-        .animated-visible { opacity: 1 !important; transform: translateY(0) !important; }
-        
-        /* NAVIGATION */
+        [data-theme="light"] .progress { background: rgba(0,0,0,0.1); }
+        .progress-fill { width: 100%; background: linear-gradient(to top, var(--peach), var(--pink)); border-radius: 3px; transition: height .1s; }
+        @media(max-width:768px){ .progress { display:none; } }
+
+        /* ── NAV ── */
         .nav {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          display: flex; align-items: center; justify-content: space-between;
-          padding: 20px 60px; backdrop-filter: blur(20px);
-          background: rgba(7,7,14,0.8); border-bottom: 1px solid var(--border);
+          position: fixed; top:0; left:0; right:0; z-index:100;
+          display:flex; align-items:center; justify-content:space-between;
+          padding: 16px 60px;
+          background: var(--nav-bg);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border);
+          transition: background 0.35s, border-color 0.25s;
         }
-        .nav-logo { font-size: 24px; font-weight: 600; background: linear-gradient(90deg, var(--peach), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
-        .nav-links { display: flex; gap: 36px; list-style: none; }
-        .nav-links a { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: 0.3s; padding-bottom: 4px; border-bottom: 2px solid transparent; }
-        .nav-links a.active-link { color: var(--peach); border-bottom-color: var(--peach); }
-        .nav-links a:hover { color: var(--text); }
-        .nav-cta { font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 100px; border: 1px solid rgba(244,165,130,0.5); background: transparent; color: var(--peach); text-decoration: none; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .nav-cta:hover { background: rgba(244,165,130,0.12); transform: translateY(-2px) scale(1.05); box-shadow: 0 4px 20px rgba(244,165,130,0.25); border-color: rgba(244,165,130,0.8); }
-        
-        .mobile-sticky-bar {
-          position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-          background: rgba(13,13,24,0.95); backdrop-filter: blur(20px);
-          border-radius: 60px; padding: 10px 20px; display: none; gap: 32px;
-          z-index: 101; border: 1px solid var(--border);
+        .nav-logo {
+          font-family:'Unbounded',sans-serif; font-size:18px; font-weight:900;
+          background: linear-gradient(90deg, var(--peach), var(--pink));
+          -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+          text-decoration:none;
         }
-        .mobile-sticky-bar button { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted); transition: 0.2s; }
-        .mobile-sticky-bar button.active-mobile { color: var(--peach); transform: scale(1.1); }
-        @media (max-width: 768px) {
-          .nav-links { display: none; }
-          .mobile-sticky-bar { display: flex; }
-          .nav { padding: 16px 24px; }
+        .nav-links { display:flex; gap:28px; list-style:none; }
+        .nav-links a {
+          font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+          color:var(--muted); text-decoration:none; transition:.25s;
+          padding-bottom:3px; border-bottom:2px solid transparent;
         }
-        
-        /* HERO */
-        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 60px 60px; background: radial-gradient(circle at 10% 20%, rgba(244,165,130,0.08), transparent 60%); }
-        .hero-inner { text-align: center; max-width: 900px; z-index: 2; }
-        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(244,165,130,0.35); background: rgba(244,165,130,0.08); font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--peach); margin-bottom: 40px; }
-        .hero-title { font-family: 'SBSansDisplay', sans-serif; font-size: clamp(48px, 8vw, 100px); font-weight: 600; line-height: 1.0; margin-bottom: 32px; }
-        .hero-title-line2 { background: linear-gradient(90deg, var(--peach), var(--pink), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-subtitle { font-size: 18px; color: var(--muted); line-height: 1.75; margin-bottom: 52px; max-width: 560px; margin-left: auto; margin-right: auto; }
-        
-        /* LIQUID GLASS CARDS */
-        .card, .testimonial-card, .office-slide {
-          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(18, 18, 18, 0.288) 0, rgba(18, 18, 18, 0.177) 100%);
-          box-shadow: inset -5px -5px 250px rgba(255, 255, 255, 0.12), inset 3px 3px 3px rgba(255, 255, 255, 0.16);
-          backdrop-filter: blur(2px);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          border-radius: 24px;
+        .nav-links a.act { color:var(--peach); border-bottom-color:var(--peach); }
+        .nav-links a:hover { color:var(--text); }
+        .nav-right { display:flex; align-items:center; gap:16px; }
+        .nav-cta {
+          font-size:12px; font-weight:600; padding:9px 22px; border-radius:100px;
+          border:1px solid rgba(244,165,130,0.45); color:var(--peach);
+          text-decoration:none; transition:all .3s;
         }
-        .card:hover, .testimonial-card:hover, .office-slide:hover {
-          transform: translateY(-8px);
-          box-shadow: inset -5px -5px 250px rgba(255, 255, 255, 0.2), inset 3px 3px 3px rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0,0,0,0.4);
-          border-color: rgba(244,165,130,0.2);
+        .nav-cta:hover { background:rgba(244,165,130,0.1); transform:translateY(-1px); }
+
+        /* ── MOBILE BAR ── */
+        .mobile-bar {
+          position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+          background:var(--nav-bg); backdrop-filter:blur(20px);
+          border-radius:60px; padding:10px 22px; display:none; gap:28px;
+          z-index:101; border:1px solid var(--border);
         }
-        
-        /* CHECKLIST - исправлено */
-        .checklist-item {
-          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(25, 25, 35, 0.6) 0, rgba(15, 15, 25, 0.4) 100%);
-          backdrop-filter: blur(2px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 20px;
-          transition: all 0.3s ease;
-          box-shadow: none;
-          margin-bottom: 12px;
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          padding: 16px 20px;
-          cursor: pointer;
+        .mobile-bar button { background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted); transition:.2s; }
+        .mobile-bar button.act { color:var(--peach); transform:scale(1.15); }
+        @media(max-width:768px){
+          .nav-links { display:none; }
+          .nav { padding:14px 20px; }
+          .mobile-bar { display:flex; }
         }
-        .checklist-item:hover {
-          transform: translateX(6px);
-          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(244,165,130,0.2) 0, rgba(232,96,154,0.12) 100%);
-          border-color: rgba(244,165,130,0.4);
+
+        /* ── КНОПКИ ── */
+        .btn-p, .btn-s {
+          display:inline-flex; align-items:center; gap:8px;
+          padding:15px 34px; border-radius:100px; font-weight:600; font-size:15px;
+          font-family:'Manrope',sans-serif; text-decoration:none;
+          transition:all .25s; cursor:pointer; border:none;
         }
-        .checklist-checkbox {
-          width: 24px;
-          height: 24px;
-          border-radius: 8px;
-          border: 2px solid var(--peach);
-          background: rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s;
-          flex-shrink: 0;
+        .btn-p {
+          background: linear-gradient(135deg, var(--peach), var(--pink));
+          color:#12001a;
+          box-shadow: 0 0 32px rgba(244,165,130,0.3);
         }
-        .checklist-checkbox.checked { background: var(--peach); color: #12001a; }
-        .checklist-text { flex: 1; font-size: 15px; }
-        .checklist-day { font-size: 12px; color: var(--peach); font-weight: 600; min-width: 70px; }
-        
-        /* FAQ - убраны белые полосы */
+        .btn-p:hover { transform:translateY(-3px); box-shadow:0 8px 50px rgba(244,165,130,0.45); }
+        .btn-s {
+          background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text);
+        }
+        [data-theme="light"] .btn-s { background:rgba(0,0,0,0.04); }
+        .btn-s:hover { background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.2); transform:translateY(-2px); }
+        [data-theme="light"] .btn-s:hover { background:rgba(0,0,0,0.08); border-color:rgba(0,0,0,0.15); }
+        .btn-p:active, .btn-s:active { transform:scale(0.98); }
+
+        /* ── КАРТОЧКИ ── */
+        .card {
+          background:var(--card); border:1px solid var(--card-border);
+          backdrop-filter:blur(4px); border-radius:24px; padding:36px;
+          transition:all .35s cubic-bezier(.34,1.56,.64,1);
+        }
+        .card:hover { transform:translateY(-6px); border-color:rgba(244,165,130,0.25); box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+        [data-theme="light"] .card:hover { box-shadow:0 12px 40px rgba(0,0,0,0.1); }
+
+        /* ── SECTION LABELS ── */
+        .s-label { display:inline-block; font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--peach); margin-bottom:14px; }
+        .s-title { font-family:'Unbounded',sans-serif; font-size:clamp(28px,4.5vw,48px); font-weight:700; line-height:1.1; letter-spacing:-.02em; }
+        .s-sub { font-size:16px; color:var(--muted); line-height:1.7; margin-top:14px; }
+
+        /* ── SECTION PADDING ── */
+        .sec { padding:100px 60px; }
+        .sec-alt { background:var(--bg2); }
+        @media(max-width:768px){ .sec { padding:72px 20px; } }
+
+        /* ── GRID ── */
+        .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1100px; margin:0 auto; }
+        .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:1100px; margin:0 auto; }
+        .grid-4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:24px; max-width:1100px; margin:0 auto; }
+        @media(max-width:1024px){ .grid-3 { grid-template-columns:repeat(2,1fr); } }
+        @media(max-width:768px){ .grid-3,.grid-2,.grid-4 { grid-template-columns:1fr; } }
+
+        /* ── SLIDER ── */
+        .slider-wrap { position:relative; max-width:900px; margin:0 auto; }
+        .slide-img { width:100%; height:420px; object-fit:cover; border-radius:24px; display:block; }
+        .slide-caption {
+          position:absolute; bottom:0; left:0; right:0; padding:24px;
+          background:linear-gradient(to top,rgba(0,0,0,.75),transparent);
+          color:#fff; font-weight:600; text-align:center; border-radius:0 0 24px 24px;
+        }
+        .sl-btn {
+          position:absolute; top:50%; transform:translateY(-50%);
+          background:rgba(0,0,0,.45); border:none; color:#fff; font-size:22px;
+          width:46px; height:46px; border-radius:50%; cursor:pointer; backdrop-filter:blur(4px);
+          transition:all .3s cubic-bezier(.34,1.56,.64,1); z-index:2; display:flex; align-items:center; justify-content:center;
+        }
+        .sl-btn:hover { background:var(--peach); color:#12001a; transform:translateY(-50%) scale(1.15); }
+        .sl-l { left:16px; } .sl-r { right:16px; }
+        .dots { display:flex; justify-content:center; gap:12px; margin-top:20px; }
+        .dot { width:8px; height:8px; border-radius:8px; background:var(--muted); cursor:pointer; transition:.25s; }
+        .dot.act { width:28px; background:var(--peach); }
+
+        /* ── CHECKLIST ── */
+        .cl-item {
+          display:flex; align-items:center; gap:18px; padding:18px 24px;
+          background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+          cursor:pointer; transition:all .3s; margin-bottom:10px;
+        }
+        .cl-item:hover { transform:translateX(6px); border-color:rgba(244,165,130,.3); background:rgba(244,165,130,.05); }
+        .cl-box {
+          width:24px; height:24px; border-radius:8px; border:2px solid var(--peach);
+          background:transparent; display:flex; align-items:center; justify-content:center;
+          flex-shrink:0; transition:all .2s; font-size:13px; color:#12001a;
+        }
+        .cl-box.done { background:var(--peach); }
+        .cl-day { font-size:11px; color:var(--peach); font-weight:700; min-width:60px; letter-spacing:.05em; text-transform:uppercase; }
+        .cl-text { font-size:15px; line-height:1.5; }
+
+        /* ── FAQ ── */
         .faq-item {
-          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(20, 20, 30, 0.7) 0, rgba(12, 12, 20, 0.5) 100%);
-          backdrop-filter: blur(4px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: none;
-          border-radius: 20px;
-          transition: all 0.3s ease;
-          margin-bottom: 16px;
-          overflow: hidden;
+          background:var(--card); border:1px solid var(--card-border); border-radius:20px;
+          margin-bottom:14px; overflow:hidden; transition:border-color .25s;
         }
-        .faq-item:hover {
-          border-color: rgba(244,165,130,0.3);
-          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(244,165,130,0.1) 0, rgba(232,96,154,0.08) 100%);
+        .faq-item:hover { border-color:rgba(244,165,130,.3); }
+        .faq-q {
+          padding:22px 28px; font-weight:600; font-size:16px; cursor:pointer;
+          display:flex; justify-content:space-between; align-items:center; gap:16px;
         }
-        .faq-question {
-          padding: 24px;
-          font-weight: 600;
-          font-size: 18px;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: transparent;
-          border-radius: 20px;
-          transition: background 0.2s;
-        }
-        .faq-question:hover { background: rgba(244,165,130,0.08); }
-        .faq-icon { font-size: 28px; transition: transform 0.2s; color: var(--peach); }
-        
-        /* CONTACTS */
+        .faq-icon { font-size:24px; color:var(--peach); flex-shrink:0; transition:transform .25s; }
+        .faq-icon.open { transform:rotate(45deg); }
+        .faq-body { padding:0 28px; color:var(--muted); line-height:1.7; font-size:15px; overflow:hidden; transition:max-height .4s cubic-bezier(.33,1,.68,1), padding .3s; }
+
+        /* ── TESTIMONIAL ── */
+        .test-card { text-align:center; padding:52px 48px; }
+        .test-avatar { font-size:64px; margin-bottom:20px; }
+        .test-text { font-size:18px; line-height:1.7; font-style:italic; margin-bottom:24px; }
+        .test-stars { color:#f59e0b; font-size:22px; margin-bottom:14px; }
+
+        /* ── CONTACT CARD ── */
         .contact-avatar {
-          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(30, 30, 40, 0.6) 0, rgba(20, 20, 30, 0.4) 100%);
-          box-shadow: inset -3px -3px 20px rgba(255,255,255,0.1), inset 2px 2px 2px rgba(255,255,255,0.15);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 50%;
-          width: 80px;
-          height: 80px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 16px auto;
-          font-size: 40px;
-          overflow: hidden;
+          width:90px; height:90px; border-radius:50%;
+          background: linear-gradient(135deg, rgba(244,165,130,.2), rgba(232,96,154,.2));
+          border:1px solid var(--card-border);
+          display:flex; align-items:center; justify-content:center;
+          font-size:40px; margin:0 auto 18px;
+          overflow:hidden;
         }
-        .contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
-        /* BUTTONS */
-        .btn-primary {
-          background: linear-gradient(135deg, rgba(244,165,130,0.9), rgba(232,96,154,0.9));
-          backdrop-filter: blur(4px);
-          box-shadow: inset -2px -2px 10px rgba(0,0,0,0.2), inset 2px 2px 5px rgba(255,255,255,0.3), 0 0 40px rgba(244,165,130,0.3);
-          border: 1px solid rgba(255,255,255,0.2);
-          color: #12001a;
-          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          display: inline-flex;
-          padding: 16px 36px;
-          border-radius: 100px;
-          font-weight: 600;
-          text-decoration: none;
+        .contact-avatar img {
+          width:100%; height:100%; object-fit:cover; display:block;
         }
-        .btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: inset -2px -2px 10px rgba(0,0,0,0.2), inset 2px 2px 5px rgba(255,255,255,0.4), 0 16px 60px rgba(244,165,130,0.55); }
-        .btn-secondary {
-          background: rgba(255,255,255,0.08);
-          backdrop-filter: blur(4px);
-          box-shadow: inset -2px -2px 10px rgba(0,0,0,0.1), inset 1px 1px 2px rgba(255,255,255,0.2);
-          border: 1px solid rgba(255,255,255,0.15);
-          color: var(--text);
-          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          display: inline-flex;
-          padding: 16px 36px;
-          border-radius: 100px;
-          font-weight: 600;
-          text-decoration: none;
+
+        /* ── MODAL ── */
+        .modal-ov {
+          position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(8px);
+          display:flex; align-items:center; justify-content:center; z-index:200;
+          opacity:0; visibility:hidden; transition:.3s;
         }
-        .btn-secondary:hover { background: rgba(255,255,255,0.12); transform: translateY(-4px) scale(1.03); box-shadow: inset -2px -2px 10px rgba(0,0,0,0.1), inset 1px 1px 2px rgba(255,255,255,0.3); }
-        
-        /* OTHER */
-        .section-label { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--peach); margin-bottom: 16px; }
-        .section-title { font-family: 'SBSansDisplay', sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 600; line-height: 1.1; }
-        .features-grid, .contacts-grid { display: grid; gap: 24px; max-width: 1100px; margin: 0 auto; }
-        .features-grid { grid-template-columns: repeat(3,1fr); }
-        .contacts-grid { grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); }
-        .map-container { border-radius: 24px; overflow: hidden; border: 1px solid var(--border); height: 300px; background: var(--bg3); display: flex; align-items: center; justify-content: center; color: var(--muted); }
-        
-        .testimonial-slider, .office-slider { position: relative; max-width: 900px; margin: 0 auto; }
-        .office-slide { position: relative; border-radius: 24px; overflow: hidden; }
-        .office-slide img { width: 100%; height: 400px; object-fit: cover; display: block; }
-        .slide-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; color: white; font-weight: 600; text-align: center; }
-        .testimonial-card { text-align: center; padding: 40px; }
-        .testimonial-avatar { font-size: 64px; margin-bottom: 16px; }
-        .stars { color: gold; font-size: 24px; margin: 12px 0; }
-        
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 28px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; backdrop-filter: blur(4px); transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2; }
-        .slider-btn:hover { background: var(--peach); color: black; transform: translateY(-50%) scale(1.15); box-shadow: 0 4px 20px rgba(244,165,130,0.4); }
-        .slider-btn-left { left: 20px; } .slider-btn-right { right: 20px; }
-        .dots { display: flex; justify-content: center; gap: 12px; margin-top: 20px; }
-        .dot { width: 10px; height: 10px; border-radius: 10px; background: var(--muted); cursor: pointer; transition: 0.2s; }
-        .dot.active { width: 28px; background: var(--peach); }
-        
-        .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; visibility: hidden; transition: 0.3s; }
-        .modal-overlay.open { opacity: 1; visibility: visible; }
-        .modal-content { background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(18, 18, 18, 0.9) 0, rgba(18, 18, 18, 0.7) 100%); backdrop-filter: blur(8px); border-radius: 32px; max-width: 500px; width: 90%; padding: 32px; transform: scale(0.9); transition: transform 0.3s; border: 1px solid rgba(255,255,255,0.15); box-shadow: inset -3px -3px 20px rgba(255,255,255,0.1), inset 2px 2px 5px rgba(255,255,255,0.1); }
-        .modal-overlay.open .modal-content { transform: scale(1); }
-        .close-modal { background: var(--peach); border: none; padding: 10px 24px; border-radius: 40px; margin-top: 24px; cursor: pointer; font-weight: 600; }
-        
-        @media (max-width: 1024px) { .features-grid { grid-template-columns: repeat(2,1fr); } }
-        @media (max-width: 768px) {
-          .features-grid { grid-template-columns: 1fr; }
-          .hero { padding: 100px 24px 60px; }
-          .office-slide img { height: 250px; }
-          .slider-btn-left { left: 10px; } .slider-btn-right { right: 10px; }
+        .modal-ov.open { opacity:1; visibility:visible; }
+        .modal-box {
+          background:var(--bg3); border:1px solid var(--border); border-radius:32px;
+          padding:40px; max-width:520px; width:90%;
+          transform:scale(.92); transition:transform .3s;
         }
+        .modal-ov.open .modal-box { transform:scale(1); }
+        .modal-input {
+          width:100%; padding:13px 16px; border-radius:14px;
+          background:var(--input-bg); border:1px solid var(--input-border);
+          color:var(--text); font-size:15px; font-family:inherit; outline:none;
+          transition:border-color .2s; margin-bottom:16px;
+        }
+        .modal-input:focus { border-color:var(--peach); }
+        .modal-label { display:block; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
+
+        /* ── HERO SPECIFIC ── */
+        .hero-badge {
+          display:inline-flex; align-items:center; gap:8px; padding:8px 20px;
+          border-radius:100px; border:1px solid rgba(244,165,130,.35);
+          background:rgba(244,165,130,.08); font-size:11px; font-weight:700;
+          text-transform:uppercase; letter-spacing:.12em; color:var(--peach); margin-bottom:36px;
+        }
+        .badge-dot { width:6px; height:6px; border-radius:50%; background:var(--peach); box-shadow:0 0 8px var(--peach); }
+        .hero-title { font-family:'Unbounded',sans-serif; font-size:clamp(44px,7.5vw,96px); font-weight:900; line-height:1.0; letter-spacing:-.03em; margin-bottom:28px; }
+        .hero-grad { background:linear-gradient(90deg,var(--peach),var(--pink),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+        /* ── MAP ── */
+        .map-wrap { border-radius:24px; overflow:hidden; border:1px solid var(--border); height:300px; }
+
+        /* ── DIVIDER ── */
+        .divider-peach { height:1px; background:linear-gradient(90deg,transparent,var(--peach),var(--pink),transparent); opacity:.35; }
+        .divider-blue  { height:1px; background:linear-gradient(90deg,transparent,var(--blue),var(--purple),transparent); opacity:.3; }
       `}</style>
-      
-      <nav className="nav">
-        <a href="#" className="nav-logo">ХАБ | Сбер</a>
-        <ul className="nav-links">
-          <li><a href="#hero" onClick={(e)=>handleNavClick(e,'hero')} className={activeSection==='hero'?'active-link':''}>О центре</a></li>
-          <li><a href="#office" onClick={(e)=>handleNavClick(e,'office')} className={activeSection==='office'?'active-link':''}>Офис</a></li>
-          <li><a href="#possibilities" onClick={(e)=>handleNavClick(e,'possibilities')} className={activeSection==='possibilities'?'active-link':''}>Возможности</a></li>
-          <li><a href="#life" onClick={(e)=>handleNavClick(e,'life')} className={activeSection==='life'?'active-link':''}>Жизнь внутри</a></li>
-          <li><a href="#testimonials" onClick={(e)=>handleNavClick(e,'testimonials')} className={activeSection==='testimonials'?'active-link':''}>Отзывы</a></li>
-          <li><a href="#checklist" onClick={(e)=>handleNavClick(e,'checklist')} className={activeSection==='checklist'?'active-link':''}>Чек-лист</a></li>
-          <li><a href="#contacts" onClick={(e)=>handleNavClick(e,'contacts')} className={activeSection==='contacts'?'active-link':''}>Контакты</a></li>
-          <li><a href="#faq" onClick={(e)=>handleNavClick(e,'faq')} className={activeSection==='faq'?'active-link':''}>FAQ</a></li>
-        </ul>
-        <a href="#booking" onClick={(e)=>{e.preventDefault(); openModal('Бронирование переговорной','Форма бронирования откроется в ближайшее время. Свяжитесь с Ириной Кузнецовой.')}} className="nav-cta">Забронировать</a>
-      </nav>
-      
-      <div className="mobile-sticky-bar">
-        <button onClick={()=>smoothScrollToCustom('hero')} className={activeSection==='hero'?'active-mobile':''}>🏠</button>
-        <button onClick={()=>smoothScrollToCustom('office')} className={activeSection==='office'?'active-mobile':''}>📸</button>
-        <button onClick={()=>smoothScrollToCustom('possibilities')} className={activeSection==='possibilities'?'active-mobile':''}>⚡</button>
-        <button onClick={()=>smoothScrollToCustom('checklist')} className={activeSection==='checklist'?'active-mobile':''}>✅</button>
-        <button onClick={()=>smoothScrollToCustom('faq')} className={activeSection==='faq'?'active-mobile':''}>❓</button>
+
+      {/* ПРОГРЕСС */}
+      <div className="progress">
+        <div className="progress-fill" style={{ height: `${scrollProgress}%` }} />
       </div>
-      
-      <section id="hero" className="hero animate-on-scroll">
-        <div className="hero-inner">
-          <div className="hero-badge"><span>📍 ул. Костина, 6 · Нижний Новгород</span></div>
-          <h1 className="hero-title">ХАБ<br /><span className="hero-title-line2">новых возможностей</span></h1>
-          <p className="hero-subtitle">Мы запускаем проекты для новых возможностей региона. Мы создаем решения для развития бизнеса через исследования клиентского опыта, анализ данных, применяя креативный подход и современные технологии.</p>
-          <div className="hero-btns">
-            <a href="#possibilities" onClick={(e)=>handleNavClick(e,'possibilities')} className="btn-primary">Исследовать →</a>
-            <a href="#booking" onClick={(e)=>{e.preventDefault(); openModal('Бронирование','Свяжитесь с нами для бронирования переговорной или коворкинга.')}} className="btn-secondary">Забронировать</a>
+
+      {/* NAV */}
+      <nav className="nav">
+        <a href="#hero" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }} className="nav-logo">ХАБ</a>
+        <ul className="nav-links">
+          {navLinks.map((l) => (
+            <li key={l.id}>
+              <a
+                href={`#${l.id}`}
+                className={activeSection === l.id ? 'act' : ''}
+                onClick={(e) => { e.preventDefault(); scrollTo(l.id); }}
+              >{l.label}</a>
+            </li>
+          ))}
+        </ul>
+        <div className="nav-right">
+          <ThemeSwitcher isDark={isDark} onToggle={() => setIsDark((p) => !p)} />
+          <a
+            href="#booking"
+            className="nav-cta"
+            onClick={(e) => { e.preventDefault(); openModal('Бронирование', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или воспользуйтесь внутренним порталом.'); }}
+          >Забронировать</a>
+        </div>
+      </nav>
+
+      {/* MOBILE BAR */}
+      <div className="mobile-bar">
+        {[
+          { id:'hero', ico:'🏠' }, { id:'possibilities', ico:'⚡' },
+          { id:'checklist', ico:'✅' }, { id:'contacts', ico:'👥' }, { id:'faq', ico:'❓' },
+        ].map((b) => (
+          <button key={b.id} className={activeSection === b.id ? 'act' : ''} onClick={() => scrollTo(b.id)}>{b.ico}</button>
+        ))}
+      </div>
+
+      {/* ── HERO ── */}
+      <section id="hero" className="sec" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', background:'var(--bg)', position:'relative', overflow:'hidden' }}>
+        {/* Орбы */}
+        <div style={{ position:'absolute', inset:0, pointerEvents:'none' }}>
+          <div style={{ position:'absolute', width:600, height:600, top:-150, right:-150, borderRadius:'50%', background:'radial-gradient(circle, rgba(244,165,130,0.18) 0%, transparent 70%)', filter:'blur(70px)', animation:'float1 12s ease-in-out infinite' }} />
+          <div style={{ position:'absolute', width:500, height:500, bottom:-80, left:-100, borderRadius:'50%', background:'radial-gradient(circle, rgba(232,96,154,0.15) 0%, transparent 70%)', filter:'blur(70px)', animation:'float2 16s ease-in-out infinite' }} />
+          {/* Кольца */}
+          <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            {[320, 560, 800].map((size, i) => (
+              <div key={i} style={{
+                position:'absolute', width:size, height:size, borderRadius:'50%',
+                border:`1px solid rgba(244,165,130,${0.12 - i*0.03})`,
+                animation:`spin${i+1} ${30+i*20}s linear infinite${i%2===1?' reverse':''}`,
+              }} />
+            ))}
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-35px,35px)} }
+          @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(28px,-28px)} }
+          @keyframes spin1 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+          @keyframes spin2 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+          @keyframes spin3 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        `}</style>
+
+        <div className="anim" style={{ textAlign:'center', maxWidth:900, margin:'0 auto', position:'relative', zIndex:2 }}>
+          <div className="hero-badge"><div className="badge-dot" /> 📍 ул. Костина, 6 · Нижний Новгород</div>
+          <h1 className="hero-title">
+            ХАБ<br />
+            <span className="hero-grad">новых возможностей</span>
+          </h1>
+          <p style={{ fontSize:18, color:'var(--muted)', lineHeight:1.75, maxWidth:560, margin:'0 auto 48px' }}>
+            Мы запускаем проекты для развития региона. Современные технологии, инновационные сервисы и комфортное пространство — всё здесь.
+          </p>
+          <div style={{ display:'flex', gap:16, justifyContent:'center', flexWrap:'wrap' }}>
+            <a href="#possibilities" className="btn-p" onClick={(e) => { e.preventDefault(); scrollTo('possibilities'); }}>Исследовать →</a>
+            <a href="#booking" className="btn-s" onClick={(e) => { e.preventDefault(); openModal('Бронирование', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking.'); }}>Забронировать</a>
+          </div>
+        </div>
+
+        {/* Карта */}
+        <div className="anim" style={{ maxWidth:1100, margin:'64px auto 0', width:'100%', padding:'0 60px' }}>
+          <div className="map-wrap">
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617"
+              width="100%" height="100%" style={{ border:0, display:'block' }} allowFullScreen
+            />
           </div>
         </div>
       </section>
-      
       <div style={{ padding: '0 60px 60px' }} className="animate-on-scroll">
         <div className="map-container">
           {showVideo ? (
@@ -472,165 +621,199 @@ export default function Home() {
           )}
         </div>
       </div>
-      
-      <section id="office" style={{ padding: '60px', background: 'var(--bg)' }}>
-        <div className="features-header" style={{ textAlign:'center' }}>
-          <div className="section-label">Пространство</div>
-          <h2 className="section-title">Офис Сбера</h2>
-          <p style={{ color: 'var(--muted)', maxWidth: 600, margin: '20px auto 0' }}>Современные интерьеры, комфортные зоны для работы и отдыха</p>
+
+      {/* ── ФОТО ОФИСА ── */}
+      <div className="divider-peach" />
+      <section id="office" className="sec sec-alt">
+        <div className="anim" style={{ textAlign:'center', marginBottom:56 }}>
+          <div className="s-label">Пространство</div>
+          <h2 className="s-title">Офис Сбера на Костина, 6</h2>
+          <p className="s-sub" style={{ maxWidth:520, margin:'14px auto 0' }}>Современные интерьеры, комфортные зоны для работы и отдыха</p>
         </div>
-        <div className="office-slider animate-on-scroll">
-          <div className="office-slide">
-            <img src={officePhotos[officeSlideIndex].url} alt={officePhotos[officeSlideIndex].title} />
-            <div className="slide-caption">{officePhotos[officeSlideIndex].title}</div>
+        <div className="slider-wrap anim">
+          <div style={{ position:'relative', borderRadius:24, overflow:'hidden' }}>
+            <img className="slide-img" src={officePhotos[officeIdx].url} alt={officePhotos[officeIdx].title} />
+            <div className="slide-caption">{officePhotos[officeIdx].title}</div>
           </div>
-          <button className="slider-btn slider-btn-left" onClick={prevOfficeSlide}>←</button>
-          <button className="slider-btn slider-btn-right" onClick={nextOfficeSlide}>→</button>
+          <button className="sl-btn sl-l" onClick={() => setOfficeIdx((p) => (p - 1 + officePhotos.length) % officePhotos.length)}>←</button>
+          <button className="sl-btn sl-r" onClick={() => setOfficeIdx((p) => (p + 1) % officePhotos.length)}>→</button>
           <div className="dots">
-            {officePhotos.map((_, idx) => (
-              <div key={idx} className={`dot ${idx === officeSlideIndex ? 'active' : ''}`} onClick={() => setOfficeSlideIndex(idx)} />
+            {officePhotos.map((_, i) => (
+              <div key={i} className={`dot ${i === officeIdx ? 'act' : ''}`} onClick={() => setOfficeIdx(i)} />
             ))}
           </div>
         </div>
       </section>
-      
-      <section id="possibilities" style={{ padding: '60px' }}>
-        <div className="features-header" style={{ textAlign:'center', marginBottom:'60px' }}>
-          <div className="section-label">Всё для продуктивной работы</div>
-          <h2 className="section-title">Возможности центра</h2>
+
+      {/* ── ВОЗМОЖНОСТИ ── */}
+      <div className="divider-blue" />
+      <section id="possibilities" className="sec">
+        <div className="anim" style={{ textAlign:'center', marginBottom:64 }}>
+          <div className="s-label">Всё для тебя</div>
+          <h2 className="s-title">Возможности центра</h2>
         </div>
-        <div className="features-grid">
+        <div className="grid-3">
           {[
-            { icon:'🎁', name:'Программа лояльности', desc:'Бонусы и скидки для активных сотрудников' },
-            { icon:'🍎', name:'Снеки и фрукты', desc:'Бесплатные напитки, яблоки, сливы, груши' },
-            { icon:'💆', name:'Массажное кресло', desc:'Relax-зона с массажными креслами' },
-            { icon:'🏋️', name:'Спортзал', desc:'07:00–21:00, современное оборудование' },
-            { icon:'💼', name:'Коворкинг + Переговорные', desc:'Рабочие места и комнаты для встреч с техникой' },
-            { icon:'📚', name:'Обучение', desc:'Тренинги, курсы на Пульсе, мастер-классы' },
-            { icon:'🚇', name:'Удобное расположение', desc:'Центр города, рядом метро Горьковская' },
-            { icon:'🖨️', name:'Печать и канцтовары', desc:'Всё необходимое на ресепшене' }
-          ].map((f,i) => (
-            <div className="card animate-on-scroll" key={i} style={{ transitionDelay: `${i*0.05}s`, padding: '32px' }}>
-              <div style={{ fontSize: 40, marginBottom: 16 }}>{f.icon}</div>
-              <h3 style={{ fontWeight:600, marginBottom:8 }}>{f.name}</h3>
-              <p style={{ color:'var(--muted)' }}>{f.desc}</p>
+            { img:'sber_present.png',  name:'Программа лояльности', desc:'Бонусы, скидки у партнёров и приоритетное бронирование за активность' },
+            { img:'sber_food.png',   name:'Снеки и напитки',       desc:'Бесплатный кофе, фрукты, яблоки, груши, сливы каждый день' },
+            { img:'sber_rest.png',  name:'Массажное кресло',      desc:'Relax-зона с профессиональными массажными креслами' },
+            { img:'sber_man_sport.png',      name:'Спортзал',              desc:'Открыт 07:00–21:00, современное оборудование, душевые' },
+            { img:'/features/cowork.png',   name:'Коворкинг',             desc:'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
+            { img:'sber_books.png', name:'Обучение',              desc:'Мастер-классы, тренинги, курсы на Пульсе — постоянный рост' },
+            { img:'/features/location.png', name:'Удобное расположение',  desc:'Центр города, рядом с метро Горьковская' },
+            { img:'/features/print.png',    name:'Печать и канцтовары',   desc:'Цветной МФУ в коворкинге, всё необходимое на ресепшене' },
+          ].map((f, i) => (
+            <div className="card anim" key={i} style={{ transitionDelay:`${i*0.06}s` }}>
+              {/* ВОТ ЭТО МЕНЯЕМ — вместо эмодзи просто img того же размера */}
+              <img
+                src={f.img}
+                alt={f.name}
+                style={{ width:48, height:48, objectFit:'contain', marginBottom:20, display:'block' }}
+              />
+              <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:16, fontWeight:700, marginBottom:10 }}>{f.name}</h3>
+              <p style={{ color:'var(--muted)', lineHeight:1.6, fontSize:14 }}>{f.desc}</p>
             </div>
           ))}
         </div>
-        <div style={{ textAlign:'center', marginTop:40 }}>
-          <button onClick={()=>openModal('Бронирование коворкинга','Форма бронирования скоро появится. Свяжитесь с Ириной Кузнецовой.')} className="btn-primary">Забронировать переговорную →</button>
+        <div style={{ textAlign:'center', marginTop:52 }}>
+          <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную →</button>
         </div>
       </section>
-      
-      <section id="life" style={{ padding: '60px', background: 'var(--bg2)' }}>
-        <div className="features-header" style={{ textAlign:'center' }}>
-          <div className="section-label">Мероприятия</div>
-          <h2 className="section-title">Жизнь внутри центра</h2>
+
+      {/* ── ЖИЗНЬ ВНУТРИ ── */}
+      <div className="divider-peach" />
+      <section id="life" className="sec sec-alt">
+        <div className="anim" style={{ textAlign:'center', marginBottom:64 }}>
+          <div className="s-label">Мероприятия</div>
+          <h2 className="s-title">Жизнь внутри центра</h2>
+          <p className="s-sub" style={{ maxWidth:500, margin:'14px auto 0' }}>Не только работа — каждую неделю что-то интересное</p>
         </div>
-        <div className="animate-on-scroll" style={{ maxWidth:'900px', margin:'0 auto' }}>
-          <div className="card" style={{ textAlign:'left', padding: '32px' }}>
-            <span style={{ fontSize:48 }}>🎨</span>
-            <h3 style={{ marginTop:12 }}>Мастер-класс по дизайн-мышлению</h3>
-            <p style={{ color:'var(--muted)', margin:'16px 0' }}>Каждую среду в 18:00. Прокачай креативность!</p>
-            <p>🍷 Дегустации | 🤝 Командообразование | 🎤 Выступления экспертов</p>
-          </div>
-          <div style={{ marginTop:24, textAlign:'center' }}>
-            <a href="https://t.me/HubEventMatch_bot" target="_blank" className="btn-secondary">📅 Записаться через бот →</a>
-          </div>
-        </div>
-      </section>
-      
-      <section id="testimonials" style={{ padding: '60px' }}>
-        <div className="features-header" style={{ textAlign:'center' }}>
-          <div className="section-label">Что говорят</div>
-          <h2 className="section-title">Отзывы сотрудников и партнёров</h2>
-          <div style={{ fontSize:28, marginTop:16 }}>★★★★★ <span style={{ color:'var(--muted)' }}>5.0 / 5</span></div>
-        </div>
-        <div className="testimonial-slider animate-on-scroll">
-          <div className="testimonial-card">
-            <div className="testimonial-avatar">{testimonials[testimonialIndex].avatar}</div>
-            <p style={{ fontSize:18, margin:'16px 0' }}>“{testimonials[testimonialIndex].text}”</p>
-            <div className="stars">★★★★★</div>
-            <h4>{testimonials[testimonialIndex].name}</h4>
-            <p style={{ color:'var(--muted)' }}>{testimonials[testimonialIndex].role}</p>
-          </div>
-          <button className="slider-btn slider-btn-left" onClick={prevTestimonial}>←</button>
-          <button className="slider-btn slider-btn-right" onClick={nextTestimonial}>→</button>
-        </div>
-      </section>
-      
-      <section id="checklist" style={{ padding: '60px', background: 'var(--bg2)' }}>
-        <div className="features-header" style={{ textAlign:'center' }}>
-          <div className="section-label">Адаптация</div>
-          <h2 className="section-title">Что меня ждёт?</h2>
-        </div>
-        <div style={{ maxWidth:800, margin:'0 auto' }}>
-          {checklistItems.map((item, idx) => (
-            <div className="checklist-item animate-on-scroll" key={idx} onClick={()=>toggleChecklist(idx)}>
-              <div className={`checklist-checkbox ${checklistState[idx] ? 'checked' : ''}`}>
-                {checklistState[idx] && '✓'}
-              </div>
-              <div className="checklist-day">{item.day}</div>
-              <div className="checklist-text">{item.text}</div>
+        <div className="grid-2">
+          {lifeEvents.map((ev, i) => (
+            <div className="card anim" key={i} style={{ transitionDelay:`${i*0.08}s` }}>
+              <div style={{ fontSize:48, marginBottom:20 }}>{ev.emoji}</div>
+              <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:18, fontWeight:700, marginBottom:12 }}>{ev.title}</h3>
+              <p style={{ color:'var(--muted)', lineHeight:1.65, fontSize:14 }}>{ev.desc}</p>
             </div>
           ))}
-          <p style={{ marginTop:32, color:'var(--muted)', fontStyle:'italic' }}>* Период адаптации — 1 неделя. После прохождения курсов на Пульсе вы получите доступ ко всем бонусам.</p>
+        </div>
+        <div style={{ textAlign:'center', marginTop:48 }}>
+          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот</a>
         </div>
       </section>
-      
-      <section id="contacts" style={{ padding: '60px' }}>
-        <div className="features-header" style={{ textAlign:'center' }}>
-          <div className="section-label">Команда поддержки</div>
-          <h2 className="section-title">К кому обратиться</h2>
+
+      {/* ── ОТЗЫВЫ ── */}
+      <div className="divider-blue" />
+      <section id="testimonials" className="sec">
+        <div className="anim" style={{ textAlign:'center', marginBottom:16 }}>
+          <div className="s-label">Что говорят</div>
+          <h2 className="s-title">Отзывы сотрудников</h2>
+          <div style={{ fontSize:28, color:'#f59e0b', marginTop:16 }}>★★★★★ <span style={{ color:'var(--muted)', fontSize:18 }}>5.0 / 5</span></div>
         </div>
-        <div className="contacts-grid">
-          {contacts.map((c,i) => (
-            <div className="card animate-on-scroll" key={i} style={{ textAlign: 'center', padding: '32px' }}>
+        <div className="slider-wrap anim" style={{ marginTop:48 }}>
+          <div className="card test-card">
+            <div className="test-avatar">{testimonials[testimonialIdx].avatar}</div>
+            <p className="test-text">«{testimonials[testimonialIdx].text}»</p>
+            <div className="test-stars">★★★★★</div>
+            <h4 style={{ fontFamily:'Unbounded,sans-serif', fontSize:16, fontWeight:700 }}>{testimonials[testimonialIdx].name}</h4>
+            <p style={{ color:'var(--muted)', marginTop:6 }}>{testimonials[testimonialIdx].role}</p>
+          </div>
+          <button className="sl-btn sl-l" onClick={() => setTestimonialIdx((p) => (p - 1 + testimonials.length) % testimonials.length)}>←</button>
+          <button className="sl-btn sl-r" onClick={() => setTestimonialIdx((p) => (p + 1) % testimonials.length)}>→</button>
+          <div className="dots">
+            {testimonials.map((_, i) => (
+              <div key={i} className={`dot ${i === testimonialIdx ? 'act' : ''}`} onClick={() => setTestimonialIdx(i)} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── ЧЕК-ЛИСТ ── */}
+      <div className="divider-peach" />
+      <section id="checklist" className="sec sec-alt">
+        <div className="anim" style={{ textAlign:'center', marginBottom:56 }}>
+          <div className="s-label">Адаптация</div>
+          <h2 className="s-title">Что меня ждёт?</h2>
+          <p className="s-sub">Интерактивный чек-лист — отмечай выполненное</p>
+        </div>
+        <div style={{ maxWidth:820, margin:'0 auto' }}>
+          {checklistItems.map((item, i) => (
+            <div className="cl-item anim" key={i} style={{ transitionDelay:`${i*0.04}s` }} onClick={() => {
+              const next = [...checklist]; next[i] = !next[i]; setChecklist(next);
+            }}>
+              <div className={`cl-box${checklist[i] ? ' done' : ''}`}>{checklist[i] ? '✓' : ''}</div>
+              <div className="cl-day">{item.day}</div>
+              <div className="cl-text" style={{ textDecoration: checklist[i] ? 'line-through' : 'none', opacity: checklist[i] ? 0.5 : 1 }}>{item.text}</div>
+            </div>
+          ))}
+          <div style={{ textAlign:'center', marginTop:32 }}>
+            <div style={{ display:'inline-block', padding:'10px 24px', borderRadius:100, background:'rgba(244,165,130,0.12)', color:'var(--peach)', fontSize:14, fontWeight:600 }}>
+              ✅ Выполнено: {checklist.filter(Boolean).length} / {checklist.length}
+            </div>
+          </div>
+          <p style={{ marginTop:28, color:'var(--muted)', fontSize:13, fontStyle:'italic', textAlign:'center' }}>
+            * Период адаптации — 1 неделя. После прохождения курсов на «Пульсе» открываются все бонусы.
+          </p>
+        </div>
+      </section>
+
+      {/* ── КОНТАКТЫ ── */}
+      <div className="divider-blue" />
+      <section id="contacts" className="sec">
+        <div className="anim" style={{ textAlign:'center', marginBottom:60 }}>
+          <div className="s-label">Команда поддержки</div>
+          <h2 className="s-title">К кому обратиться?</h2>
+        </div>
+
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:24, maxWidth:1100, margin:'0 auto' }}>
+          {contacts.map((c, i) => (
+            <div className="card anim" key={i} style={{ textAlign:'center', transitionDelay:`${i*0.07}s` }}>
               <div className="contact-avatar">
-                {c.avatarImg ? (
-                  <img src={c.avatarImg} alt={c.name} onError={(e) => (e.currentTarget.style.display = 'none')} />
-                ) : null}
-                {(!c.avatarImg) && <span style={{ fontSize: 40 }}>{c.avatarEmoji}</span>}
+                {c.avatarImg
+                  ? <img src={c.avatarImg} alt={c.name} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                  : <span>{c.emoji}</span>
+                }
               </div>
-              <h3 style={{ marginTop: 12 }}>{c.name}</h3>
-              <p style={{ color: 'var(--muted)', marginBottom: 16 }}>{c.role}</p>
-              <a href={`https://t.me/${c.tg.slice(1)}`} target="_blank" className="btn-secondary" style={{ display: 'inline-block', padding: '10px 24px' }}>📩 Написать в Telegram</a>
+              <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:14, fontWeight:700, marginBottom:8 }}>{c.name}</h3>
+              <p style={{ color:'var(--muted)', fontSize:12, marginBottom:20 }}>{c.role}</p>
+              <a href={`https://t.me/${c.tg}`} target="_blank" rel="noreferrer" className="btn-s" style={{ fontSize:12, padding:'9px 16px' }}>✈️ Telegram</a>
             </div>
           ))}
-          <div className="card animate-on-scroll" style={{ textAlign: 'center', cursor: 'pointer', padding: '32px' }} onClick={()=>setApplyModalOpen(true)}>
+
+          {/* Пятая карточка — Хочу в команду */}
+          <div className="card anim" style={{ textAlign:'center', cursor:'pointer' }} onClick={() => setApplyOpen(true)}>
             <div className="contact-avatar">
               <img src="add.png" alt='add'/>
             </div>
-            <h3 style={{ marginTop: 12 }}>Хочу в команду</h3>
-            <p style={{ color: 'var(--muted)', marginBottom: 16 }}>Присоединяйтесь к нам</p>
-            <button className="btn-primary" style={{ display: 'inline-block', padding: '10px 24px' }}>Оставить заявку →</button>
+            <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:14, fontWeight:700, marginBottom:8 }}>Хочу в команду</h3>
+            <p style={{ color:'var(--muted)', fontSize:12, marginBottom:20 }}>Присоединяйтесь к нам!</p>
+            <button className="btn-p" style={{ fontSize:12, padding:'9px 16px', border:'none', cursor:'pointer' }}>Заявка →</button>
           </div>
         </div>
       </section>
-      
-      <section id="faq" style={{ padding: '60px', background: 'var(--bg2)' }}>
-        <div className="features-header" style={{ textAlign:'center' }}>
-          <div className="section-label">Ответы</div>
-          <h2 className="section-title">Часто задаваемые вопросы</h2>
+
+      {/* ── FAQ ── */}
+      <div className="divider-peach" />
+      <section id="faq" className="sec sec-alt">
+        <div className="anim" style={{ textAlign:'center', marginBottom:56 }}>
+          <div className="s-label">Ответы</div>
+          <h2 className="s-title">Часто задаваемые вопросы</h2>
         </div>
-        <div style={{ maxWidth:800, margin:'0 auto' }}>
-          {faqItems.map((item, idx) => {
-            const isOpen = openFaq === idx;
+        <div style={{ maxWidth:820, margin:'0 auto' }}>
+          {faqItems.map((item, i) => {
+            const isOpen = openFaq === i;
             return (
-              <div className="faq-item animate-on-scroll" key={idx}>
-                <div className="faq-question" onClick={() => toggleFaq(idx)}>
-                  {item.q}
-                  <span className="faq-icon">{isOpen ? '−' : '+'}</span>
+              <div className="faq-item anim" key={i} style={{ transitionDelay:`${i*0.04}s` }}>
+                <div className="faq-q" onClick={() => setOpenFaq(isOpen ? null : i)}>
+                  <span>{item.q}</span>
+                  <span className={`faq-icon${isOpen ? ' open' : ''}`}>+</span>
                 </div>
-                <div 
-                  ref={el => { faqRefs.current[idx] = el; }}
+                <div
+                  ref={(el) => { faqRefs.current[i] = el; }}
+                  className="faq-body"
                   style={{
-                    maxHeight: isOpen ? `${faqRefs.current[idx]?.scrollHeight || 200}px` : '0px',
-                    transition: 'maxHeight 0.4s cubic-bezier(0.33, 1, 0.68, 1)',
-                    overflow: 'hidden',
-                    padding: isOpen ? '0 24px 24px 24px' : '0 24px',
-                    color: 'var(--muted)',
-                    lineHeight: 1.6
+                    maxHeight: isOpen ? `${faqRefs.current[i]?.scrollHeight ?? 300}px` : '0px',
+                    paddingBottom: isOpen ? 22 : 0,
                   }}
                 >
                   {item.a}
@@ -640,52 +823,47 @@ export default function Home() {
           })}
         </div>
       </section>
-      
-      <footer style={{ padding: '36px 60px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
-        <div style={{ fontWeight:600 }}>ХАБ · Сбер | ул. Костина, 6</div>
-        <div>© 2026 Сбер. Все права защищены.</div>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ padding:'32px 60px', borderTop:'1px solid var(--border)', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:16, background:'var(--bg)' }}>
+        <div style={{ fontFamily:'Unbounded,sans-serif', fontWeight:700, fontSize:14 }}>ХАБ · Сбер</div>
+        <div style={{ color:'var(--muted)', fontSize:13 }}>ул. Костина, 6, Нижний Новгород · © 2026 Сбер</div>
       </footer>
-      
-      <div className={`modal-overlay ${modalOpen ? 'open' : ''}`} onClick={closeModal}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <h3 style={{ fontWeight: 600, marginBottom: 16 }}>{modalContent.title}</h3>
-          <p>{modalContent.body}</p>
-          <button className="close-modal" onClick={closeModal}>Закрыть</button>
+
+      {/* ── МОДАЛ INFO ── */}
+      <div className={`modal-ov${modal.open ? ' open' : ''}`} onClick={closeModal}>
+        <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+          <h3 style={{ fontFamily:'Unbounded,sans-serif', fontWeight:700, fontSize:22, marginBottom:16 }}>{modal.title}</h3>
+          <p style={{ color:'var(--muted)', lineHeight:1.65 }}>{modal.body}</p>
+          <button className="btn-p" style={{ marginTop:28, border:'none', cursor:'pointer' }} onClick={closeModal}>Закрыть</button>
         </div>
       </div>
 
-      <div className={`modal-overlay ${applyModalOpen ? 'open' : ''}`} onClick={() => { setApplyModalOpen(false); setApplySubmitted(false); setApplyForm({ name: '', role: '', tg: '', message: '' }); }}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
-          {applySubmitted ? (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
-              <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
-              <h3 style={{ fontWeight: 600, marginBottom: 12 }}>Заявка отправлена!</h3>
-              <p style={{ color: 'var(--muted)' }}>Мы свяжемся с вами в ближайшее время.</p>
+      {/* ── МОДАЛ ЗАЯВКА ── */}
+      <div className={`modal-ov${applyOpen ? ' open' : ''}`} onClick={() => { setApplyOpen(false); setApplyDone(false); }}>
+        <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+          {applyDone ? (
+            <div style={{ textAlign:'center', padding:'20px 0' }}>
+              <div style={{ fontSize:64, marginBottom:20 }}>🎉</div>
+              <h3 style={{ fontFamily:'Unbounded,sans-serif', fontWeight:700, fontSize:20, marginBottom:12 }}>Заявка отправлена!</h3>
+              <p style={{ color:'var(--muted)' }}>Мы свяжемся с вами в ближайшее время.</p>
             </div>
           ) : (
             <>
-              <h3 style={{ fontWeight: 600, marginBottom: 8 }}>Хочу в команду</h3>
-              <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 24 }}>Заполните форму — мы свяжемся с вами!</p>
-              <form onSubmit={handleApplySubmit}>
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Ваше имя *</label>
-                  <input type="text" required placeholder="Иван Иванов" value={applyForm.name} onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
-                </div>
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Направление / роль *</label>
-                  <input type="text" required placeholder="Разработчик, дизайнер, аналитик..." value={applyForm.role} onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
-                </div>
-                <div style={{ marginBottom: 16 }}>
-                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Telegram</label>
-                  <input type="text" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
-                </div>
-                <div style={{ marginBottom: 24 }}>
-                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>О себе</label>
-                  <textarea rows={3} placeholder="Расскажите немного о себе и своих навыках..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }} />
-                </div>
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer', padding: '14px 20px' }}>Отправить заявку</button>
-                  <button type="button" onClick={() => setApplyModalOpen(false)} className="btn-secondary" style={{ padding: '14px 20px', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', background: 'rgba(0,0,0,0.4)' }}>Отмена</button>
+              <h3 style={{ fontFamily:'Unbounded,sans-serif', fontWeight:700, fontSize:20, marginBottom:6 }}>Хочу в команду</h3>
+              <p style={{ color:'var(--muted)', fontSize:13, marginBottom:28 }}>Заполните форму — мы свяжемся с вами!</p>
+              <form onSubmit={handleApply}>
+                <label className="modal-label">Имя *</label>
+                <input className="modal-input" required placeholder="Иван Иванов" value={applyForm.name} onChange={(e) => setApplyForm({ ...applyForm, name:e.target.value })} />
+                <label className="modal-label">Направление / роль *</label>
+                <input className="modal-input" required placeholder="Разработчик, аналитик..." value={applyForm.role} onChange={(e) => setApplyForm({ ...applyForm, role:e.target.value })} />
+                <label className="modal-label">Telegram</label>
+                <input className="modal-input" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg:e.target.value })} />
+                <label className="modal-label">О себе</label>
+                <textarea className="modal-input" rows={3} placeholder="Расскажите немного о себе..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message:e.target.value })} style={{ resize:'none' }} />
+                <div style={{ display:'flex', gap:12, marginTop:4 }}>
+                  <button type="submit" className="btn-p" style={{ flex:1, justifyContent:'center', border:'none', cursor:'pointer', padding:'13px 0' }}>Отправить</button>
+                  <button type="button" className="btn-s" style={{ padding:'13px 20px', cursor:'pointer' }} onClick={() => setApplyOpen(false)}>Отмена</button>
                 </div>
               </form>
             </>
