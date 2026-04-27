@@ -682,7 +682,7 @@ export default function Home() {
           ))}
         </div>
         <div style={{ textAlign:'center', marginTop:52 }}>
-          <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную →</button>
+          <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную</button>
         </div>
       </section>
 
@@ -703,7 +703,7 @@ export default function Home() {
           ))}
         </div>
         <div style={{ textAlign:'center', marginTop:48 }}>
-          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот →</a>
+          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот</a>
         </div>
       </section>
 
