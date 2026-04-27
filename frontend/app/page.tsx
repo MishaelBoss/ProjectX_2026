@@ -29,22 +29,17 @@ export default function Home() {
   };
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [checklistState, setChecklistState] = useState<boolean[]>(new Array(12).fill(false));
-  const [engagement, setEngagement] = useState(0);
-  const [counter310, setCounter310] = useState(false);
   
-  const engagementRef = useRef<HTMLDivElement>(null);
-  const counter310Ref = useRef<HTMLDivElement>(null);
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
   
-  // Фото офиса (замените на свои)
   const officePhotos = [
     { url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800', title: 'Современный коворкинг' },
     { url: 'https://images.unsplash.com/photo-1497366811353-2a2e6d7e8b0a?w=800', title: 'Переговорная' },
     { url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800', title: 'Зона отдыха' },
-    { url: '/sportzals/IMG_0347.jpeg', title: 'Спортзал' }
+    { url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800', title: 'Команда за работой' },
+    { url: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800', title: 'Спортзал' }
   ];
   
-  // Кастомный плавный скролл
   const smoothScrollToCustom = (targetElementId: string) => {
     const target = document.getElementById(targetElementId);
     if (!target) return;
@@ -74,7 +69,6 @@ export default function Home() {
     smoothScrollToCustom(id);
   };
   
-  // Активная секция
   useEffect(() => {
     const sections = document.querySelectorAll('section[id], div[id]');
     const observer = new IntersectionObserver(
@@ -89,7 +83,6 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
   
-  // Анимация появления
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -106,58 +99,21 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
   
-  // Счётчики
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && entry.target.id === 'engagement-meter') {
-            let start = 0;
-            const end = 95;
-            const duration = 2000;
-            const stepTime = 20;
-            const steps = duration / stepTime;
-            const increment = end / steps;
-            const timer = setInterval(() => {
-              start += increment;
-              if (start >= end) { setEngagement(end); clearInterval(timer); }
-              else setEngagement(Math.floor(start));
-            }, stepTime);
-            observer.unobserve(entry.target);
-          }
-          if (entry.isIntersecting && entry.target.id === 'counter310') {
-            setCounter310(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-    if (engagementRef.current) observer.observe(engagementRef.current);
-    if (counter310Ref.current) observer.observe(counter310Ref.current);
-    return () => observer.disconnect();
-  }, []);
-  
   const nextTestimonial = () => setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
   const prevTestimonial = () => setTestimonialIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  
   const nextOfficeSlide = () => setOfficeSlideIndex((prev) => (prev + 1) % officePhotos.length);
   const prevOfficeSlide = () => setOfficeSlideIndex((prev) => (prev - 1 + officePhotos.length) % officePhotos.length);
-  
   const toggleFaq = (idx: number) => setOpenFaq(openFaq === idx ? null : idx);
-  
   const toggleChecklist = (idx: number) => {
     const newState = [...checklistState];
     newState[idx] = !newState[idx];
     setChecklistState(newState);
   };
-  
   const openModal = (title: string, body: string) => {
     setModalContent({ title, body });
     setModalOpen(true);
   };
   const closeModal = () => setModalOpen(false);
-  
   const handleApplySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setApplySubmitted(true);
@@ -168,7 +124,6 @@ export default function Home() {
     }, 2500);
   };
   
-  // Данные
   const testimonials = [
     { name: 'Анна К.', role: 'Аналитик', text: 'Отличное пространство! Удобные переговорные, всегда есть место для работы.', rating: 5, avatar: '👩‍💼' },
     { name: 'Дмитрий В.', role: 'Руководитель проектов', text: 'Программа лояльности приятно удивляет. Кофе и снеки — отличный бонус.', rating: 5, avatar: '👨‍💻' },
@@ -225,11 +180,7 @@ export default function Home() {
           font-display: swap;
         }
         
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
           --peach: #f4a582;
@@ -259,22 +210,14 @@ export default function Home() {
           transform: translateY(30px);
           transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.7s ease;
         }
-        .animated-visible {
-          opacity: 1 !important;
-          transform: translateY(0) !important;
-        }
+        .animated-visible { opacity: 1 !important; transform: translateY(0) !important; }
         
+        /* NAVIGATION */
         .nav {
-          position: fixed;
-          top: 0; left: 0; right: 0;
-          z-index: 100;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 20px 60px;
-          backdrop-filter: blur(20px);
-          background: rgba(7,7,14,0.8);
-          border-bottom: 1px solid var(--border);
+          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 20px 60px; backdrop-filter: blur(20px);
+          background: rgba(7,7,14,0.8); border-bottom: 1px solid var(--border);
         }
         .nav-logo { font-size: 24px; font-weight: 600; background: linear-gradient(90deg, var(--peach), var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; }
         .nav-links { display: flex; gap: 36px; list-style: none; }
@@ -283,7 +226,6 @@ export default function Home() {
         .nav-links a:hover { color: var(--text); }
         .nav-cta { font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 100px; border: 1px solid rgba(244,165,130,0.5); background: transparent; color: var(--peach); text-decoration: none; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .nav-cta:hover { background: rgba(244,165,130,0.12); transform: translateY(-2px) scale(1.05); box-shadow: 0 4px 20px rgba(244,165,130,0.25); border-color: rgba(244,165,130,0.8); }
-        .nav-cta:active { transform: scale(0.97); }
         
         .mobile-sticky-bar {
           position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
@@ -299,55 +241,103 @@ export default function Home() {
           .nav { padding: 16px 24px; }
         }
         
-        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; padding: 120px 60px 60px; background: radial-gradient(circle at 10% 20%, rgba(244,165,130,0.08), transparent 60%); }
+        /* HERO */
+        .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 60px 60px; background: radial-gradient(circle at 10% 20%, rgba(244,165,130,0.08), transparent 60%); }
         .hero-inner { text-align: center; max-width: 900px; z-index: 2; }
         .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 100px; border: 1px solid rgba(244,165,130,0.35); background: rgba(244,165,130,0.08); font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--peach); margin-bottom: 40px; }
         .hero-title { font-family: 'SBSansDisplay', sans-serif; font-size: clamp(48px, 8vw, 100px); font-weight: 600; line-height: 1.0; margin-bottom: 32px; }
         .hero-title-line2 { background: linear-gradient(90deg, var(--peach), var(--pink), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { font-size: 18px; color: var(--muted); line-height: 1.75; margin-bottom: 52px; max-width: 560px; margin-left: auto; margin-right: auto; }
-        .btn-primary, .btn-secondary { display: inline-flex; padding: 16px 36px; border-radius: 100px; font-weight: 600; text-decoration: none; }
-        .btn-primary {
-          background: linear-gradient(135deg, var(--peach), var(--pink));
-          color: #12001a;
-          box-shadow: 0 0 40px rgba(244,165,130,0.3);
+        
+        /* LIQUID GLASS CARDS */
+        .card, .testimonial-card, .office-slide {
+          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(18, 18, 18, 0.288) 0, rgba(18, 18, 18, 0.177) 100%);
+          box-shadow: inset -5px -5px 250px rgba(255, 255, 255, 0.12), inset 3px 3px 3px rgba(255, 255, 255, 0.16);
+          backdrop-filter: blur(2px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
           transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          position: relative;
+          border-radius: 24px;
+        }
+        .card:hover, .testimonial-card:hover, .office-slide:hover {
+          transform: translateY(-8px);
+          box-shadow: inset -5px -5px 250px rgba(255, 255, 255, 0.2), inset 3px 3px 3px rgba(255, 255, 255, 0.25), 0 20px 40px rgba(0,0,0,0.4);
+          border-color: rgba(244,165,130,0.2);
+        }
+        
+        /* CHECKLIST - исправлено */
+        .checklist-item {
+          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(25, 25, 35, 0.6) 0, rgba(15, 15, 25, 0.4) 100%);
+          backdrop-filter: blur(2px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 20px;
+          transition: all 0.3s ease;
+          box-shadow: none;
+          margin-bottom: 12px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 16px 20px;
+          cursor: pointer;
+        }
+        .checklist-item:hover {
+          transform: translateX(6px);
+          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(244,165,130,0.2) 0, rgba(232,96,154,0.12) 100%);
+          border-color: rgba(244,165,130,0.4);
+        }
+        .checklist-checkbox {
+          width: 24px;
+          height: 24px;
+          border-radius: 8px;
+          border: 2px solid var(--peach);
+          background: rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+          flex-shrink: 0;
+        }
+        .checklist-checkbox.checked { background: var(--peach); color: #12001a; }
+        .checklist-text { flex: 1; font-size: 15px; }
+        .checklist-day { font-size: 12px; color: var(--peach); font-weight: 600; min-width: 70px; }
+        
+        /* FAQ - убраны белые полосы */
+        .faq-item {
+          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(20, 20, 30, 0.7) 0, rgba(12, 12, 20, 0.5) 100%);
+          backdrop-filter: blur(4px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: none;
+          border-radius: 20px;
+          transition: all 0.3s ease;
+          margin-bottom: 16px;
           overflow: hidden;
         }
-        .btn-primary::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-          opacity: 0;
-          transition: opacity 0.3s;
+        .faq-item:hover {
+          border-color: rgba(244,165,130,0.3);
+          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(244,165,130,0.1) 0, rgba(232,96,154,0.08) 100%);
         }
-        .btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 60px rgba(244,165,130,0.55); }
-        .btn-primary:hover::after { opacity: 1; }
-        .btn-primary:active { transform: translateY(-1px) scale(0.98); }
-        .btn-secondary {
-          background: rgba(255,255,255,0.05);
-          color: var(--text);
-          border: 1px solid var(--border);
-          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .faq-question {
+          padding: 24px;
+          font-weight: 600;
+          font-size: 18px;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: transparent;
+          border-radius: 20px;
+          transition: background 0.2s;
         }
-        .btn-secondary:hover { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.25); transform: translateY(-4px) scale(1.03); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
-        .btn-secondary:active { transform: translateY(-1px) scale(0.98); }
+        .faq-question:hover { background: rgba(244,165,130,0.08); }
+        .faq-icon { font-size: 28px; transition: transform 0.2s; color: var(--peach); }
         
-        .section-label { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--peach); margin-bottom: 16px; }
-        .section-title { font-family: 'SBSansDisplay', sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 600; line-height: 1.1; }
-        .features-grid, .contacts-grid { display: grid; gap: 24px; max-width: 1100px; margin: 0 auto; }
-        .features-grid { grid-template-columns: repeat(3,1fr); }
-        .contacts-grid { grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); }
-        .card { background: var(--bg3); border: 1px solid var(--border); border-radius: 24px; padding: 32px; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .card:hover { transform: translateY(-8px); border-color: rgba(244,165,130,0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
-        .card:hover > div:first-child { transform: scale(1.2) rotate(-6deg); }
-        
+        /* CONTACTS */
         .contact-avatar {
+          background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(30, 30, 40, 0.6) 0, rgba(20, 20, 30, 0.4) 100%);
+          box-shadow: inset -3px -3px 20px rgba(255,255,255,0.1), inset 2px 2px 2px rgba(255,255,255,0.15);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 50%;
           width: 80px;
           height: 80px;
-          background: #2a2a3a;
-          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -355,53 +345,68 @@ export default function Home() {
           font-size: 40px;
           overflow: hidden;
         }
-        .contact-avatar img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
+        .contact-avatar img { width: 100%; height: 100%; object-fit: cover; }
         
+        /* BUTTONS */
+        .btn-primary {
+          background: linear-gradient(135deg, rgba(244,165,130,0.9), rgba(232,96,154,0.9));
+          backdrop-filter: blur(4px);
+          box-shadow: inset -2px -2px 10px rgba(0,0,0,0.2), inset 2px 2px 5px rgba(255,255,255,0.3), 0 0 40px rgba(244,165,130,0.3);
+          border: 1px solid rgba(255,255,255,0.2);
+          color: #12001a;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: inline-flex;
+          padding: 16px 36px;
+          border-radius: 100px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        .btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: inset -2px -2px 10px rgba(0,0,0,0.2), inset 2px 2px 5px rgba(255,255,255,0.4), 0 16px 60px rgba(244,165,130,0.55); }
+        .btn-secondary {
+          background: rgba(255,255,255,0.08);
+          backdrop-filter: blur(4px);
+          box-shadow: inset -2px -2px 10px rgba(0,0,0,0.1), inset 1px 1px 2px rgba(255,255,255,0.2);
+          border: 1px solid rgba(255,255,255,0.15);
+          color: var(--text);
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: inline-flex;
+          padding: 16px 36px;
+          border-radius: 100px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.12); transform: translateY(-4px) scale(1.03); box-shadow: inset -2px -2px 10px rgba(0,0,0,0.1), inset 1px 1px 2px rgba(255,255,255,0.3); }
+        
+        /* OTHER */
+        .section-label { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--peach); margin-bottom: 16px; }
+        .section-title { font-family: 'SBSansDisplay', sans-serif; font-size: clamp(32px, 5vw, 52px); font-weight: 600; line-height: 1.1; }
+        .features-grid, .contacts-grid { display: grid; gap: 24px; max-width: 1100px; margin: 0 auto; }
+        .features-grid { grid-template-columns: repeat(3,1fr); }
+        .contacts-grid { grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); }
         .map-container { border-radius: 24px; overflow: hidden; border: 1px solid var(--border); height: 300px; background: var(--bg3); display: flex; align-items: center; justify-content: center; color: var(--muted); }
         
         .testimonial-slider, .office-slider { position: relative; max-width: 900px; margin: 0 auto; }
         .office-slide { position: relative; border-radius: 24px; overflow: hidden; }
         .office-slide img { width: 100%; height: 400px; object-fit: cover; display: block; }
         .slide-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; color: white; font-weight: 600; text-align: center; }
-        .office-slider .slider-btn { top: 50%; transform: translateY(-50%); }
-        
         .testimonial-card { text-align: center; padding: 40px; }
         .testimonial-avatar { font-size: 64px; margin-bottom: 16px; }
         .stars { color: gold; font-size: 24px; margin: 12px 0; }
+        
         .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 28px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; backdrop-filter: blur(4px); transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2; }
         .slider-btn:hover { background: var(--peach); color: black; transform: translateY(-50%) scale(1.15); box-shadow: 0 4px 20px rgba(244,165,130,0.4); }
-        .slider-btn:active { transform: translateY(-50%) scale(0.95); }
         .slider-btn-left { left: 20px; } .slider-btn-right { right: 20px; }
         .dots { display: flex; justify-content: center; gap: 12px; margin-top: 20px; }
         .dot { width: 10px; height: 10px; border-radius: 10px; background: var(--muted); cursor: pointer; transition: 0.2s; }
         .dot.active { width: 28px; background: var(--peach); }
         
-        .faq-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 16px; overflow: hidden; }
-        .faq-question { padding: 24px; font-weight: 600; font-size: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--bg3); }
-        .faq-question:hover { background: rgba(244,165,130,0.05); }
-        .faq-icon { font-size: 28px; transition: transform 0.2s; }
-        
-        .checklist-item { display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: var(--bg3); border-radius: 16px; margin-bottom: 12px; border: 1px solid var(--border); cursor: pointer; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .checklist-item:hover { background: rgba(244,165,130,0.05); border-color: rgba(244,165,130,0.25); transform: translateX(8px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-        .checklist-item:hover .checklist-checkbox { transform: scale(1.15) rotate(-5deg); }
-        .checklist-checkbox { width: 24px; height: 24px; border-radius: 6px; border: 2px solid var(--peach); background: transparent; display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .checklist-checkbox.checked { background: var(--peach); color: black; }
-        .checklist-text { flex: 1; font-size: 15px; }
-        .checklist-day { font-size: 12px; color: var(--peach); font-weight: 600; min-width: 70px; }
-        
         .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; visibility: hidden; transition: 0.3s; }
         .modal-overlay.open { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--bg3); border-radius: 32px; max-width: 500px; width: 90%; padding: 32px; transform: scale(0.9); transition: transform 0.3s; border: 1px solid var(--border); }
+        .modal-content { background: radial-gradient(85% 100.92% at 75.07% -20%, rgba(18, 18, 18, 0.9) 0, rgba(18, 18, 18, 0.7) 100%); backdrop-filter: blur(8px); border-radius: 32px; max-width: 500px; width: 90%; padding: 32px; transform: scale(0.9); transition: transform 0.3s; border: 1px solid rgba(255,255,255,0.15); box-shadow: inset -3px -3px 20px rgba(255,255,255,0.1), inset 2px 2px 5px rgba(255,255,255,0.1); }
         .modal-overlay.open .modal-content { transform: scale(1); }
         .close-modal { background: var(--peach); border: none; padding: 10px 24px; border-radius: 40px; margin-top: 24px; cursor: pointer; font-weight: 600; }
         
-        @media (max-width: 1024px) {
-          .features-grid { grid-template-columns: repeat(2,1fr); }
-        }
+        @media (max-width: 1024px) { .features-grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 768px) {
           .features-grid { grid-template-columns: 1fr; }
           .hero { padding: 100px 24px 60px; }
@@ -468,7 +473,6 @@ export default function Home() {
         </div>
       </div>
       
-      {/* НОВЫЙ БЛОК: ГАЛЕРЕЯ ОФИСА СБЕРА */}
       <section id="office" style={{ padding: '60px', background: 'var(--bg)' }}>
         <div className="features-header" style={{ textAlign:'center' }}>
           <div className="section-label">Пространство</div>
@@ -506,7 +510,7 @@ export default function Home() {
             { icon:'🚇', name:'Удобное расположение', desc:'Центр города, рядом метро Горьковская' },
             { icon:'🖨️', name:'Печать и канцтовары', desc:'Всё необходимое на ресепшене' }
           ].map((f,i) => (
-            <div className="card animate-on-scroll" key={i} style={{ transitionDelay: `${i*0.05}s` }}>
+            <div className="card animate-on-scroll" key={i} style={{ transitionDelay: `${i*0.05}s`, padding: '32px' }}>
               <div style={{ fontSize: 40, marginBottom: 16 }}>{f.icon}</div>
               <h3 style={{ fontWeight:600, marginBottom:8 }}>{f.name}</h3>
               <p style={{ color:'var(--muted)' }}>{f.desc}</p>
@@ -524,7 +528,7 @@ export default function Home() {
           <h2 className="section-title">Жизнь внутри центра</h2>
         </div>
         <div className="animate-on-scroll" style={{ maxWidth:'900px', margin:'0 auto' }}>
-          <div className="card" style={{ textAlign:'left' }}>
+          <div className="card" style={{ textAlign:'left', padding: '32px' }}>
             <span style={{ fontSize:48 }}>🎨</span>
             <h3 style={{ marginTop:12 }}>Мастер-класс по дизайн-мышлению</h3>
             <p style={{ color:'var(--muted)', margin:'16px 0' }}>Каждую среду в 18:00. Прокачай креативность!</p>
@@ -581,27 +585,25 @@ export default function Home() {
         </div>
         <div className="contacts-grid">
           {contacts.map((c,i) => (
-            <div className="card animate-on-scroll" key={i} style={{ textAlign: 'center' }}>
+            <div className="card animate-on-scroll" key={i} style={{ textAlign: 'center', padding: '32px' }}>
               <div className="contact-avatar">
                 {c.avatarImg ? (
                   <img src={c.avatarImg} alt={c.name} onError={(e) => (e.currentTarget.style.display = 'none')} />
                 ) : null}
-                {(!c.avatarImg || (c.avatarImg && !document.querySelector(`img[src="${c.avatarImg}"]`)?.clientHeight) ) && (
-                  <span style={{ fontSize: 40 }}>{c.avatarEmoji}</span>
-                )}
+                {(!c.avatarImg) && <span style={{ fontSize: 40 }}>{c.avatarEmoji}</span>}
               </div>
               <h3 style={{ marginTop: 12 }}>{c.name}</h3>
               <p style={{ color: 'var(--muted)', marginBottom: 16 }}>{c.role}</p>
-              <a href={`https://t.me/${c.tg.slice(1)}`} target="_blank" className="btn-secondary" style={{ display: 'inline-block' }}>📩 Написать в Telegram</a>
+              <a href={`https://t.me/${c.tg.slice(1)}`} target="_blank" className="btn-secondary" style={{ display: 'inline-block', padding: '10px 24px' }}>📩 Написать в Telegram</a>
             </div>
           ))}
-          <div className="card animate-on-scroll" style={{ textAlign: 'center', cursor: 'pointer' }}>
-            <div className="contact-avatar" style={{ background: 'linear-gradient(135deg, var(--peach), var(--pink))' }}>
-              <span style={{ fontSize: 40, color: 'white' }}>➕</span>
+          <div className="card animate-on-scroll" style={{ textAlign: 'center', cursor: 'pointer', padding: '32px' }} onClick={()=>setApplyModalOpen(true)}>
+            <div className="contact-avatar">
+              <img src="add.png" alt='add'/>
             </div>
             <h3 style={{ marginTop: 12 }}>Хочу в команду</h3>
             <p style={{ color: 'var(--muted)', marginBottom: 16 }}>Присоединяйтесь к нам</p>
-            <button className="btn-primary" style={{ display: 'inline-block' }} onClick={() => setApplyModalOpen(true)}>Оставить заявку →</button>
+            <button className="btn-primary" style={{ display: 'inline-block', padding: '10px 24px' }}>Оставить заявку →</button>
           </div>
         </div>
       </section>
@@ -639,26 +641,6 @@ export default function Home() {
         </div>
       </section>
       
-      <div ref={counter310Ref} id="counter310" className="animate-on-scroll" style={{ background: 'linear-gradient(135deg, #f4a58220, #e8609a20)', borderRadius: 48, padding: 48, textAlign: 'center', maxWidth: 800, margin: '40px auto' }}>
-        <div className="section-label">Сергей, самое время</div>
-        <div style={{ fontFamily: 'SBSansDisplay', fontSize: 'clamp(48px,8vw,90px)', fontWeight: 600, background: 'linear-gradient(135deg, var(--peach), var(--pink))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          {counter310 ? '310' : '0'}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginTop: 16 }}>
-          <span>⚡ Время стойкое</span>
-          <span>📈 Производительность</span>
-          <span>🏢 Служба помещения</span>
-        </div>
-      </div>
-      
-      <div ref={engagementRef} id="engagement-meter" className="animate-on-scroll" style={{ background: 'var(--bg2)', padding: '60px', textAlign: 'center' }}>
-        <div className="section-label">Индекс диджитал-культуры</div>
-        <div style={{ fontSize: 80, fontWeight: 600, background: 'linear-gradient(135deg, var(--peach), var(--blue))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{engagement}%</div>
-        <div style={{ width: '80%', margin: '16px auto 0', height: 8, background: 'var(--bg3)', borderRadius: 10, overflow: 'hidden' }}>
-          <div style={{ width: `${engagement}%`, height: '100%', background: 'linear-gradient(90deg, var(--peach), var(--pink))' }} />
-        </div>
-      </div>
-      
       <footer style={{ padding: '36px 60px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <div style={{ fontWeight:600 }}>ХАБ · Сбер | ул. Костина, 6</div>
         <div>© 2026 Сбер. Все права защищены.</div>
@@ -687,23 +669,23 @@ export default function Home() {
               <form onSubmit={handleApplySubmit}>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Ваше имя *</label>
-                  <input type="text" required placeholder="Иван Иванов" value={applyForm.name} onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
+                  <input type="text" required placeholder="Иван Иванов" value={applyForm.name} onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Направление / роль *</label>
-                  <input type="text" required placeholder="Разработчик, дизайнер, аналитик..." value={applyForm.role} onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
+                  <input type="text" required placeholder="Разработчик, дизайнер, аналитик..." value={applyForm.role} onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Telegram</label>
-                  <input type="text" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
+                  <input type="text" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 24 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>О себе</label>
-                  <textarea rows={3} placeholder="Расскажите немного о себе и своих навыках..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }} />
+                  <textarea rows={3} placeholder="Расскажите немного о себе и своих навыках..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer' }}>Отправить заявку</button>
-                  <button type="button" onClick={() => setApplyModalOpen(false)} className="btn-secondary" style={{ padding: '16px 20px', border: '1px solid var(--border)', cursor: 'pointer', background: 'none' }}>Отмена</button>
+                  <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer', padding: '14px 20px' }}>Отправить заявку</button>
+                  <button type="button" onClick={() => setApplyModalOpen(false)} className="btn-secondary" style={{ padding: '14px 20px', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', background: 'rgba(0,0,0,0.4)' }}>Отмена</button>
                 </div>
               </form>
             </>
