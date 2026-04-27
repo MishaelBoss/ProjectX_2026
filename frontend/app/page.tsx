@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Home() {
@@ -347,6 +348,7 @@ export default function Home() {
           <li><a href="#faq" onClick={(e)=>handleNavClick(e,'faq')} className={activeSection==='faq'?'active-link':''}>FAQ</a></li>
         </ul>
         <a href="#booking" onClick={(e)=>{e.preventDefault(); openModal('Бронирование переговорной','Форма бронирования откроется в ближайшее время. Свяжитесь с Ириной Кузнецовой.')}} className="nav-cta">Забронировать</a>
+        <Link href="/contacts" className="nav-cta">Связаться</Link>
       </nav>
       
       <div className="mobile-sticky-bar">
@@ -478,6 +480,55 @@ export default function Home() {
               <h3 style={{ marginTop: 12 }}>{c.name}</h3>
               <p style={{ color: 'var(--muted)', marginBottom: 16 }}>{c.role}</p>
               <a href={`https://t.me/${c.tg.slice(1)}`} target="_blank" className="btn-secondary" style={{ display: 'inline-block' }}>📩 Написать в Telegram</a>
+            ))}
+          </div>
+          <button className="slider-btn slider-btn-left" onClick={prevSlide}>←</button>
+          <button className="slider-btn slider-btn-right" onClick={nextSlide}>→</button>
+          <div className="dots">
+            {slides.map((_, idx) => (
+              <div key={idx} className={`dot ${idx === slideIndex ? 'active' : ''}`} onClick={() => setSlideIndex(idx)} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="quickstart" style={{ padding: '80px 60px', background: 'var(--bg2)' }}>
+        <div className="features-header"><div className="section-label">Мгновенный доступ</div><h2 className="section-title">Выбери товар по каталогу<br />или отсканируй штрих-код</h2></div>
+        <div className="quick-grid">
+          <div className="quick-card animate-on-scroll">
+            <span style={{ fontSize: 40 }}>📱</span>
+            <div style={{ fontWeight: 700, marginTop: 8 }}>Сканер</div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Наведи камеру на штрих-код</div>
+            <button className="btn-secondary" style={{ marginTop: 16, padding: '8px 20px' }} onClick={() => openModal('Демо-сканер', 'Функция сканирования штрих-кода будет доступна в ближайшее время.')}>Демо-скан</button>
+          </div>
+          <div className="quick-card animate-on-scroll">
+            <span style={{ fontSize: 40 }}>📖</span>
+            <div style={{ fontWeight: 700, marginTop: 8 }}>Каталог</div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>Все товары и услуги хаба</div>
+            <button className="btn-secondary" style={{ marginTop: 16, padding: '8px 20px' }} onClick={() => openModal('Каталог ХАБ', 'Здесь будет полный перечень услуг и товаров.')}>Открыть</button>
+          </div>
+          <div className="quick-card animate-on-scroll">
+            <span style={{ fontSize: 40 }}>🖍️</span>
+            <div style={{ fontWeight: 700, marginTop: 8 }}>WHITEBOARD MARKER</div>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>attach ECONOMY — экономь на маркерах</div>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ padding: '80px 60px', background: 'var(--bg)' }}>
+        <div className="features-header"><div className="section-label">Интерактив</div><h2 className="section-title">Какой котик ты сегодня?</h2></div>
+        <div className="cat-grid">
+          {[
+            { name: 'Кот-шопоголик', emoji: '🛍️', desc: 'Сканирую и покупаю' },
+            { name: 'Кот-минималист', emoji: '🧘', desc: 'Только нужное' },
+            { name: 'Кот-трудяга', emoji: '💼', desc: 'РВР и дедлайны' },
+            { name: 'Кот-релакс', emoji: '😴', desc: 'Кофе и диван' }
+          ].map((cat, i) => (
+            <div className="cat-card animate-on-scroll" key={i}>
+              <span style={{ fontSize: 48 }}>{cat.emoji}</span>
+              <div style={{ fontWeight: 700, marginTop: 8 }}>{cat.name}</div>
+              <div style={{ fontSize: 13, color: 'var(--muted)' }}>{cat.desc}</div>
+              <button className="btn-secondary" style={{ marginTop: 16, padding: '6px 16px' }} onClick={() => openModal('Твой коток', `Ты выбрал ${cat.name}. Отличный выбор!`)}>Выбрать</button>
             </div>
           ))}
           {/* Карточка "Хочу в команду" */}
@@ -548,6 +599,40 @@ export default function Home() {
       <footer style={{ padding: '36px 60px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <div style={{ fontWeight:600 }}>ХАБ · Сбер | ул. Костина, 6</div>
         <div>© 2026 Сбер. Все права защищены.</div>
+
+      <section id="faq" style={{ padding: '80px 60px', background: 'var(--bg)' }}>
+        <div className="features-header"><div className="section-label">Ответы</div><h2 className="section-title">Часто задаваемые вопросы</h2></div>
+        <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          {[
+            { q: 'Как получить доступ в центр?', a: 'После заполнения анкеты и прохождения адаптации вы получите электронный пропуск.' },
+            { q: 'Есть ли бесплатный кофе?', a: 'Да, каждый день — свежемолотый кофе, чай, фрукты и снеки.' },
+            { q: 'Можно ли привести гостя?', a: 'Да, по предварительному согласованию с администратором.' },
+            { q: 'Где оставить велосипед?', a: 'На подземной парковке есть велопарковка и камера хранения.' },
+          ].map((item, idx) => (
+            <div className={`faq-item animate-on-scroll ${openFaq === idx ? 'open' : ''}`} key={idx}>
+              <div className="faq-question" onClick={() => toggleFaq(idx)}>
+                {item.q}
+                <span className="faq-icon">+</span>
+              </div>
+              <div className="faq-answer">{item.a}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="cta" className="cta-section">
+        <div className="cta-orb" />
+        <div className="cta-inner">
+          <div className="section-label">Присоединяйся</div>
+          <h2 className="section-title">Готов стать<br />частью ХАБа?</h2>
+          <p className="cta-sub">Инновации, забота и комфорт в едином пространстве.</p>
+          <Link href="/contacts" className="btn-primary" style={{display:'inline-flex'}}>Связаться с нами →</Link>
+        </div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-logo">ХАБ · Нижний Новгород</div>
+        <div className="footer-right">ул. Костина, 6 · © 2026 Сбер</div>
       </footer>
       
       <div className={`modal-overlay ${modalOpen ? 'open' : ''}`} onClick={closeModal}>
