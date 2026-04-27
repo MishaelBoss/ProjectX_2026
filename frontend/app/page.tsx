@@ -229,9 +229,15 @@ export default function Home() {
           background: transparent;
           color: var(--peach);
           text-decoration: none;
-          transition: all 0.3s;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .nav-cta:hover { background: rgba(244,165,130,0.12); }
+        .nav-cta:hover {
+          background: rgba(244,165,130,0.12);
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: 0 4px 20px rgba(244,165,130,0.25);
+          border-color: rgba(244,165,130,0.8);
+        }
+        .nav-cta:active { transform: scale(0.97); }
         .mobile-sticky-bar {
           position: fixed;
           bottom: 20px;
@@ -395,13 +401,25 @@ export default function Home() {
           text-decoration: none;
           background: linear-gradient(135deg, var(--peach), var(--pink));
           color: #12001a;
-          transition: all 0.3s;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
           box-shadow: 0 0 40px rgba(244,165,130,0.3);
+          position: relative;
+          overflow: hidden;
+        }
+        .btn-primary::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+          opacity: 0;
+          transition: opacity 0.3s;
         }
         .btn-primary:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 60px rgba(244,165,130,0.45);
+          transform: translateY(-4px) scale(1.03);
+          box-shadow: 0 16px 60px rgba(244,165,130,0.55);
         }
+        .btn-primary:hover::after { opacity: 1; }
+        .btn-primary:active { transform: translateY(-1px) scale(0.98); }
         .btn-secondary {
           display: inline-flex;
           align-items: center;
@@ -413,13 +431,15 @@ export default function Home() {
           background: rgba(255,255,255,0.05);
           color: var(--text);
           border: 1px solid var(--border);
-          transition: all 0.3s;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .btn-secondary:hover {
           background: rgba(255,255,255,0.10);
-          border-color: rgba(255,255,255,0.2);
-          transform: translateY(-3px);
+          border-color: rgba(255,255,255,0.25);
+          transform: translateY(-4px) scale(1.03);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.4);
         }
+        .btn-secondary:active { transform: translateY(-1px) scale(0.98); }
         .hero-location {
           margin-top: 64px;
           font-size: 13px;
@@ -494,6 +514,11 @@ export default function Home() {
           justify-content: center;
           font-size: 26px;
           margin-bottom: 24px;
+          transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+        }
+        .feature-card:hover .feature-icon {
+          transform: scale(1.18) rotate(-6deg);
+          box-shadow: 0 8px 24px rgba(244,165,130,0.25);
         }
         .ic-peach { background: rgba(244,165,130,0.15); }
         .ic-pink { background: rgba(232,96,154,0.15); }
@@ -543,13 +568,17 @@ export default function Home() {
           border-radius: 16px;
           background: var(--bg3);
           border: 1px solid var(--border);
-          transition: all 0.3s;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
           cursor: pointer;
         }
         .checklist-item:hover {
           border-color: rgba(244,165,130,0.25);
           background: rgba(244,165,130,0.05);
-          transform: translateX(6px);
+          transform: translateX(10px);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .checklist-item:hover .checklist-num {
+          transform: scale(1.15) rotate(-5deg);
         }
         .checklist-num {
           font-family: 'Unbounded', sans-serif;
@@ -563,6 +592,7 @@ export default function Home() {
           flex-shrink: 0;
           background: linear-gradient(135deg, var(--peach), var(--pink));
           color: #12001a;
+          transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .checklist-text {
           font-size: 15px;
@@ -607,7 +637,8 @@ export default function Home() {
         .sc2:hover { border-color: rgba(232,96,154,0.3); }
         .sc3:hover { border-color: rgba(91,200,245,0.3); }
         .sc4:hover { border-color: rgba(179,136,247,0.3); }
-        .space-emoji { font-size: 40px; margin-bottom: 24px; display: block; }
+        .space-emoji { font-size: 40px; margin-bottom: 24px; display: block; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .space-card:hover .space-emoji { transform: scale(1.25) rotate(-8deg); }
         .space-name {
           font-family: 'Unbounded', sans-serif;
           font-size: 20px;
@@ -804,9 +835,15 @@ export default function Home() {
           height: 44px;
           border-radius: 50%;
           backdrop-filter: blur(4px);
-          transition: 0.2s;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .slider-btn:hover { background: var(--peach); color: black; }
+        .slider-btn:hover {
+          background: var(--peach);
+          color: black;
+          transform: translateY(-50%) scale(1.15);
+          box-shadow: 0 4px 20px rgba(244,165,130,0.4);
+        }
+        .slider-btn:active { transform: translateY(-50%) scale(0.95); }
         .slider-btn-left { left: 10px; }
         .slider-btn-right { right: 10px; }
         .dots {
