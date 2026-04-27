@@ -676,7 +676,7 @@ export default function Home() {
           ))}
         </div>
         <div style={{ textAlign:'center', marginTop:52 }}>
-          <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную →</button>
+          <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную </button>
         </div>
       </section>
 
@@ -787,7 +787,7 @@ export default function Home() {
             </div>
             <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:14, fontWeight:700, marginBottom:8 }}>Хочу в команду</h3>
             <p style={{ color:'var(--muted)', fontSize:12, marginBottom:20 }}>Присоединяйтесь к нам!</p>
-            <button className="btn-p" style={{ fontSize:12, padding:'9px 16px', border:'none', cursor:'pointer' }}>Заявка →</button>
+            <button className="btn-p" style={{ fontSize:12, padding:'9px 16px', border:'none', cursor:'pointer' }}>Заявка</button>
           </div>
         </div>
       </section>
