@@ -521,7 +521,7 @@ export default function Home() {
             </div>
           ))}
           {/* Карточка "Хочу в команду" */}
-          <div className="card animate-on-scroll" style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => openModal('Хочу в команду', 'Оставьте заявку: напишите свои контакты и направление деятельности. Мы свяжемся с вами!')}>
+          <div className="card animate-on-scroll" style={{ textAlign: 'center', cursor: 'pointer' }}>
             <div className="contact-avatar">
               <img src='/add.png' alt="add" />
             </div>
