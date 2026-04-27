@@ -10,16 +10,7 @@ export default function Home() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [applyForm, setApplyForm] = useState({ name: '', role: '', tg: '', message: '' });
   const [applySubmitted, setApplySubmitted] = useState(false);
-
-  const handleApplySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setApplySubmitted(true);
-    setTimeout(() => {
-      setApplySubmitted(false);
-      setApplyModalOpen(false);
-      setApplyForm({ name: '', role: '', tg: '', message: '' });
-    }, 2500);
-  };
+  const [officeSlideIndex, setOfficeSlideIndex] = useState(0);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [checklistState, setChecklistState] = useState<boolean[]>(new Array(12).fill(false));
   const [engagement, setEngagement] = useState(0);
@@ -29,7 +20,15 @@ export default function Home() {
   const counter310Ref = useRef<HTMLDivElement>(null);
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
   
-  // Кастомный плавный скролл «как в GTA6»
+  // Фото офиса (замените на свои)
+  const officePhotos = [
+    { url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800', title: 'Современный коворкинг' },
+    { url: 'https://images.unsplash.com/photo-1497366811353-2a2e6d7e8b0a?w=800', title: 'Переговорная' },
+    { url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800', title: 'Зона отдыха' },
+    { url: '/sportzals/IMG_0347.jpeg', title: 'Спортзал' }
+  ];
+  
+  // Кастомный плавный скролл
   const smoothScrollToCustom = (targetElementId: string) => {
     const target = document.getElementById(targetElementId);
     if (!target) return;
@@ -126,6 +125,9 @@ export default function Home() {
   const nextTestimonial = () => setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
   const prevTestimonial = () => setTestimonialIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   
+  const nextOfficeSlide = () => setOfficeSlideIndex((prev) => (prev + 1) % officePhotos.length);
+  const prevOfficeSlide = () => setOfficeSlideIndex((prev) => (prev - 1 + officePhotos.length) % officePhotos.length);
+  
   const toggleFaq = (idx: number) => setOpenFaq(openFaq === idx ? null : idx);
   
   const toggleChecklist = (idx: number) => {
@@ -139,6 +141,16 @@ export default function Home() {
     setModalOpen(true);
   };
   const closeModal = () => setModalOpen(false);
+  
+  const handleApplySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setApplySubmitted(true);
+    setTimeout(() => {
+      setApplySubmitted(false);
+      setApplyModalOpen(false);
+      setApplyForm({ name: '', role: '', tg: '', message: '' });
+    }, 2500);
+  };
   
   // Данные
   const testimonials = [
@@ -173,10 +185,10 @@ export default function Home() {
   ];
   
   const contacts = [
-    { name: 'Александра Иванова', role: 'Специалист по адаптации', tg: '@alex_hub', avatarEmoji: '👩', avatarImg: '/people/ava-nadya-v@2x.png' },
-    { name: 'Михаил Смирнов', role: 'Технический специалист', tg: '@michael_tech', avatarEmoji: '🔧', avatarImg: '/people/ava-azat@2x.png' },
-    { name: 'Ирина Кузнецова', role: 'Менеджер по бронированию', tg: '@irina_booking', avatarEmoji: '📅', avatarImg: '/people/ava-nastya@2x.png' },
-    { name: 'Фёдор Петров', role: 'Бадди', tg: '@fedor_buddy', avatarEmoji: '🤝', avatarImg: '/people/ava-vlad@2x.png' }
+    { name: 'Александра Иванова', role: 'Специалист по адаптации', tg: '@alex_hub', avatarImg: '/people/ava-nadya-v@2x.png', avatarEmoji: '👩' },
+    { name: 'Михаил Смирнов', role: 'Технический специалист', tg: '@michael_tech', avatarImg: '/people/ava-azat@2x.png', avatarEmoji: '🔧' },
+    { name: 'Ирина Кузнецова', role: 'Менеджер по бронированию', tg: '@irina_booking', avatarImg: '/people/ava-nastya@2x.png', avatarEmoji: '📅' },
+    { name: 'Фёдор Петров', role: 'Бадди', tg: '@fedor_buddy', avatarImg: '/people/ava-vlad@2x.png', avatarEmoji: '🤝' }
   ];
   
   return (
@@ -335,14 +347,22 @@ export default function Home() {
         
         .map-container { border-radius: 24px; overflow: hidden; border: 1px solid var(--border); height: 300px; background: var(--bg3); display: flex; align-items: center; justify-content: center; color: var(--muted); }
         
-        .testimonial-slider { position: relative; max-width: 700px; margin: 0 auto; }
+        .testimonial-slider, .office-slider { position: relative; max-width: 900px; margin: 0 auto; }
+        .office-slide { position: relative; border-radius: 24px; overflow: hidden; }
+        .office-slide img { width: 100%; height: 400px; object-fit: cover; display: block; }
+        .slide-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; color: white; font-weight: 600; text-align: center; }
+        .office-slider .slider-btn { top: 50%; transform: translateY(-50%); }
+        
         .testimonial-card { text-align: center; padding: 40px; }
         .testimonial-avatar { font-size: 64px; margin-bottom: 16px; }
         .stars { color: gold; font-size: 24px; margin: 12px 0; }
-        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 28px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; backdrop-filter: blur(4px); transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 28px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; backdrop-filter: blur(4px); transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2; }
         .slider-btn:hover { background: var(--peach); color: black; transform: translateY(-50%) scale(1.15); box-shadow: 0 4px 20px rgba(244,165,130,0.4); }
         .slider-btn:active { transform: translateY(-50%) scale(0.95); }
-        .slider-btn-left { left: -60px; } .slider-btn-right { right: -60px; }
+        .slider-btn-left { left: 20px; } .slider-btn-right { right: 20px; }
+        .dots { display: flex; justify-content: center; gap: 12px; margin-top: 20px; }
+        .dot { width: 10px; height: 10px; border-radius: 10px; background: var(--muted); cursor: pointer; transition: 0.2s; }
+        .dot.active { width: 28px; background: var(--peach); }
         
         .faq-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 16px; overflow: hidden; }
         .faq-question { padding: 24px; font-weight: 600; font-size: 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--bg3); }
@@ -365,13 +385,12 @@ export default function Home() {
         
         @media (max-width: 1024px) {
           .features-grid { grid-template-columns: repeat(2,1fr); }
-          .slider-btn-left { left: 0; } .slider-btn-right { right: 0; }
         }
         @media (max-width: 768px) {
           .features-grid { grid-template-columns: 1fr; }
           .hero { padding: 100px 24px 60px; }
-          .slider-btn { top: auto; bottom: -50px; }
-          .testimonial-slider { margin-bottom: 60px; }
+          .office-slide img { height: 250px; }
+          .slider-btn-left { left: 10px; } .slider-btn-right { right: 10px; }
         }
       `}</style>
       
@@ -379,6 +398,7 @@ export default function Home() {
         <a href="#" className="nav-logo">ХАБ | Сбер</a>
         <ul className="nav-links">
           <li><a href="#hero" onClick={(e)=>handleNavClick(e,'hero')} className={activeSection==='hero'?'active-link':''}>О центре</a></li>
+          <li><a href="#office" onClick={(e)=>handleNavClick(e,'office')} className={activeSection==='office'?'active-link':''}>Офис</a></li>
           <li><a href="#possibilities" onClick={(e)=>handleNavClick(e,'possibilities')} className={activeSection==='possibilities'?'active-link':''}>Возможности</a></li>
           <li><a href="#life" onClick={(e)=>handleNavClick(e,'life')} className={activeSection==='life'?'active-link':''}>Жизнь внутри</a></li>
           <li><a href="#testimonials" onClick={(e)=>handleNavClick(e,'testimonials')} className={activeSection==='testimonials'?'active-link':''}>Отзывы</a></li>
@@ -391,8 +411,8 @@ export default function Home() {
       
       <div className="mobile-sticky-bar">
         <button onClick={()=>smoothScrollToCustom('hero')} className={activeSection==='hero'?'active-mobile':''}>🏠</button>
+        <button onClick={()=>smoothScrollToCustom('office')} className={activeSection==='office'?'active-mobile':''}>📸</button>
         <button onClick={()=>smoothScrollToCustom('possibilities')} className={activeSection==='possibilities'?'active-mobile':''}>⚡</button>
-        <button onClick={()=>smoothScrollToCustom('life')} className={activeSection==='life'?'active-mobile':''}>🎉</button>
         <button onClick={()=>smoothScrollToCustom('checklist')} className={activeSection==='checklist'?'active-mobile':''}>✅</button>
         <button onClick={()=>smoothScrollToCustom('faq')} className={activeSection==='faq'?'active-mobile':''}>❓</button>
       </div>
@@ -414,6 +434,28 @@ export default function Home() {
           <iframe src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617&what=here" width="100%" height="100%" frameBorder="0" style={{ border:0, borderRadius:'24px' }} allowFullScreen></iframe>
         </div>
       </div>
+      
+      {/* НОВЫЙ БЛОК: ГАЛЕРЕЯ ОФИСА СБЕРА */}
+      <section id="office" style={{ padding: '60px', background: 'var(--bg)' }}>
+        <div className="features-header" style={{ textAlign:'center' }}>
+          <div className="section-label">Пространство</div>
+          <h2 className="section-title">Офис Сбера</h2>
+          <p style={{ color: 'var(--muted)', maxWidth: 600, margin: '20px auto 0' }}>Современные интерьеры, комфортные зоны для работы и отдыха</p>
+        </div>
+        <div className="office-slider animate-on-scroll">
+          <div className="office-slide">
+            <img src={officePhotos[officeSlideIndex].url} alt={officePhotos[officeSlideIndex].title} />
+            <div className="slide-caption">{officePhotos[officeSlideIndex].title}</div>
+          </div>
+          <button className="slider-btn slider-btn-left" onClick={prevOfficeSlide}>←</button>
+          <button className="slider-btn slider-btn-right" onClick={nextOfficeSlide}>→</button>
+          <div className="dots">
+            {officePhotos.map((_, idx) => (
+              <div key={idx} className={`dot ${idx === officeSlideIndex ? 'active' : ''}`} onClick={() => setOfficeSlideIndex(idx)} />
+            ))}
+          </div>
+        </div>
+      </section>
       
       <section id="possibilities" style={{ padding: '60px' }}>
         <div className="features-header" style={{ textAlign:'center', marginBottom:'60px' }}>
@@ -499,7 +541,6 @@ export default function Home() {
         </div>
       </section>
       
-      {/* БЛОК КОНТАКТОВ — С КРУГЛЫМИ АВАТАРАМИ И КНОПКОЙ "ХОЧУ В КОМАНДУ" */}
       <section id="contacts" style={{ padding: '60px' }}>
         <div className="features-header" style={{ textAlign:'center' }}>
           <div className="section-label">Команда поддержки</div>
@@ -510,8 +551,9 @@ export default function Home() {
             <div className="card animate-on-scroll" key={i} style={{ textAlign: 'center' }}>
               <div className="contact-avatar">
                 {c.avatarImg ? (
-                  <img src={c.avatarImg} alt={c.name} />
-                ) : (
+                  <img src={c.avatarImg} alt={c.name} onError={(e) => (e.currentTarget.style.display = 'none')} />
+                ) : null}
+                {(!c.avatarImg || (c.avatarImg && !document.querySelector(`img[src="${c.avatarImg}"]`)?.clientHeight) ) && (
                   <span style={{ fontSize: 40 }}>{c.avatarEmoji}</span>
                 )}
               </div>
@@ -520,10 +562,9 @@ export default function Home() {
               <a href={`https://t.me/${c.tg.slice(1)}`} target="_blank" className="btn-secondary" style={{ display: 'inline-block' }}>📩 Написать в Telegram</a>
             </div>
           ))}
-          {/* Карточка "Хочу в команду" */}
           <div className="card animate-on-scroll" style={{ textAlign: 'center', cursor: 'pointer' }}>
-            <div className="contact-avatar">
-              <img src='/add.png' alt="add" />
+            <div className="contact-avatar" style={{ background: 'linear-gradient(135deg, var(--peach), var(--pink))' }}>
+              <span style={{ fontSize: 40, color: 'white' }}>➕</span>
             </div>
             <h3 style={{ marginTop: 12 }}>Хочу в команду</h3>
             <p style={{ color: 'var(--muted)', marginBottom: 16 }}>Присоединяйтесь к нам</p>
@@ -598,8 +639,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Модал формы заявки */}
-      <div className={`modal-overlay ${applyModalOpen ? 'open' : ''}`} onClick={() => setApplyModalOpen(false)}>
+      <div className={`modal-overlay ${applyModalOpen ? 'open' : ''}`} onClick={() => { setApplyModalOpen(false); setApplySubmitted(false); setApplyForm({ name: '', role: '', tg: '', message: '' }); }}>
         <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
           {applySubmitted ? (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
@@ -614,61 +654,23 @@ export default function Home() {
               <form onSubmit={handleApplySubmit}>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Ваше имя *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Иван Иванов"
-                    value={applyForm.name}
-                    onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })}
-                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.3s' }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
-                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
-                  />
+                  <input type="text" required placeholder="Иван Иванов" value={applyForm.name} onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Направление / роль *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Разработчик, дизайнер, аналитик..."
-                    value={applyForm.role}
-                    onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })}
-                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.3s' }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
-                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
-                  />
+                  <input type="text" required placeholder="Разработчик, дизайнер, аналитик..." value={applyForm.role} onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Telegram</label>
-                  <input
-                    type="text"
-                    placeholder="@username"
-                    value={applyForm.tg}
-                    onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })}
-                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.3s' }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
-                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
-                  />
+                  <input type="text" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none' }} />
                 </div>
                 <div style={{ marginBottom: 24 }}>
                   <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>О себе</label>
-                  <textarea
-                    rows={3}
-                    placeholder="Расскажите немного о себе и своих навыках..."
-                    value={applyForm.message}
-                    onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })}
-                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', resize: 'vertical', transition: 'border-color 0.3s' }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
-                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
-                  />
+                  <textarea rows={3} placeholder="Расскажите немного о себе и своих навыках..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
-                  <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
-                    Отправить заявку
-                  </button>
-                  <button type="button" onClick={() => setApplyModalOpen(false)} className="btn-secondary" style={{ padding: '16px 20px', border: '1px solid var(--border)', cursor: 'pointer', background: 'none' }}>
-                    Отмена
-                  </button>
+                  <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer' }}>Отправить заявку</button>
+                  <button type="button" onClick={() => setApplyModalOpen(false)} className="btn-secondary" style={{ padding: '16px 20px', border: '1px solid var(--border)', cursor: 'pointer', background: 'none' }}>Отмена</button>
                 </div>
               </form>
             </>
