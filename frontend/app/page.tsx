@@ -153,6 +153,11 @@ export default function Home() {
   const [applyForm, setApplyForm] = useState({ name: '', role: '', tg: '', message: '' });
   const [applyDone, setApplyDone] = useState(false);
 
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiMessage, setAiMessage] = useState('');
+  const [aiChat, setAiChat] = useState<{ role: 'user' | 'assistant'; text: string }[]>([]);
+  const [aiLoading, setAiLoading] = useState(false);
+
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -230,6 +235,24 @@ export default function Home() {
     requestAnimationFrame(step);
   };
 
+  const handleAiSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiMessage.trim()) return;
+    const userMsg = aiMessage.trim();
+    setAiChat(prev => [...prev, { role: 'user', text: userMsg }]);
+    setAiMessage('');
+    setAiLoading(true);
+    
+    setTimeout(() => {
+      setAiChat(prev => [...prev, {
+        role: 'assistant',
+        text: `Спасибо за вопрос! Я AI-помощник хаба. Отвечу так: «${userMsg}». Обратитесь также к нашим контактам в разделе "К кому обратиться".`
+      }]);
+      setAiLoading(false);
+    }, 1000);
+  };
+
+
   const openModal = (title: string, body: string) => setModal({ open: true, title, body });
   const closeModal = () => setModal({ open: false, title: '', body: '' });
 
@@ -251,6 +274,193 @@ export default function Home() {
 
   return (
     <>
+
+      {/* AI‑Оверлей (затемнение) */}
+      {aiOpen && (
+        <div
+          onClick={() => setAiOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 102,
+            transition: 'opacity 0.3s',
+          }}
+        />
+      )}
+
+      {/* Плавающая кнопка AI */}
+      <button
+        onClick={() => setAiOpen(true)}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, var(--peach), var(--pink))',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+          border: 'none',
+          cursor: 'pointer',
+          zIndex: 103,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '28px',
+          transition: 'transform 0.2s',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+      >
+        🤖
+      </button>
+
+      {/* AI-модалка (выезжает снизу) */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          right: 0,
+          left: 'auto',
+          width: 'min(90%, 400px)',
+          backgroundColor: 'var(--bg3)',
+          borderTopLeftRadius: '24px',
+          borderTopRightRadius: '24px',
+          boxShadow: '0 -4px 30px rgba(0,0,0,0.3)',
+          zIndex: 104,
+          transform: aiOpen ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '80vh',
+          border: '1px solid var(--border)',
+          borderBottom: 'none',
+        }}
+      >
+        <div
+          style={{
+            padding: '16px',
+            borderBottom: '1px solid var(--border)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            background: 'var(--bg2)',
+            borderTopLeftRadius: '24px',
+            borderTopRightRadius: '24px',
+          }}
+        >
+          <span style={{ fontWeight: 600, fontFamily: 'Unbounded, sans-serif', fontSize: '16px' }}>🤖 AI‑помощник</span>
+          <button
+            onClick={() => setAiOpen(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '24px',
+              cursor: 'pointer',
+              color: 'var(--text)',
+              opacity: 0.7,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+            maxHeight: '60vh',
+          }}
+        >
+          {aiChat.length === 0 && (
+            <div style={{ color: 'var(--muted)', textAlign: 'center', fontSize: '14px', padding: '20px 0' }}>
+              Задайте вопрос о хабе, мероприятиях, бронировании и т.д.
+            </div>
+          )}
+          {aiChat.map((msg, idx) => (
+            <div
+              key={idx}
+              style={{
+                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                background:
+                  msg.role === 'user'
+                    ? 'linear-gradient(135deg, var(--peach), var(--pink))'
+                    : 'var(--card)',
+                color: msg.role === 'user' ? '#12001a' : 'var(--text)',
+                padding: '10px 14px',
+                borderRadius: '18px',
+                maxWidth: '85%',
+                fontSize: '14px',
+                wordBreak: 'break-word',
+                border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none',
+              }}
+            >
+              {msg.text}
+            </div>
+          ))}
+          {aiLoading && (
+            <div
+              style={{
+                alignSelf: 'flex-start',
+                background: 'var(--card)',
+                padding: '10px 14px',
+                borderRadius: '18px',
+                fontSize: '14px',
+                color: 'var(--muted)',
+              }}
+            >
+              Печатает...
+            </div>
+          )}
+        </div>
+        <form
+          onSubmit={handleAiSend}
+          style={{
+            padding: '16px',
+            borderTop: '1px solid var(--border)',
+            display: 'flex',
+            gap: '12px',
+            background: 'var(--bg2)',
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Спросите что-нибудь..."
+            value={aiMessage}
+            onChange={(e) => setAiMessage(e.target.value)}
+            style={{
+              flex: 1,
+              padding: '10px 16px',
+              borderRadius: '100px',
+              border: '1px solid var(--border)',
+              background: 'var(--input-bg)',
+              color: 'var(--text)',
+              fontSize: '14px',
+              outline: 'none',
+            }}
+          />
+          <button
+            type="submit"
+            disabled={aiLoading}
+            style={{
+              background: 'linear-gradient(135deg, var(--peach), var(--pink))',
+              border: 'none',
+              borderRadius: '100px',
+              padding: '0 20px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              color: '#12001a',
+            }}
+          >
+            Отправить
+          </button>
+        </form>
+      </div>
+      
       <div className="progress">
         <div className="progress-fill" style={{ height: `${scrollProgress}%` }} />
       </div>
