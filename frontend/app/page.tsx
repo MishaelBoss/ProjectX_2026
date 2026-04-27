@@ -2,12 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-interface ThemeSwitcherProps {
-  isDark: boolean;
-  onToggle: () => void;
-}
-
-function ThemeSwitcher({ isDark, onToggle }: ThemeSwitcherProps) {
+function ThemeSwitcher({ isDark, onToggle }: { isDark: boolean; onToggle: () => void }) {
   return (
     <div
       onClick={onToggle}
@@ -23,7 +18,6 @@ function ThemeSwitcher({ isDark, onToggle }: ThemeSwitcherProps) {
         flexShrink: 0,
       }}
     >
-      {/* Track */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -36,7 +30,6 @@ function ThemeSwitcher({ isDark, onToggle }: ThemeSwitcherProps) {
         transition: 'all 0.4s ease',
         overflow: 'hidden',
       }}>
-        {/* Звёзды (только в тёмной теме) */}
         {isDark && (
           <>
             <div style={{ position:'absolute', width:2, height:2, borderRadius:'50%', background:'white', opacity:0.8, top:6, left:10 }} />
@@ -45,8 +38,6 @@ function ThemeSwitcher({ isDark, onToggle }: ThemeSwitcherProps) {
           </>
         )}
       </div>
-
-      {/* Knob */}
       <div style={{
         position: 'absolute',
         top: 3,
@@ -62,12 +53,10 @@ function ThemeSwitcher({ isDark, onToggle }: ThemeSwitcherProps) {
         justifyContent: 'center',
       }}>
         {isDark ? (
-          // Луна
           <svg width="13" height="13" viewBox="0 0 24 24" fill="#a0b4d6">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         ) : (
-          // Солнце
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2.5">
             <circle cx="12" cy="12" r="4"/>
             <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
@@ -77,7 +66,6 @@ function ThemeSwitcher({ isDark, onToggle }: ThemeSwitcherProps) {
     </div>
   );
 }
-// ─────────────────────────────────────────────────────────────────────────────
 
 const officePhotos = [
   { url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=900&q=80', title: 'Современный коворкинг' },
@@ -169,7 +157,6 @@ export default function Home() {
   
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Применяем тему
   useEffect(() => {
     setIsClient(true);
     const saved = localStorage.getItem('hubTheme');
@@ -183,7 +170,6 @@ export default function Home() {
     localStorage.setItem('hubTheme', isDark ? 'dark' : 'light');
   }, [isDark, isClient]);
 
-  // Прогресс скролла
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
@@ -193,7 +179,6 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Активная секция
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }),
@@ -203,7 +188,6 @@ export default function Home() {
     return () => obs.disconnect();
   }, []);
 
-  // Анимация при скролле
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } }),
@@ -248,7 +232,7 @@ export default function Home() {
     { id: 'contacts', label: 'Контакты' },
     { id: 'faq', label: 'FAQ' },
   ];
-  
+
   return (
     <>
       <style jsx global>{`
@@ -256,7 +240,6 @@ export default function Home() {
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ── ТЕМЫ ── */
         [data-theme="dark"] {
           --bg:    #07070e;
           --bg2:   #0d0d18;
@@ -301,11 +284,9 @@ export default function Home() {
           transition: background 0.35s, color 0.25s;
         }
 
-        /* ── АНИМАЦИИ ПОЯВЛЕНИЯ ── */
         .anim { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(.2,.9,.4,1), transform 0.65s ease; }
         .anim.vis { opacity: 1; transform: none; }
 
-        /* ── ПРОГРЕСС-БАР ── */
         .progress {
           position: fixed; left: 18px; top: 50%; transform: translateY(-50%);
           width: 3px; height: 180px; background: rgba(255,255,255,0.1);
@@ -315,7 +296,6 @@ export default function Home() {
         .progress-fill { width: 100%; background: linear-gradient(to top, var(--peach), var(--pink)); border-radius: 3px; transition: height .1s; }
         @media(max-width:768px){ .progress { display:none; } }
 
-        /* ── NAV ── */
         .nav {
           position: fixed; top:0; left:0; right:0; z-index:100;
           display:flex; align-items:center; justify-content:space-between;
@@ -347,7 +327,6 @@ export default function Home() {
         }
         .nav-cta:hover { background:rgba(244,165,130,0.1); transform:translateY(-1px); }
 
-        /* ── MOBILE BAR ── */
         .mobile-bar {
           position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
           background:var(--nav-bg); backdrop-filter:blur(20px);
@@ -362,7 +341,6 @@ export default function Home() {
           .mobile-bar { display:flex; }
         }
 
-        /* ── КНОПКИ ── */
         .btn-p, .btn-s {
           display:inline-flex; align-items:center; gap:8px;
           padding:15px 34px; border-radius:100px; font-weight:600; font-size:15px;
@@ -383,7 +361,6 @@ export default function Home() {
         [data-theme="light"] .btn-s:hover { background:rgba(0,0,0,0.08); border-color:rgba(0,0,0,0.15); }
         .btn-p:active, .btn-s:active { transform:scale(0.98); }
 
-        /* ── КАРТОЧКИ ── */
         .card {
           background:var(--card); border:1px solid var(--card-border);
           backdrop-filter:blur(4px); border-radius:24px; padding:36px;
@@ -392,24 +369,20 @@ export default function Home() {
         .card:hover { transform:translateY(-6px); border-color:rgba(244,165,130,0.25); box-shadow:0 20px 60px rgba(0,0,0,0.3); }
         [data-theme="light"] .card:hover { box-shadow:0 12px 40px rgba(0,0,0,0.1); }
 
-        /* ── SECTION LABELS ── */
         .s-label { display:inline-block; font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--peach); margin-bottom:14px; }
         .s-title { font-family:'Unbounded',sans-serif; font-size:clamp(28px,4.5vw,48px); font-weight:700; line-height:1.1; letter-spacing:-.02em; }
         .s-sub { font-size:16px; color:var(--muted); line-height:1.7; margin-top:14px; }
 
-        /* ── SECTION PADDING ── */
         .sec { padding:100px 60px; }
         .sec-alt { background:var(--bg2); }
         @media(max-width:768px){ .sec { padding:72px 20px; } }
 
-        /* ── GRID ── */
         .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1100px; margin:0 auto; }
         .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:1100px; margin:0 auto; }
         .grid-4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:24px; max-width:1100px; margin:0 auto; }
         @media(max-width:1024px){ .grid-3 { grid-template-columns:repeat(2,1fr); } }
         @media(max-width:768px){ .grid-3,.grid-2,.grid-4 { grid-template-columns:1fr; } }
 
-        /* ── SLIDER ── */
         .slider-wrap { position:relative; max-width:900px; margin:0 auto; }
         .slide-img { width:100%; height:420px; object-fit:cover; border-radius:24px; display:block; }
         .slide-caption {
@@ -429,7 +402,6 @@ export default function Home() {
         .dot { width:8px; height:8px; border-radius:8px; background:var(--muted); cursor:pointer; transition:.25s; }
         .dot.act { width:28px; background:var(--peach); }
 
-        /* ── CHECKLIST ── */
         .cl-item {
           display:flex; align-items:center; gap:18px; padding:18px 24px;
           background:var(--card); border:1px solid var(--card-border); border-radius:16px;
@@ -445,7 +417,6 @@ export default function Home() {
         .cl-day { font-size:11px; color:var(--peach); font-weight:700; min-width:60px; letter-spacing:.05em; text-transform:uppercase; }
         .cl-text { font-size:15px; line-height:1.5; }
 
-        /* ── FAQ ── */
         .faq-item {
           background:var(--card); border:1px solid var(--card-border); border-radius:20px;
           margin-bottom:14px; overflow:hidden; transition:border-color .25s;
@@ -459,13 +430,11 @@ export default function Home() {
         .faq-icon.open { transform:rotate(45deg); }
         .faq-body { padding:0 28px; color:var(--muted); line-height:1.7; font-size:15px; overflow:hidden; transition:max-height .4s cubic-bezier(.33,1,.68,1), padding .3s; }
 
-        /* ── TESTIMONIAL ── */
         .test-card { text-align:center; padding:52px 48px; }
         .test-avatar { font-size:64px; margin-bottom:20px; }
         .test-text { font-size:18px; line-height:1.7; font-style:italic; margin-bottom:24px; }
         .test-stars { color:#f59e0b; font-size:22px; margin-bottom:14px; }
 
-        /* ── CONTACT CARD ── */
         .contact-avatar {
           width:90px; height:90px; border-radius:50%;
           background: linear-gradient(135deg, rgba(244,165,130,.2), rgba(232,96,154,.2));
@@ -474,11 +443,8 @@ export default function Home() {
           font-size:40px; margin:0 auto 18px;
           overflow:hidden;
         }
-        .contact-avatar img {
-          width:100%; height:100%; object-fit:cover; display:block;
-        }
+        .contact-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
 
-        /* ── MODAL ── */
         .modal-ov {
           position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(8px);
           display:flex; align-items:center; justify-content:center; z-index:200;
@@ -500,7 +466,6 @@ export default function Home() {
         .modal-input:focus { border-color:var(--peach); }
         .modal-label { display:block; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
 
-        /* ── HERO SPECIFIC ── */
         .hero-badge {
           display:inline-flex; align-items:center; gap:8px; padding:8px 20px;
           border-radius:100px; border:1px solid rgba(244,165,130,.35);
@@ -511,20 +476,41 @@ export default function Home() {
         .hero-title { font-family:'Unbounded',sans-serif; font-size:clamp(44px,7.5vw,96px); font-weight:900; line-height:1.0; letter-spacing:-.03em; margin-bottom:28px; }
         .hero-grad { background:linear-gradient(90deg,var(--peach),var(--pink),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
 
-        /* ── MAP ── */
         .map-wrap { border-radius:24px; overflow:hidden; border:1px solid var(--border); height:300px; }
 
-        /* ── DIVIDER ── */
         .divider-peach { height:1px; background:linear-gradient(90deg,transparent,var(--peach),var(--pink),transparent); opacity:.35; }
         .divider-blue  { height:1px; background:linear-gradient(90deg,transparent,var(--blue),var(--purple),transparent); opacity:.3; }
+
+        /* ДЕКОРАТИВНЫЕ АНИМАЦИИ */
+        .deco {
+          position: absolute;
+          pointer-events: none;
+          user-select: none;
+          z-index: 1;
+        }
+        .deco img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        @keyframes deco-float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(3deg); }
+        }
+        @keyframes deco-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes deco-pulse {
+          0%, 100% { opacity: 0.18; transform: scale(1); }
+          50% { opacity: 0.32; transform: scale(1.05); }
+        }
       `}</style>
 
-      {/* ПРОГРЕСС */}
       <div className="progress">
         <div className="progress-fill" style={{ height: `${scrollProgress}%` }} />
       </div>
 
-      {/* NAV */}
       <nav className="nav">
         <a href="#hero" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }} className="nav-logo">ХАБ</a>
         <ul className="nav-links">
@@ -548,7 +534,6 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* MOBILE BAR */}
       <div className="mobile-bar">
         {[
           { id:'hero', ico:'🏠' }, { id:'possibilities', ico:'⚡' },
@@ -558,13 +543,10 @@ export default function Home() {
         ))}
       </div>
 
-      {/* ── HERO ── */}
       <section id="hero" className="sec" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', background:'var(--bg)', position:'relative', overflow:'hidden' }}>
-        {/* Орбы */}
         <div style={{ position:'absolute', inset:0, pointerEvents:'none' }}>
           <div style={{ position:'absolute', width:600, height:600, top:-150, right:-150, borderRadius:'50%', background:'radial-gradient(circle, rgba(244,165,130,0.18) 0%, transparent 70%)', filter:'blur(70px)', animation:'float1 12s ease-in-out infinite' }} />
           <div style={{ position:'absolute', width:500, height:500, bottom:-80, left:-100, borderRadius:'50%', background:'radial-gradient(circle, rgba(232,96,154,0.15) 0%, transparent 70%)', filter:'blur(70px)', animation:'float2 16s ease-in-out infinite' }} />
-          {/* Кольца */}
           <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
             {[320, 560, 800].map((size, i) => (
               <div key={i} style={{
@@ -573,6 +555,19 @@ export default function Home() {
                 animation:`spin${i+1} ${30+i*20}s linear infinite${i%2===1?' reverse':''}`,
               }} />
             ))}
+          </div>
+
+          <div className="deco" style={{ width:420, height:420, top:'5%', right:'-80px', opacity:0.55, animation:'deco-float 10s ease-in-out infinite' }}>
+            <img src="/brandbook/20.png" alt="" />
+          </div>
+          <div className="deco" style={{ width:320, height:320, bottom:'10%', left:'-60px', opacity:0.2, animation:'deco-spin 40s linear infinite' }}>
+            <img src="/brandbook/22.png" alt="" />
+          </div>
+          <div className="deco" style={{ width:180, height:180, top:'12%', left:'8%', opacity:0.22, animation:'deco-float 14s ease-in-out infinite 2s' }}>
+            <img src="/brandbook/34.png" alt="" />
+          </div>
+          <div className="deco" style={{ width:80, height:80, top:'18%', right:'18%', opacity:0.28, animation:'deco-float 8s ease-in-out infinite 1s' }}>
+            <img src="/brandbook/16.png" alt="" />
           </div>
         </div>
 
@@ -599,7 +594,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Карта */}
         <div className="anim" style={{ maxWidth:1100, margin:'64px auto 0', width:'100%', padding:'0 60px' }}>
           <div className="map-wrap">
             <iframe
@@ -632,7 +626,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── ФОТО ОФИСА ── */}
+      {/* ДЕКОР МЕЖДУ HERO И ОФИСОМ */}
+      <div style={{ position:'relative', height:0, overflow:'visible', zIndex:10 }}>
+        <img
+          src="/brandbook/3d-ribbon.png"
+          alt=""
+          style={{ position:'absolute', right:60, top:-120, width:240, opacity:0.45, pointerEvents:'none', animation:'deco-float 12s ease-in-out infinite' }}
+        />
+      </div>
+
       <div className="divider-peach" />
       <section id="office" className="sec sec-alt">
         <div className="anim" style={{ textAlign:'center', marginBottom:56 }}>
@@ -655,42 +657,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── ВОЗМОЖНОСТИ ── */}
+      {/* ── ВОЗМОЖНОСТИ С ДЕКОРОМ ── */}
       <div className="divider-blue" />
-      <section id="possibilities" className="sec">
+      <section id="possibilities" className="sec" style={{ position:'relative', overflow:'hidden' }}>
+        <div className="deco" style={{ width:500, height:500, top:-100, right:-100, opacity:0.08, animation:'deco-spin 60s linear infinite reverse' }}>
+          <img src="/brandbook/orbit-sphere.png" alt="" />
+        </div>
         <div className="anim" style={{ textAlign:'center', marginBottom:64 }}>
           <div className="s-label">Всё для тебя</div>
           <h2 className="s-title">Возможности центра</h2>
         </div>
         <div className="grid-3">
           {[
-            { img:'sber_present.png',  name:'Программа лояльности', desc:'Бонусы, скидки у партнёров и приоритетное бронирование за активность' },
-            { img:'sber_food.png',   name:'Снеки и напитки',       desc:'Бесплатный кофе, фрукты, яблоки, груши, сливы каждый день' },
-            { img:'sber_rest.png',  name:'Массажное кресло',      desc:'Relax-зона с профессиональными массажными креслами' },
-            { img:'sber_man_sport.png',      name:'Спортзал',              desc:'Открыт 07:00–21:00, современное оборудование, душевые' },
-            { img:'/features/cowork.png',   name:'Коворкинг',             desc:'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
-            { img:'sber_books.png', name:'Обучение',              desc:'Мастер-классы, тренинги, курсы на Пульсе — постоянный рост' },
-            { img:'/features/location.png', name:'Удобное расположение',  desc:'Центр города, рядом с метро Горьковская' },
-            { img:'/features/print.png',    name:'Печать и канцтовары',   desc:'Цветной МФУ в коворкинге, всё необходимое на ресепшене' },
-          ].map((f, i) => (
+            { icon:'🎁', name:'Программа лояльности', desc:'Бонусы и скидки для активных сотрудников' },
+            { icon:'🍎', name:'Снеки и фрукты', desc:'Бесплатные напитки, яблоки, сливы, груши' },
+            { icon:'💆', name:'Массажное кресло', desc:'Relax-зона с массажными креслами' },
+            { icon:'🏋️', name:'Спортзал', desc:'07:00–21:00, современное оборудование' },
+            { icon:'💼', name:'Коворкинг + Переговорные', desc:'Рабочие места и комнаты для встреч' },
+            { icon:'📚', name:'Обучение', desc:'Тренинги, курсы на Пульсе, мастер-классы' },
+            { icon:'🚇', name:'Удобное расположение', desc:'Центр города, рядом метро Горьковская' },
+            { icon:'🖨️', name:'Печать и канцтовары', desc:'Всё необходимое на ресепшене' },
+          ].map((f,i) => (
             <div className="card anim" key={i} style={{ transitionDelay:`${i*0.06}s` }}>
-              {/* ВОТ ЭТО МЕНЯЕМ — вместо эмодзи просто img того же размера */}
-              <img
-                src={f.img}
-                alt={f.name}
-                style={{ width:48, height:48, objectFit:'contain', marginBottom:20, display:'block' }}
-              />
+              <div style={{ fontSize:48, marginBottom:20 }}>{f.icon}</div>
               <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:16, fontWeight:700, marginBottom:10 }}>{f.name}</h3>
               <p style={{ color:'var(--muted)', lineHeight:1.6, fontSize:14 }}>{f.desc}</p>
             </div>
           ))}
         </div>
         <div style={{ textAlign:'center', marginTop:52 }}>
-          <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную </button>
+          <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную →</button>
         </div>
       </section>
 
-      {/* ── ЖИЗНЬ ВНУТРИ ── */}
       <div className="divider-peach" />
       <section id="life" className="sec sec-alt">
         <div className="anim" style={{ textAlign:'center', marginBottom:64 }}>
@@ -708,11 +707,10 @@ export default function Home() {
           ))}
         </div>
         <div style={{ textAlign:'center', marginTop:48 }}>
-          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот</a>
+          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот →</a>
         </div>
       </section>
 
-      {/* ── ОТЗЫВЫ ── */}
       <div className="divider-blue" />
       <section id="testimonials" className="sec">
         <div className="anim" style={{ textAlign:'center', marginBottom:16 }}>
@@ -738,9 +736,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── ЧЕК-ЛИСТ ── */}
+      {/* ── ЧЕК-ЛИСТ С ДЕКОРОМ ── */}
       <div className="divider-peach" />
-      <section id="checklist" className="sec sec-alt">
+      <section id="checklist" className="sec sec-alt" style={{ position:'relative', overflow:'hidden' }}>
+        <div className="deco" style={{ width:300, height:300, bottom:0, left:-80, opacity:0.2, animation:'deco-float 16s ease-in-out infinite' }}>
+          <img src="/brandbook/3d-blob.png" alt="" />
+        </div>
         <div className="anim" style={{ textAlign:'center', marginBottom:56 }}>
           <div className="s-label">Адаптация</div>
           <h2 className="s-title">Что меня ждёт?</h2>
@@ -767,14 +768,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── КОНТАКТЫ ── */}
       <div className="divider-blue" />
       <section id="contacts" className="sec">
         <div className="anim" style={{ textAlign:'center', marginBottom:60 }}>
           <div className="s-label">Команда поддержки</div>
           <h2 className="s-title">К кому обратиться?</h2>
         </div>
-
         <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:24, maxWidth:1100, margin:'0 auto' }}>
           {contacts.map((c, i) => (
             <div className="card anim" key={i} style={{ textAlign:'center', transitionDelay:`${i*0.07}s` }}>
@@ -789,22 +788,23 @@ export default function Home() {
               <a href={`https://t.me/${c.tg}`} target="_blank" rel="noreferrer" className="btn-s" style={{ fontSize:12, padding:'9px 16px' }}>✈️ Telegram</a>
             </div>
           ))}
-
-          {/* Пятая карточка — Хочу в команду */}
           <div className="card anim" style={{ textAlign:'center', cursor:'pointer' }} onClick={() => setApplyOpen(true)}>
             <div className="contact-avatar">
               <img src="add.png" alt='add'/>
             </div>
             <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:14, fontWeight:700, marginBottom:8 }}>Хочу в команду</h3>
             <p style={{ color:'var(--muted)', fontSize:12, marginBottom:20 }}>Присоединяйтесь к нам!</p>
-            <button className="btn-p" style={{ fontSize:12, padding:'9px 16px', border:'none', cursor:'pointer' }}>Заявка</button>
+            <button className="btn-p" style={{ fontSize:12, padding:'9px 16px', border:'none', cursor:'pointer' }}>Заявка →</button>
           </div>
         </div>
       </section>
 
-      {/* ── FAQ ── */}
+      {/* ── FAQ С ДЕКОРОМ ── */}
       <div className="divider-peach" />
-      <section id="faq" className="sec sec-alt">
+      <section id="faq" className="sec sec-alt" style={{ position:'relative', overflow:'hidden' }}>
+        <div className="deco" style={{ width:260, height:260, top:40, right:-60, opacity:0.12, animation:'deco-spin 50s linear infinite' }}>
+          <img src="/brandbook/orbit-planet.png" alt="" />
+        </div>
         <div className="anim" style={{ textAlign:'center', marginBottom:56 }}>
           <div className="s-label">Ответы</div>
           <h2 className="s-title">Часто задаваемые вопросы</h2>
@@ -834,13 +834,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
       <footer style={{ padding:'32px 60px', borderTop:'1px solid var(--border)', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:16, background:'var(--bg)' }}>
         <div style={{ fontFamily:'Unbounded,sans-serif', fontWeight:700, fontSize:14 }}>ХАБ · Сбер</div>
         <div style={{ color:'var(--muted)', fontSize:13 }}>ул. Костина, 6, Нижний Новгород · © 2026 Сбер</div>
       </footer>
 
-      {/* ── МОДАЛ INFO ── */}
       <div className={`modal-ov${modal.open ? ' open' : ''}`} onClick={closeModal}>
         <div className="modal-box" onClick={(e) => e.stopPropagation()}>
           <h3 style={{ fontFamily:'Unbounded,sans-serif', fontWeight:700, fontSize:22, marginBottom:16 }}>{modal.title}</h3>
@@ -849,7 +847,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── МОДАЛ ЗАЯВКА ── */}
       <div className={`modal-ov${applyOpen ? ' open' : ''}`} onClick={() => { setApplyOpen(false); setApplyDone(false); }}>
         <div className="modal-box" onClick={(e) => e.stopPropagation()}>
           {applyDone ? (
