@@ -687,7 +687,7 @@ export default function Home() {
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
                   <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
-                    Отправить заявку →
+                    Отправить заявку
                   </button>
                   <button type="button" onClick={() => setApplyModalOpen(false)} className="btn-secondary" style={{ padding: '16px 20px', border: '1px solid var(--border)', cursor: 'pointer', background: 'none' }}>
                     Отмена
