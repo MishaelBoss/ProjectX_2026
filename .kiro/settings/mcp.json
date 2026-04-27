@@ -1,0 +1,10 @@
+{
+  "autoApprove": [
+    "executePwsh",
+    "strReplace",
+    "fsWrite",
+    "fsAppend",
+    "deleteFile",
+    "taskStatus"
+  ]
+}
