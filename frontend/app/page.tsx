@@ -766,31 +766,35 @@ export default function Home() {
 
       <div className="divider-blue" />
       <section id="contacts" className="sec">
-        <div className="anim" style={{ textAlign:'center', marginBottom:60 }}>
+        <div className="anim" style={{ textAlign: 'center', marginBottom: 60 }}>
           <div className="s-label">Команда поддержки</div>
           <h2 className="s-title">К кому обратиться?</h2>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(5,1fr)', gap:24, maxWidth:1100, margin:'0 auto' }}>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 24, maxWidth: 1100, margin: '0 auto' }}>
           {contacts.map((c, i) => (
-            <div className="card anim" key={i} style={{ textAlign:'center', transitionDelay:`${i*0.07}s` }}>
+            <div className="card anim" key={i} style={{ textAlign: 'center', transitionDelay: `${i * 0.07}s`, display: 'flex', flexDirection: 'column', height: '100%', padding: '36px 28px'}}>
               <div className="contact-avatar">
-                {c.avatarImg
-                  ? <img src={c.avatarImg} alt={c.name} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                  : <span>{c.emoji}</span>
-                }
+                {c.avatarImg ? (
+                  <img src={c.avatarImg} alt={c.name} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                ) : (
+                  <span>{c.emoji}</span>
+                )}
               </div>
-              <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:14, fontWeight:700, marginBottom:8 }}>{c.name}</h3>
-              <p style={{ color:'var(--muted)', fontSize:12, marginBottom:20 }}>{c.role}</p>
-              <a href={`https://t.me/${c.tg}`} target="_blank" rel="noreferrer" className="btn-s" style={{ fontSize:12, padding:'9px 16px' }}>✈️ Telegram</a>
+              <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{c.name}</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20,flexGrow: 1, lineHeight: 1.4}}>{c.role}</p>
+              <a href={`https://t.me/${c.tg}`} target="_blank" rel="noreferrer" className="btn-s" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textAlign: 'center' }}>✈️ Telegram</a>
             </div>
           ))}
-          <div className="card anim" style={{ textAlign:'center', cursor:'pointer' }} onClick={() => setApplyOpen(true)}>
+
+          <div className="card anim" style={{ textAlign: 'center', cursor: 'pointer', display: 'flex', flexDirection: 'column', height: '100%', padding: '36px 28px'}} onClick={() => setApplyOpen(true)}>
             <div className="contact-avatar">
-              <img src="add.png" alt='add'/>
+              <img src="add.png" alt="add" />
             </div>
-            <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:14, fontWeight:700, marginBottom:8 }}>Хочу в команду</h3>
-            <p style={{ color:'var(--muted)', fontSize:12, marginBottom:20 }}>Присоединяйтесь к нам!</p>
-            <button className="btn-p" style={{ fontSize:12, padding:'9px 16px', border:'none', cursor:'pointer' }}>Заявка →</button>
+            <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Хочу в команду</h3>
+            <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4}}>Присоединяйтесь к нам!</p>
+
+            <button className="btn-p" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Заявка</button>
           </div>
         </div>
       </section>
