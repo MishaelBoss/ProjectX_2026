@@ -891,7 +891,7 @@ export default function Home() {
           <li><a href="#spaces" onClick={(e) => handleNavClick(e, 'spaces')} className={activeSection === 'spaces' ? 'active-link' : ''}>Пространства</a></li>
           <li><a href="#faq" onClick={(e) => handleNavClick(e, 'faq')} className={activeSection === 'faq' ? 'active-link' : ''}>FAQ</a></li>
         </ul>
-        <a href="#cta" onClick={(e) => handleNavClick(e, 'cta')} className="nav-cta">Связаться</a>
+        <Link href="/contacts" className="nav-cta">Связаться</Link>
       </nav>
 
       <div className="mobile-sticky-bar">
@@ -1054,7 +1054,7 @@ export default function Home() {
       </section>
 
       <section style={{ padding: '80px 60px', background: 'var(--bg)' }}>
-        <div className="features-header"><div className="section-label">Интерактив</div><h2 className="section-title">Какою котку ты сегодня?</h2></div>
+        <div className="features-header"><div className="section-label">Интерактив</div><h2 className="section-title">Какой котик ты сегодня?</h2></div>
         <div className="cat-grid">
           {[
             { name: 'Кот-шопоголик', emoji: '🛍️', desc: 'Сканирую и покупаю' },
@@ -1136,7 +1136,7 @@ export default function Home() {
           <div className="section-label">Присоединяйся</div>
           <h2 className="section-title">Готов стать<br />частью ХАБа?</h2>
           <p className="cta-sub">Инновации, забота и комфорт в едином пространстве.</p>
-          <a href="mailto:hab@sber.ru" className="btn-primary" style={{display:'inline-flex'}}>Связаться с нами →</a>
+          <Link href="/contacts" className="btn-primary" style={{display:'inline-flex'}}>Связаться с нами →</Link>
         </div>
       </section>
 
