@@ -111,15 +111,30 @@ const contacts = [
 ];
 
 const faqItems = [
-  { q: 'Как посетить спортзал?', a: 'Спортзал открыт ежедневно с 07:00 до 21:00. Вход свободный для всех сотрудников. Есть раздевалки, душевые, тренажёры и свободные веса.' },
-  { q: 'Когда обед?', a: 'Обеденный перерыв — 50 минут. В столовой горячие обеды, зона с микроволновками и кулерами. Можно приносить еду или заказывать доставку.' },
-  { q: 'Как забронировать переговорную или коворкинг?', a: 'Через внутренний портал (раздел «Бронирование») или напрямую Ирине Кузнецовой в Telegram: @irina_booking.' },
-  { q: 'Какой период адаптации?', a: 'Базовая адаптация — 1 неделя. За каждым новичком закрепляется бадди-наставник. Полное погружение занимает около месяца.' },
-  { q: 'Как записаться на мероприятия?', a: 'Через Telegram-бот @HubEventMatch_bot или у Александры Ивановой. Расписание публикуется в корпоративном канале каждый понедельник.' },
-  { q: 'Как составить график работы?', a: 'График согласовывается с руководителем в первую неделю. Возможен гибкий формат: core-часы 10:00–16:00, остальное — по договорённости.' },
-  { q: 'Как воспользоваться программой лояльности?', a: 'Активируйте личный кабинет в разделе «Бонусы» на корпоративном портале. Баллы начисляются за активность и посещение мероприятий.' },
-  { q: 'Где взять канцтовары?', a: 'На ресепшене: ручки, блокноты, стикеры, скрепки. Запрашивайте у администратора или берите самостоятельно из общего шкафа.' },
-  { q: 'Как распечатать документ?', a: 'В зоне коворкинга стоит цветной МФУ. Печать доступна с баланса бонусов или бесплатно первые 20 страниц в день.' },
+  {
+    q: 'Как посетить спортзал?',
+    a: 'Спортзал находится на первом этаже, слева от ресепшена. Открыт ежедневно с 07:00 до 21:00 — вход свободный для всех сотрудников без предварительной записи. Вам доступны: беговые дорожки, велотренажёры, силовая рама, гантели до 50 кг и скамьи. Есть раздевалки с ключами, душевые кабины, а также кулер с питьевой водой и чистое полотенце можно взять на ресепшене. В часы пик (12:00–14:00) зал может быть загружен, выбирайте другое время, если хотите заниматься в тишине.'
+  },
+  {
+    q: 'Когда и где можно пообедать?',
+    a: 'Обеденный перерыв — 50 минут, вы можете выбрать любое время с 11:30 до 15:00 (согласуйте с руководителем). В столовой на втором этаже каждый день с 12:00 до 14:00 доступны горячие обеды: первое, второе, салат, хлеб, компот. Также есть зона с двумя микроволновками, холодильником и кофемашиной — можно разогреть принесённую еду. Если хотите заказать доставку, ресепшн хранит меню ближайших кафе (рекомендуем «Супчик» и «Вкусное дело»). Запрещено разогревать рыбу и сильно пахнущие блюда в общих микроволновках, пожалуйста, уважайте коллег.'
+  },
+  {
+    q: 'Как забронировать переговорную или коворкинг?',
+    a: 'Забронировать можно двумя способами: (1) через внутренний портал «Бронирование» — выберите дату, время, количество участников, и система подтвердит, свободна ли комната. (2) Написать Ирине Кузнецовой, менеджеру по бронированию, в Telegram: @irina_booking (отвечает в рабочие дни с 9:00 до 18:00). Переговорные оснащены 4K-экраном, маркерной доской и конференц-связью. Коворкинг — open space с 12 рабочими местами, быстрым Wi-Fi и розетками у каждого стола. Бронирование — минимум на 1 час, максимум на 4 часа. Отмените бронь не позже чем за 30 минут, иначе штрафные бонусы.'
+  },
+  {
+    q: 'Как долго длится адаптация для новичков?',
+    a: 'Базовая адаптация официально длится 1 неделю. За вами закрепляют бадди-наставника (он проведёт экскурсию, познакомит с командой, ответит на бытовые вопросы). В первую неделю нужно обязательно пройти инструктаж по кибербезопасности, охране труда и пожарной безопасности — запишитесь у Александры Ивановой (@alex_hub). Полное погружение в рабочие процессы, доступ к корпоративным сервисам и полным правам занимает около месяца. По итогам месяца вы заполняете чек-лист адаптации (он есть на портале) и получаете приветственные бонусы в программе лояльности.'
+  },
+  {
+    q: 'Как записаться на мастер-классы, дегустации и другие события?',
+    a: 'Актуальное расписание публикуется в корпоративном телеграм-канале «Hub События» каждый понедельник. Запись на мероприятия — через специального бота @HubEventMatch_bot: выберите событие, нажмите «Записаться», и бот пришлёт напоминание за час. Если передумали, отмените запись в том же боте (но не позже чем за 2 часа, иначе событие будет считаться посещённым, а бонусы не начислят). Также можно записаться устно у Александры Ивановой (@alex_hub) — она ведёт общий список. Участие бесплатное, но количество мест ограничено (обычно 20–30 человек).'
+  },
+  {
+    q: 'Как согласовать график работы? Есть ли гибкий формат?',
+    a: 'График обсуждается с вашим руководителем в первую неделю работы. Действует система «core hours»: с 10:00 до 16:00 вы обязательно должны быть на связи (в офисе или удалённо). Остальные часы (рано утром, вечером) — по вашему усмотрению, но общая нагрузка 40 часов в неделю. Можно работать полностью из офиса, гибридно (2–3 дня в офисе) или полностью удалённо, если это позволяет ваша роль (например, аналитика, разработка). Для удалённой работы необходимо подать заявку через корпоративный портал (раздел «Удалённый режим») — её рассматривает руководитель и HR. При одобрении вы получаете доступ к VPN и корпоративной защите. В удалённые дни вы обязаны быть онлайн в рабочие часы, отвечать в чатах и участвовать в видеозвонках.'
+  }
 ];
 
 export default function Home() {
@@ -137,26 +152,7 @@ export default function Home() {
   const [applyOpen, setApplyOpen] = useState(false);
   const [applyForm, setApplyForm] = useState({ name: '', role: '', tg: '', message: '' });
   const [applyDone, setApplyDone] = useState(false);
-  const [applySubmitted, setApplySubmitted] = useState(false);
-  const [showVideo, setShowVideo] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [officeSlideIndex, setOfficeSlideIndex] = useState(0);
 
-  const handleApplySubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setApplySubmitted(true);
-    setTimeout(() => {
-      setApplySubmitted(false);
-      setApplyForm({ name: '', role: '', tg: '', message: '' });
-    }, 2500);
-  };
-
-  const handleVideoEnd = () => {
-    setShowVideo(false);
-  };
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
-  const [checklistState, setChecklistState] = useState<boolean[]>(new Array(12).fill(false));
-  
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -255,278 +251,6 @@ export default function Home() {
 
   return (
     <>
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@400;500;600&display=swap');
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        [data-theme="dark"] {
-          --bg:    #07070e;
-          --bg2:   #0d0d18;
-          --bg3:   #11111f;
-          --text:  #f0eef8;
-          --muted: rgba(240,238,248,0.45);
-          --border: rgba(255,255,255,0.08);
-          --peach: #f4a582;
-          --pink:  #e8609a;
-          --blue:  #5bc8f5;
-          --purple:#b388f7;
-          --card:  rgba(255,255,255,0.04);
-          --card-border: rgba(255,255,255,0.09);
-          --input-bg: rgba(0,0,0,0.35);
-          --input-border: rgba(255,255,255,0.14);
-          --nav-bg: rgba(7,7,14,0.85);
-        }
-        [data-theme="light"] {
-          --bg:    #f4f4f8;
-          --bg2:   #eceef5;
-          --bg3:   #ffffff;
-          --text:  #111420;
-          --muted: rgba(0,0,0,0.52);
-          --border: rgba(0,0,0,0.07);
-          --peach: #d4845e;
-          --pink:  #c84d82;
-          --blue:  #3a9ec9;
-          --purple:#7b5cb8;
-          --card:  rgba(255,255,255,0.75);
-          --card-border: rgba(0,0,0,0.08);
-          --input-bg: #ffffff;
-          --input-border: #d0d5dd;
-          --nav-bg: rgba(244,244,248,0.88);
-        }
-
-        html { scroll-behavior: auto; }
-        body {
-          font-family: 'Manrope', sans-serif;
-          background: var(--bg);
-          color: var(--text);
-          overflow-x: hidden;
-          transition: background 0.35s, color 0.25s;
-        }
-
-        .anim { opacity: 0; transform: translateY(28px); transition: opacity 0.65s cubic-bezier(.2,.9,.4,1), transform 0.65s ease; }
-        .anim.vis { opacity: 1; transform: none; }
-
-        .progress {
-          position: fixed; left: 18px; top: 50%; transform: translateY(-50%);
-          width: 3px; height: 180px; background: rgba(255,255,255,0.1);
-          border-radius: 3px; z-index: 99; overflow: hidden;
-        }
-        [data-theme="light"] .progress { background: rgba(0,0,0,0.1); }
-        .progress-fill { width: 100%; background: linear-gradient(to top, var(--peach), var(--pink)); border-radius: 3px; transition: height .1s; }
-        @media(max-width:768px){ .progress { display:none; } }
-
-        .nav {
-          position: fixed; top:0; left:0; right:0; z-index:100;
-          display:flex; align-items:center; justify-content:space-between;
-          padding: 16px 60px;
-          background: var(--nav-bg);
-          backdrop-filter: blur(20px);
-          border-bottom: 1px solid var(--border);
-          transition: background 0.35s, border-color 0.25s;
-        }
-        .nav-logo {
-          font-family:'Unbounded',sans-serif; font-size:18px; font-weight:900;
-          background: linear-gradient(90deg, var(--peach), var(--pink));
-          -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-          text-decoration:none;
-        }
-        .nav-links { display:flex; gap:28px; list-style:none; }
-        .nav-links a {
-          font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
-          color:var(--muted); text-decoration:none; transition:.25s;
-          padding-bottom:3px; border-bottom:2px solid transparent;
-        }
-        .nav-links a.act { color:var(--peach); border-bottom-color:var(--peach); }
-        .nav-links a:hover { color:var(--text); }
-        .nav-right { display:flex; align-items:center; gap:16px; }
-        .nav-cta {
-          font-size:12px; font-weight:600; padding:9px 22px; border-radius:100px;
-          border:1px solid rgba(244,165,130,0.45); color:var(--peach);
-          text-decoration:none; transition:all .3s;
-        }
-        .nav-cta:hover { background:rgba(244,165,130,0.1); transform:translateY(-1px); }
-
-        .mobile-bar {
-          position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
-          background:var(--nav-bg); backdrop-filter:blur(20px);
-          border-radius:60px; padding:10px 22px; display:none; gap:28px;
-          z-index:101; border:1px solid var(--border);
-        }
-        .mobile-bar button { background:none; border:none; font-size:20px; cursor:pointer; color:var(--muted); transition:.2s; }
-        .mobile-bar button.act { color:var(--peach); transform:scale(1.15); }
-        @media(max-width:768px){
-          .nav-links { display:none; }
-          .nav { padding:14px 20px; }
-          .mobile-bar { display:flex; }
-        }
-
-        .btn-p, .btn-s {
-          display:inline-flex; align-items:center; gap:8px;
-          padding:15px 34px; border-radius:100px; font-weight:600; font-size:15px;
-          font-family:'Manrope',sans-serif; text-decoration:none;
-          transition:all .25s; cursor:pointer; border:none;
-        }
-        .btn-p {
-          background: linear-gradient(135deg, var(--peach), var(--pink));
-          color:#12001a;
-          box-shadow: 0 0 32px rgba(244,165,130,0.3);
-        }
-        .btn-p:hover { transform:translateY(-3px); box-shadow:0 8px 50px rgba(244,165,130,0.45); }
-        .btn-s {
-          background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text);
-        }
-        [data-theme="light"] .btn-s { background:rgba(0,0,0,0.04); }
-        .btn-s:hover { background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.2); transform:translateY(-2px); }
-        [data-theme="light"] .btn-s:hover { background:rgba(0,0,0,0.08); border-color:rgba(0,0,0,0.15); }
-        .btn-p:active, .btn-s:active { transform:scale(0.98); }
-
-        .card {
-          background:var(--card); border:1px solid var(--card-border);
-          backdrop-filter:blur(4px); border-radius:24px; padding:36px;
-          transition:all .35s cubic-bezier(.34,1.56,.64,1);
-        }
-        .card:hover { transform:translateY(-6px); border-color:rgba(244,165,130,0.25); box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-        [data-theme="light"] .card:hover { box-shadow:0 12px 40px rgba(0,0,0,0.1); }
-
-        .s-label { display:inline-block; font-size:11px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--peach); margin-bottom:14px; }
-        .s-title { font-family:'Unbounded',sans-serif; font-size:clamp(28px,4.5vw,48px); font-weight:700; line-height:1.1; letter-spacing:-.02em; }
-        .s-sub { font-size:16px; color:var(--muted); line-height:1.7; margin-top:14px; }
-
-        .sec { padding:100px 60px; }
-        .sec-alt { background:var(--bg2); }
-        @media(max-width:768px){ .sec { padding:72px 20px; } }
-
-        .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1100px; margin:0 auto; }
-        .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:1100px; margin:0 auto; }
-        .grid-4 { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:24px; max-width:1100px; margin:0 auto; }
-        @media(max-width:1024px){ .grid-3 { grid-template-columns:repeat(2,1fr); } }
-        @media(max-width:768px){ .grid-3,.grid-2,.grid-4 { grid-template-columns:1fr; } }
-
-        .slider-wrap { position:relative; max-width:900px; margin:0 auto; }
-        .slide-img { width:100%; height:420px; object-fit:cover; border-radius:24px; display:block; }
-        .slide-caption {
-          position:absolute; bottom:0; left:0; right:0; padding:24px;
-          background:linear-gradient(to top,rgba(0,0,0,.75),transparent);
-          color:#fff; font-weight:600; text-align:center; border-radius:0 0 24px 24px;
-        }
-        .sl-btn {
-          position:absolute; top:50%; transform:translateY(-50%);
-          background:rgba(0,0,0,.45); border:none; color:#fff; font-size:22px;
-          width:46px; height:46px; border-radius:50%; cursor:pointer; backdrop-filter:blur(4px);
-          transition:all .3s cubic-bezier(.34,1.56,.64,1); z-index:2; display:flex; align-items:center; justify-content:center;
-        }
-        .sl-btn:hover { background:var(--peach); color:#12001a; transform:translateY(-50%) scale(1.15); }
-        .sl-l { left:16px; } .sl-r { right:16px; }
-        .dots { display:flex; justify-content:center; gap:12px; margin-top:20px; }
-        .dot { width:8px; height:8px; border-radius:8px; background:var(--muted); cursor:pointer; transition:.25s; }
-        .dot.act { width:28px; background:var(--peach); }
-
-        .cl-item {
-          display:flex; align-items:center; gap:18px; padding:18px 24px;
-          background:var(--card); border:1px solid var(--card-border); border-radius:16px;
-          cursor:pointer; transition:all .3s; margin-bottom:10px;
-        }
-        .cl-item:hover { transform:translateX(6px); border-color:rgba(244,165,130,.3); background:rgba(244,165,130,.05); }
-        .cl-box {
-          width:24px; height:24px; border-radius:8px; border:2px solid var(--peach);
-          background:transparent; display:flex; align-items:center; justify-content:center;
-          flex-shrink:0; transition:all .2s; font-size:13px; color:#12001a;
-        }
-        .cl-box.done { background:var(--peach); }
-        .cl-day { font-size:11px; color:var(--peach); font-weight:700; min-width:60px; letter-spacing:.05em; text-transform:uppercase; }
-        .cl-text { font-size:15px; line-height:1.5; }
-
-        .faq-item {
-          background:var(--card); border:1px solid var(--card-border); border-radius:20px;
-          margin-bottom:14px; overflow:hidden; transition:border-color .25s;
-        }
-        .faq-item:hover { border-color:rgba(244,165,130,.3); }
-        .faq-q {
-          padding:22px 28px; font-weight:600; font-size:16px; cursor:pointer;
-          display:flex; justify-content:space-between; align-items:center; gap:16px;
-        }
-        .faq-icon { font-size:24px; color:var(--peach); flex-shrink:0; transition:transform .25s; }
-        .faq-icon.open { transform:rotate(45deg); }
-        .faq-body { padding:0 28px; color:var(--muted); line-height:1.7; font-size:15px; overflow:hidden; transition:max-height .4s cubic-bezier(.33,1,.68,1), padding .3s; }
-
-        .test-card { text-align:center; padding:52px 48px; }
-        .test-avatar { font-size:64px; margin-bottom:20px; }
-        .test-text { font-size:18px; line-height:1.7; font-style:italic; margin-bottom:24px; }
-        .test-stars { color:#f59e0b; font-size:22px; margin-bottom:14px; }
-
-        .contact-avatar {
-          width:90px; height:90px; border-radius:50%;
-          background: linear-gradient(135deg, rgba(244,165,130,.2), rgba(232,96,154,.2));
-          border:1px solid var(--card-border);
-          display:flex; align-items:center; justify-content:center;
-          font-size:40px; margin:0 auto 18px;
-          overflow:hidden;
-        }
-        .contact-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
-
-        .modal-ov {
-          position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(8px);
-          display:flex; align-items:center; justify-content:center; z-index:200;
-          opacity:0; visibility:hidden; transition:.3s;
-        }
-        .modal-ov.open { opacity:1; visibility:visible; }
-        .modal-box {
-          background:var(--bg3); border:1px solid var(--border); border-radius:32px;
-          padding:40px; max-width:520px; width:90%;
-          transform:scale(.92); transition:transform .3s;
-        }
-        .modal-ov.open .modal-box { transform:scale(1); }
-        .modal-input {
-          width:100%; padding:13px 16px; border-radius:14px;
-          background:var(--input-bg); border:1px solid var(--input-border);
-          color:var(--text); font-size:15px; font-family:inherit; outline:none;
-          transition:border-color .2s; margin-bottom:16px;
-        }
-        .modal-input:focus { border-color:var(--peach); }
-        .modal-label { display:block; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px; }
-
-        .hero-badge {
-          display:inline-flex; align-items:center; gap:8px; padding:8px 20px;
-          border-radius:100px; border:1px solid rgba(244,165,130,.35);
-          background:rgba(244,165,130,.08); font-size:11px; font-weight:700;
-          text-transform:uppercase; letter-spacing:.12em; color:var(--peach); margin-bottom:36px;
-        }
-        .badge-dot { width:6px; height:6px; border-radius:50%; background:var(--peach); box-shadow:0 0 8px var(--peach); }
-        .hero-title { font-family:'Unbounded',sans-serif; font-size:clamp(44px,7.5vw,96px); font-weight:900; line-height:1.0; letter-spacing:-.03em; margin-bottom:28px; }
-        .hero-grad { background:linear-gradient(90deg,var(--peach),var(--pink),var(--blue)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-
-        .map-wrap { border-radius:24px; overflow:hidden; border:1px solid var(--border); height:300px; }
-
-        .divider-peach { height:1px; background:linear-gradient(90deg,transparent,var(--peach),var(--pink),transparent); opacity:.35; }
-        .divider-blue  { height:1px; background:linear-gradient(90deg,transparent,var(--blue),var(--purple),transparent); opacity:.3; }
-
-        /* ДЕКОРАТИВНЫЕ АНИМАЦИИ */
-        .deco {
-          position: absolute;
-          pointer-events: none;
-          user-select: none;
-          z-index: 1;
-        }
-        .deco img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-        }
-        @keyframes deco-float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(3deg); }
-        }
-        @keyframes deco-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes deco-pulse {
-          0%, 100% { opacity: 0.18; transform: scale(1); }
-          50% { opacity: 0.32; transform: scale(1.05); }
-        }
-      `}</style>
-
       <div className="progress">
         <div className="progress-fill" style={{ height: `${scrollProgress}%` }} />
       </div>
@@ -589,6 +313,12 @@ export default function Home() {
           <div className="deco" style={{ width:80, height:80, top:'18%', right:'18%', opacity:0.28, animation:'deco-float 8s ease-in-out infinite 1s' }}>
             <img src="/brandbook/16.png" alt="" />
           </div>
+          <div className="deco" style={{ width: 420, height: 420, top: '18%', right: '-60px', opacity: 0.75, animation: 'deco-float 11s ease-in-out infinite', zIndex: 2}}>
+            <img src="/brandbook/IMG_0339.png" alt="Котик-астронавт" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
+          <div className="deco" style={{ width: 580, height: 580, top: '-120px', left: '50%', transform: 'translateX(-50%)', opacity: 0.22, animation: 'deco-spin 75s linear infinite',zIndex: 1}}>
+            <img src="/brandbook/33.png" alt="Космическая планета" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
         </div>
 
         <style>{`
@@ -613,29 +343,16 @@ export default function Home() {
             <a href="#booking" className="btn-s" onClick={(e) => { e.preventDefault(); openModal('Бронирование', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking.'); }}>Забронировать</a>
           </div>
         </div>
-      </section>
 
-      {/* КАРТА С ВИДЕО-ПЕРЕХОДОМ */}
-      <div style={{ padding:'0 60px 60px' }}>
-        <div className="map-wrap">
-          {showVideo ? (
-            <video
-              ref={videoRef}
-              src="/per.mp4"
-              autoPlay
-              muted
-              playsInline
-              onEnded={handleVideoEnd}
-              style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:'24px', display:'block' }}
-            />
-          ) : (
+        <div className="anim" style={{ maxWidth:1100, margin:'64px auto 0', width:'100%', padding:'0 60px' }}>
+          <div className="map-wrap">
             <iframe
               src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617"
-              width="100%" height="100%" style={{ border:0, display:'block', borderRadius:'24px' }} allowFullScreen
+              width="100%" height="100%" style={{ border:0, display:'block' }} allowFullScreen
             />
-          )}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* ДЕКОР МЕЖДУ HERO И ОФИСОМ */}
       <div style={{ position:'relative', height:0, overflow:'visible', zIndex:10 }}>
@@ -684,7 +401,7 @@ export default function Home() {
             { img:'sber_food.png',   name:'Снеки и напитки',       desc:'Бесплатный кофе, фрукты, яблоки, груши, сливы каждый день' },
             { img:'sber_rest.png',  name:'Массажное кресло',      desc:'Relax-зона с профессиональными массажными креслами' },
             { img:'sber_man_sport.png',      name:'Спортзал',              desc:'Открыт 07:00–21:00, современное оборудование, душевые' },
-            { img:'/features/cowork.png',   name:'Коворкинг',             desc:'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
+            { img:'sber_suitcase.png',   name:'Коворкинг',             desc:'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
             { img:'sber_books.png', name:'Обучение',              desc:'Мастер-классы, тренинги, курсы на Пульсе — постоянный рост' },
             { img:'sber_a_man_is_resting_in_a_chair.png', name:'Удобное расположение',  desc:'Центр города, рядом с метро Горьковская' },
             { img:'sber_printer.png',    name:'Печать и канцтовары',   desc:'Цветной МФУ в коворкинге, всё необходимое на ресепшене' },
@@ -734,16 +451,25 @@ export default function Home() {
           <h2 className="s-title">Отзывы сотрудников</h2>
           <div style={{ fontSize:28, color:'#f59e0b', marginTop:16 }}>★★★★★ <span style={{ color:'var(--muted)', fontSize:18 }}>5.0 / 5</span></div>
         </div>
-        <div className="slider-wrap anim" style={{ marginTop:48 }}>
-          <div className="card test-card">
-            <div className="test-avatar">{testimonials[testimonialIdx].avatar}</div>
-            <p className="test-text">«{testimonials[testimonialIdx].text}»</p>
-            <div className="test-stars">★★★★★</div>
-            <h4 style={{ fontFamily:'Unbounded,sans-serif', fontSize:16, fontWeight:700 }}>{testimonials[testimonialIdx].name}</h4>
-            <p style={{ color:'var(--muted)', marginTop:6 }}>{testimonials[testimonialIdx].role}</p>
+
+        <div className="testimonial-slider">
+          <div className="testimonial-track" style={{ transform: `translateX(-${testimonialIdx * 100}%)` }}>
+            {testimonials.map((t, idx) => (
+              <div className="testimonial-slide" key={idx}>
+                <div className="card test-card" style={{ margin:0, width:'100%' }}>
+                  <div className="test-avatar">{t.avatar}</div>
+                  <p className="test-text">«{t.text}»</p>
+                  <div className="test-stars">★★★★★</div>
+                  <h4 style={{ fontFamily:'Unbounded,sans-serif', fontSize:16, fontWeight:700 }}>{t.name}</h4>
+                  <p style={{ color:'var(--muted)', marginTop:6 }}>{t.role}</p>
+                </div>
+              </div>
+            ))}
           </div>
+
           <button className="sl-btn sl-l" onClick={() => setTestimonialIdx((p) => (p - 1 + testimonials.length) % testimonials.length)}>←</button>
           <button className="sl-btn sl-r" onClick={() => setTestimonialIdx((p) => (p + 1) % testimonials.length)}>→</button>
+
           <div className="dots">
             {testimonials.map((_, i) => (
               <div key={i} className={`dot ${i === testimonialIdx ? 'act' : ''}`} onClick={() => setTestimonialIdx(i)} />
@@ -812,7 +538,7 @@ export default function Home() {
               <img src="add.png" alt="add" />
             </div>
             <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Хочу в команду</h3>
-            <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4}}>Присоединяйтесь к нам!</p> ы
+            <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4}}>Присоединяйтесь к нам!</p>
             <button className="btn-p" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Заявка</button>
           </div>
         </div>
