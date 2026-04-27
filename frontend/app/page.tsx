@@ -7,6 +7,19 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: '', body: '' });
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [applyModalOpen, setApplyModalOpen] = useState(false);
+  const [applyForm, setApplyForm] = useState({ name: '', role: '', tg: '', message: '' });
+  const [applySubmitted, setApplySubmitted] = useState(false);
+
+  const handleApplySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setApplySubmitted(true);
+    setTimeout(() => {
+      setApplySubmitted(false);
+      setApplyModalOpen(false);
+      setApplyForm({ name: '', role: '', tg: '', message: '' });
+    }, 2500);
+  };
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [checklistState, setChecklistState] = useState<boolean[]>(new Array(12).fill(false));
   const [engagement, setEngagement] = useState(0);
@@ -514,7 +527,7 @@ export default function Home() {
             </div>
             <h3 style={{ marginTop: 12 }}>Хочу в команду</h3>
             <p style={{ color: 'var(--muted)', marginBottom: 16 }}>Присоединяйтесь к нам</p>
-            <button className="btn-primary" style={{ display: 'inline-block' }}>Оставить заявку →</button>
+            <button className="btn-primary" style={{ display: 'inline-block' }} onClick={() => setApplyModalOpen(true)}>Оставить заявку →</button>
           </div>
         </div>
       </section>
@@ -582,6 +595,84 @@ export default function Home() {
           <h3 style={{ fontWeight: 600, marginBottom: 16 }}>{modalContent.title}</h3>
           <p>{modalContent.body}</p>
           <button className="close-modal" onClick={closeModal}>Закрыть</button>
+        </div>
+      </div>
+
+      {/* Модал формы заявки */}
+      <div className={`modal-overlay ${applyModalOpen ? 'open' : ''}`} onClick={() => setApplyModalOpen(false)}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
+          {applySubmitted ? (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ fontSize: 56, marginBottom: 16 }}>🎉</div>
+              <h3 style={{ fontWeight: 600, marginBottom: 12 }}>Заявка отправлена!</h3>
+              <p style={{ color: 'var(--muted)' }}>Мы свяжемся с вами в ближайшее время.</p>
+            </div>
+          ) : (
+            <>
+              <h3 style={{ fontWeight: 600, marginBottom: 8 }}>Хочу в команду</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 24 }}>Заполните форму — мы свяжемся с вами!</p>
+              <form onSubmit={handleApplySubmit}>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Ваше имя *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Иван Иванов"
+                    value={applyForm.name}
+                    onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })}
+                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.3s' }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+                  />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Направление / роль *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Разработчик, дизайнер, аналитик..."
+                    value={applyForm.role}
+                    onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })}
+                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.3s' }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+                  />
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Telegram</label>
+                  <input
+                    type="text"
+                    placeholder="@username"
+                    value={applyForm.tg}
+                    onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })}
+                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.3s' }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+                  />
+                </div>
+                <div style={{ marginBottom: 24 }}>
+                  <label style={{ display: 'block', fontSize: 12, color: 'var(--muted)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>О себе</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Расскажите немного о себе и своих навыках..."
+                    value={applyForm.message}
+                    onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })}
+                    style={{ width: '100%', padding: '12px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)', fontSize: 15, fontFamily: 'inherit', outline: 'none', resize: 'vertical', transition: 'border-color 0.3s' }}
+                    onFocus={(e) => e.target.style.borderColor = 'var(--peach)'}
+                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button type="submit" className="btn-primary" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
+                    Отправить заявку →
+                  </button>
+                  <button type="button" onClick={() => setApplyModalOpen(false)} className="btn-secondary" style={{ padding: '16px 20px', border: '1px solid var(--border)', cursor: 'pointer', background: 'none' }}>
+                    Отмена
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </>
