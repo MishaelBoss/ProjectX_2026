@@ -10,6 +10,8 @@ export default function Home() {
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [applyForm, setApplyForm] = useState({ name: '', role: '', tg: '', message: '' });
   const [applySubmitted, setApplySubmitted] = useState(false);
+  const [showVideo, setShowVideo] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleApplySubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +21,10 @@ export default function Home() {
       setApplyModalOpen(false);
       setApplyForm({ name: '', role: '', tg: '', message: '' });
     }, 2500);
+  };
+
+  const handleVideoEnd = () => {
+    setShowVideo(false);
   };
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [checklistState, setChecklistState] = useState<boolean[]>(new Array(12).fill(false));
@@ -411,7 +417,24 @@ export default function Home() {
       
       <div style={{ padding: '0 60px 60px' }} className="animate-on-scroll">
         <div className="map-container">
-          <iframe src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617&what=here" width="100%" height="100%" frameBorder="0" style={{ border:0, borderRadius:'24px' }} allowFullScreen></iframe>
+          {showVideo ? (
+            <video
+              ref={videoRef}
+              src="/per.mp4"
+              autoPlay
+              muted
+              playsInline
+              onEnded={handleVideoEnd}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '24px'
+              }}
+            />
+          ) : (
+            <iframe src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617&what=here" width="100%" height="100%" frameBorder="0" style={{ border:0, borderRadius:'24px' }} allowFullScreen></iframe>
+          )}
         </div>
       </div>
       
