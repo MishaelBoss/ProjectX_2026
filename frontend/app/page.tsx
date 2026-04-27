@@ -144,7 +144,9 @@ export default function Home() {
   const [officeIdx, setOfficeIdx] = useState(0);
   const [testimonialIdx, setTestimonialIdx] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [checklist, setChecklist] = useState<boolean[]>(new Array(checklistItems.length).fill(false));
+  const [checklist, setChecklist] = useState<boolean[]>(() => {
+    return new Array(checklistItems.length).fill(false);
+  });
   const [scrollProgress, setScrollProgress] = useState(0);
   const [modal, setModal] = useState<{ open: boolean; title: string; body: string }>({ open: false, title: '', body: '' });
   const [applyOpen, setApplyOpen] = useState(false);
@@ -192,6 +194,24 @@ export default function Home() {
     document.querySelectorAll('.anim').forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    const saved = localStorage.getItem('hubChecklist');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length === checklistItems.length) {
+          setChecklist(parsed);
+        }
+      } catch (e) {}
+    }
+  }, [isClient]);
+
+  useEffect(() => {
+    if (!isClient) return;
+    localStorage.setItem('hubChecklist', JSON.stringify(checklist));
+  }, [checklist, isClient]);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -674,6 +694,8 @@ export default function Home() {
             { img:'sber_man_sport.png',      name:'Спортзал',              desc:'Открыт 07:00–21:00, современное оборудование, душевые' },
             { img:'sber_suitcase.png',   name:'Коворкинг',             desc:'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
             { img:'sber_books.png', name:'Обучение',              desc:'Мастер-классы, тренинги, курсы на Пульсе — постоянный рост' },
+            { img:'sber_a_man_is_resting_in_a_chair.png', name:'Удобное расположение',  desc:'Центр города, рядом с метро Горьковская' },
+            { img:'sber_printer.png',    name:'Печать и канцтовары',   desc:'Цветной МФУ в коворкинге, всё необходимое на ресепшене' },
           ].map((f, i) => (
             <div className="card anim" key={i} style={{ transitionDelay:`${i*0.06}s` }}>
               {/* ВОТ ЭТО МЕНЯЕМ — вместо эмодзи просто img того же размера */}
@@ -807,8 +829,7 @@ export default function Home() {
               <img src="add.png" alt="add" />
             </div>
             <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Хочу в команду</h3>
-            <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4}}>Присоединяйтесь к нам!</p>
-
+            <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4}}>Присоединяйтесь к нам!</p> ы
             <button className="btn-p" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>Заявка</button>
           </div>
         </div>
