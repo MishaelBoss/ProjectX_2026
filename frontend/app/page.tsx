@@ -920,11 +920,11 @@ export default function Home() {
 
         <div className="mobile-bar">
           {[
-            { id: 'hero', ico: '/sber_home.jpg', label: 'Главная' },
-            { id: 'possibilities', ico: '/sber_lightning.jpg', label: 'Возможности' },
-            { id: 'checklist', ico: '/sber.jpg', label: 'Чек-лист' },
-            { id: 'contacts', ico: '/sber_people.jpg', label: 'Контакты' },
-            { id: 'faq', ico: '/sber_help.jpg', label: 'FAQ' },
+            { id: 'hero', ico: '/sber_home.png', label: 'Главная' },
+            { id: 'possibilities', ico: '/sber_lightning.png', label: 'Возможности' },
+            { id: 'checklist', ico: '/sber.png', label: 'Чек-лист' },
+            { id: 'contacts', ico: '/sber_contacts.png', label: 'Контакты' },
+            { id: 'faq', ico: '/sber_helping.png', label: 'FAQ' },
           ].map((b) => (
             <button key={b.id} className={activeSection === b.id ? 'act' : ''} onClick={() => scrollTo(b.id)} aria-label={b.label}>
               <div className="mobile-bar-icon">
