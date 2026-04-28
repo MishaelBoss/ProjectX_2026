@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
 import { createReview, getReviews, login, register, sendQuestion } from './lib/api';
 import { Review } from './types/review.types';
+import Link from 'next/link';
 
 function ThemeSwitcher({ isDark, onToggle }: { isDark: boolean; onToggle: () => void }) {
   return (
@@ -550,7 +551,7 @@ export default function Home() {
     if (q.includes('печать') || q.includes('канцтовары')) {
       return 'Бесплатная печать до 20 страниц в день в зоне коворкинга. Канцтовары можно взять на ресепшене.';
     }
-    return 'Я AI-помощник хаба. Напишите свой вопрос подробнее, или обратитесь к нашим контактам в разделе "К кому обратиться".';
+    return 'Я Помощник хаба. Напишите свой вопрос подробнее, или обратитесь к нашим контактам в разделе "К кому обратиться".';
   };
 
   const handleAiSend = async (e: React.FormEvent) => {
@@ -869,7 +870,7 @@ export default function Home() {
           }}
         >
           <div style={{ padding: '16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}>
-            <span style={{ fontWeight: 600, fontFamily: 'Unbounded, sans-serif', fontSize: '16px' }}>AI‑помощник</span>
+            <span style={{ fontWeight: 600, fontFamily: 'Unbounded, sans-serif', fontSize: '16px' }}>Помощник</span>
             <button onClick={() => setAiOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }} aria-label="close">✕</button>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '60vh' }}>
@@ -921,14 +922,16 @@ export default function Home() {
         <div className="mobile-bar">
           {[
             { id: 'hero', ico: '/sber_home.png', label: 'Главная' },
-            { id: 'possibilities', ico: '/sber_lightning.png', label: 'Возможности' },
+            { id: 'possibilities', ico: '/sber_helping.png', label: 'Возможности' },
+            { id: 'life', ico: '/sber_live.png', label: 'Жизнь' },
+            { id: 'testimonials', ico: '/sber_coments.png', label: 'Отзывы' },
             { id: 'checklist', ico: '/sber.png', label: 'Чек-лист' },
             { id: 'contacts', ico: '/sber_contacts.png', label: 'Контакты' },
             { id: 'faq', ico: '/sber_helping.png', label: 'FAQ' },
           ].map((b) => (
             <button key={b.id} className={activeSection === b.id ? 'act' : ''} onClick={() => scrollTo(b.id)} aria-label={b.label}>
               <div className="mobile-bar-icon">
-                <Image src={b.ico} alt={b.label} width={28} height={28} />
+                <Image src={b.ico} alt={b.label} width={32} height={32} />
               </div>
               <span className="mobile-bar-label">{b.label}</span>
             </button>
@@ -1154,7 +1157,7 @@ export default function Home() {
               ))}
             </div>
             <div style={{ textAlign:'center', marginTop:36 }}>
-              <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот</a>
+              <Link href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">Записаться через бот</Link>
             </div>
           </div>
         </section>
