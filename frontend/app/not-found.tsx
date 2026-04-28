@@ -23,8 +23,32 @@ export default function NotFound() {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
   }, [isDark, isClient]);
 
+  useEffect(() => {
+    const audio = document.getElementById('bgMusic') as HTMLAudioElement;
+    if (audio) {
+      audio.volume = 0.25;
+      
+      const tryPlay = () => {
+        audio.play().catch(() => {});
+      };
+
+      document.addEventListener('click', tryPlay, { once: true });
+      document.addEventListener('touchstart', tryPlay, { once: true });
+    }
+  }, []);
+
   return (
     <>
+      <audio
+        id="bgMusic"
+        loop
+        autoPlay
+        muted={false}   // можно сделать true сначала, если браузер блокирует
+        style={{ display: 'none' }}
+      >
+        <source src="/test.mp3" type="audio/mpeg" />
+        Твой браузер не поддерживает аудио.
+      </audio>
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@400;500;600&display=swap');
 
