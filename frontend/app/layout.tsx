@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import localFont from 'next/font/local';
+import AxiosConfig from "./components/AxiosConfig";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,7 @@ export default function RootLayout({
       lang="en"
       className={`${sbLight.variable} ${sbSemibold.variable} h-full antialiased`}
     >
+      <AxiosConfig/>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

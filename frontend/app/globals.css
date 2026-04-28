@@ -192,7 +192,7 @@ body {
 }
 .faq-icon { font-size:24px; color:var(--peach); flex-shrink:0; transition:transform .25s; }
 .faq-icon.open { transform:rotate(45deg); }
-.faq-body { padding:0 28px; color:var(--muted); line-height:1.7; font-size:15px; overflow:hidden; transition:max-height .4s cubic-bezier(.33,1,.68,1), padding-bottom .3s; }
+.faq-body { padding:0 28px; color:var(--muted); line-height:1.7; font-size:15px; overflow:hidden; transition:max-height .4s cubic-bezier(.33,1,.68,1), padding .3s; }
 
 .test-card { text-align:center; padding:52px 48px; }
 .test-avatar { font-size:64px; margin-bottom:20px; }
@@ -287,4 +287,210 @@ body {
 }
 @media (max-width: 768px) {
   .testimonial-slide { padding: 0; }
+}
+
+@media (max-width: 1200px) {
+  .sec {
+    padding: 80px 40px;
+  }
+  .hero {
+    padding: 100px 40px 60px;
+  }
+}
+
+/* Для планшетов (до 1024px) */
+@media (max-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px;
+  }
+  .contacts-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px;
+  }
+  .slider-wrap {
+    max-width: 100%;
+  }
+  .slide-img {
+    height: 320px;
+  }
+  .hero-title {
+    font-size: clamp(40px, 8vw, 70px);
+  }
+  .hero-subtitle {
+    font-size: 16px;
+    max-width: 90%;
+  }
+  .btn-p, .btn-s {
+    padding: 12px 28px;
+    font-size: 14px;
+  }
+}
+
+/* Для мобильных телефонов (до 768px) */
+@media (max-width: 768px) {
+  .sec {
+    padding: 60px 20px !important;
+  }
+  .hero {
+    padding: 80px 20px 40px !important;
+  }
+  .grid-3,
+  .grid-2,
+  .contacts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  .card {
+    padding: 24px !important;
+  }
+  .hero-badge {
+    font-size: 10px;
+    padding: 6px 16px;
+  }
+  .hero-title {
+    font-size: clamp(32px, 10vw, 48px);
+    margin-bottom: 20px;
+  }
+  .hero-subtitle {
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  .hero-btns {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn-p, .btn-s {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+  .map-wrap {
+    height: 240px;
+  }
+  .slide-img {
+    height: 220px;
+  }
+  .slider-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  .slider-btn-left {
+    left: 8px;
+  }
+  .slider-btn-right {
+    right: 8px;
+  }
+  .test-card {
+    padding: 32px 20px !important;
+  }
+  .test-avatar {
+    font-size: 48px;
+  }
+  .test-text {
+    font-size: 16px;
+  }
+  .faq-q {
+    padding: 16px 20px;
+    font-size: 14px;
+  }
+  .faq-icon {
+    font-size: 20px;
+  }
+  .faq-body {
+    font-size: 13px;
+    padding: 0 20px;
+  }
+  .cl-item {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .cl-day {
+    min-width: 55px;
+    font-size: 10px;
+  }
+  .cl-text {
+    font-size: 13px;
+  }
+  .contact-avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 32px;
+  }
+  .contacts-grid .card {
+    padding: 20px !important;
+  }
+  .footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+    padding: 24px 20px;
+  }
+  .mobile-bar {
+    gap: 20px;
+    padding: 8px 18px;
+  }
+  .mobile-bar button {
+    font-size: 18px;
+  }
+  /* AI-кнопка чуть меньше и правее */
+  .ai-fab {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 24px !important;
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+  /* AI-модалка на всю ширину на телефонах */
+  .ai-modal {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+  }
+}
+
+/* Для очень маленьких экранов (до 480px) */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 28px;
+  }
+  .section-title {
+    font-size: 24px;
+  }
+  .s-label {
+    font-size: 10px;
+  }
+  .hero-badge {
+    font-size: 9px;
+  }
+}
+.checklist-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.checklist-modal {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 24px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+@media (max-width: 768px) {
+  .checklist-modal {
+    max-width: 90%;
+    padding: 20px;
+  }
 }
