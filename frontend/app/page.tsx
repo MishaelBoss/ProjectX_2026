@@ -219,6 +219,53 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Единая инициализация: тема, чек-лист, пользователь, отзывы
+  useEffect(() => {
+    const init = async () => {
+      // 1. Тема из localStorage
+      const savedTheme = localStorage.getItem('hubTheme');
+      if (savedTheme === 'light') setIsDark(false);
+      else if (savedTheme === 'dark') setIsDark(true);
+      else setIsDark(true);
+
+      // 2. Чек-лист из localStorage
+      const savedChecklist = localStorage.getItem('hubChecklistGrouped');
+      if (savedChecklist) {
+        try {
+          const parsed = JSON.parse(savedChecklist);
+          if (Array.isArray(parsed) && parsed.length === checklistGrouped.length) {
+            setChecklistState(parsed);
+          }
+        } catch (e) {}
+      }
+
+      // 3. Пользователь из localStorage
+      const savedUser = localStorage.getItem('hubUser');
+      if (savedUser) {
+        try { setCurrentUser(JSON.parse(savedUser)); } catch {}
+      }
+
+      // 4. Отзывы из API (асинхронно, ждём)
+      try {
+        const reviews = await getReviews();
+        setApiReviews(reviews);
+      } catch (error) {
+        console.error('Failed to load reviews', error);
+      }
+
+      setIsClient(true);
+    };
+    init();
+  }, []);
+
+  // Применение темы при её изменении (только когда клиент готов)
+  useEffect(() => {
+    if (!isClient) return;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('hubTheme', isDark ? 'dark' : 'light');
+  }, [isDark, isClient]);
+
+  // Определение мобильного устройства
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -226,36 +273,7 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  useEffect(() => {
-    setIsClient(true);
-    const saved = localStorage.getItem('hubTheme');
-    if (saved === 'light') setIsDark(false);
-    else if (saved === 'dark') setIsDark(true);
-  }, []);
-
-  useEffect(() => {
-    const loadReviews = async () => {
-      try {
-        const data = await getReviews();
-        setApiReviews(data);
-      } catch (error) {
-        console.error('Failed to load reviews', error);
-      }
-    };
-
-    const savedUser = localStorage.getItem('hubUser');
-    if (savedUser) {
-      try { setCurrentUser(JSON.parse(savedUser)); } catch {}
-    }
-    loadReviews();
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    localStorage.setItem('hubTheme', isDark ? 'dark' : 'light');
-  }, [isDark, isClient]);
-
+  // Прогресс скролла
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
@@ -265,6 +283,7 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Активная секция меню
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }),
@@ -274,6 +293,7 @@ export default function Home() {
     return () => obs.disconnect();
   }, []);
 
+  // Анимация появления элементов
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } }),
@@ -283,19 +303,7 @@ export default function Home() {
     return () => obs.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!isClient) return;
-    const saved = localStorage.getItem('hubChecklistGrouped');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length === checklistGrouped.length) {
-          setChecklistState(parsed);
-        }
-      } catch (e) { }
-    }
-  }, [isClient]);
-
+  // Сохранение чек-листа при изменении
   useEffect(() => {
     if (!isClient) return;
     localStorage.setItem('hubChecklistGrouped', JSON.stringify(checklistState));
@@ -460,7 +468,7 @@ export default function Home() {
         <div className="page-loader">
           <div className="loader-content">
             <div className="cat-loader">
-              <video src='/cat_flying.webm' autoPlay muted loop playsInline style={{ width: '150%', height: '150%', objectFit: 'contain' }} />
+              <video src="/cat_flying.webm" autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               <div className="cat-shadow"></div>
             </div>
             <p className="loader-text">Загружаем космические возможности...</p>
@@ -486,8 +494,9 @@ export default function Home() {
               fontSize: '28px', transition: 'transform 0.2s', overflow: 'hidden',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}>
-            <Image src="/bot-chat.png" alt='bot-chat' width={60} height={50} style={{ objectFit: 'cover' }} />
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <Image src="/bot-chat.png" alt="bot-chat" width={60} height={50} style={{ objectFit: 'cover' }} />
           </button>
 
           {/* AI-модалка */}
@@ -499,7 +508,8 @@ export default function Home() {
               transform: aiOpen ? 'translateY(0)' : 'translateY(100%)',
               transition: 'transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1)',
               display: 'flex', flexDirection: 'column', maxHeight: '80vh', border: '1px solid var(--border)', borderBottom: 'none',
-            }}>
+            }}
+          >
             <div style={{ padding: '16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}>
               <span style={{ fontWeight: 600, fontFamily: 'Unbounded, sans-serif', fontSize: '16px' }}>AI‑помощник</span>
               <button onClick={() => setAiOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }}>✕</button>
