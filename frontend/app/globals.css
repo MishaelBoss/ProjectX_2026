@@ -192,7 +192,7 @@ body {
 }
 .faq-icon { font-size:24px; color:var(--peach); flex-shrink:0; transition:transform .25s; }
 .faq-icon.open { transform:rotate(45deg); }
-.faq-body { padding:0 28px; color:var(--muted); line-height:1.7; font-size:15px; overflow:hidden; transition:max-height .4s cubic-bezier(.33,1,.68,1), padding .3s; }
+.faq-body { padding:0 28px; color:var(--muted); line-height:1.7; font-size:15px; overflow:hidden; transition:max-height .4s cubic-bezier(.33,1,.68,1), padding-bottom .3s; }
 
 .test-card { text-align:center; padding:52px 48px; }
 .test-avatar { font-size:64px; margin-bottom:20px; }

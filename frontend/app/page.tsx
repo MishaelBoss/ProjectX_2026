@@ -159,6 +159,9 @@ export default function Home() {
   const [aiLoading, setAiLoading] = useState(false);
 
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [showVideo, setShowVideo] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const handleVideoEnd = () => setShowVideo(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -556,35 +559,25 @@ export default function Home() {
 
         <div className="anim" style={{ maxWidth:1100, margin:'64px auto 0', width:'100%', padding:'0 60px' }}>
           <div className="map-wrap">
-            <iframe
-              src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617"
-              width="100%" height="100%" style={{ border:0, display:'block' }} allowFullScreen
-            />
+            {showVideo ? (
+              <video
+                ref={videoRef}
+                src="/per.mp4"
+                autoPlay
+                muted
+                playsInline
+                onEnded={handleVideoEnd}
+                style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
+              />
+            ) : (
+              <iframe
+                src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617"
+                width="100%" height="100%" style={{ border:0, display:'block' }} allowFullScreen
+              />
+            )}
           </div>
         </div>
       </section>
-
-      {/* КАРТА С ВИДЕО-ПЕРЕХОДОМ */}
-      <div style={{ padding:'0 60px 60px' }}>
-        <div className="map-wrap">
-          {showVideo ? (
-            <video
-              ref={videoRef}
-              src="/per.mp4"
-              autoPlay
-              muted
-              playsInline
-              onEnded={handleVideoEnd}
-              style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:'24px', display:'block' }}
-            />
-          ) : (
-            <iframe
-              src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617"
-              width="100%" height="100%" style={{ border:0, display:'block', borderRadius:'24px' }} allowFullScreen
-            />
-          )}
-        </div>
-      </div>
 
       {/* ДЕКОР МЕЖДУ HERO И ОФИСОМ */}
       <div style={{ position:'relative', height:0, overflow:'visible', zIndex:10 }}>
@@ -790,7 +783,7 @@ export default function Home() {
           {faqItems.map((item, i) => {
             const isOpen = openFaq === i;
             return (
-              <div className="faq-item anim" key={i} style={{ transitionDelay:`${i*0.04}s` }}>
+              <div className="faq-item" key={i} style={{ transitionDelay:`${i*0.04}s` }}>
                 <div className="faq-q" onClick={() => setOpenFaq(isOpen ? null : i)}>
                   <span>{item.q}</span>
                   <span className={`faq-icon${isOpen ? ' open' : ''}`}>+</span>
@@ -799,7 +792,7 @@ export default function Home() {
                   ref={(el) => { faqRefs.current[i] = el; }}
                   className="faq-body"
                   style={{
-                    maxHeight: isOpen ? `${faqRefs.current[i]?.scrollHeight ?? 300}px` : '0px',
+                    maxHeight: isOpen ? `${faqRefs.current[i]?.scrollHeight ?? 500}px` : '0px',
                     paddingBottom: isOpen ? 22 : 0,
                   }}
                 >
