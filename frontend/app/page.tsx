@@ -587,7 +587,7 @@ export default function Home() {
       </section>
 
       <div style={{ position: 'relative', height: 0, overflow: 'visible', zIndex: 10 }}>
-        <img src="/brandbook/3d-ribbon.png" alt="" style={{ position: 'absolute', right: 60, top: -120, width: 240, opacity: 0.45, pointerEvents: 'none', animation: 'deco-float 12s ease-in-out infinite' }} />
+        <img src="/brandbook/22.png" alt="" style={{ position: 'absolute', right: 60, top: -120, width: 240, opacity: 0.45, pointerEvents: 'none', animation: 'deco-float 12s ease-in-out infinite' }} />
       </div>
 
       <div className="divider-peach" />
@@ -614,7 +614,7 @@ export default function Home() {
 
       <div className="divider-blue" />
       <section id="possibilities" className="sec" style={{ position: 'relative', overflow: 'hidden' }}>
-        <div className="deco" style={{ width: 500, height: 500, top: -100, right: -100, opacity: 0.08, animation: 'deco-spin 60s linear infinite reverse' }}><img src="/brandbook/orbit-sphere.png" alt="" /></div>
+        <div className="deco" style={{ width: 500, height: 500, top: -100, right: -100, opacity: 0.08, animation: 'deco-spin 60s linear infinite reverse' }}><img src="/brandbook/37.png" alt="" /></div>
         <div className="anim" style={{ textAlign: 'center', marginBottom: 64 }}>
           <div className="s-label">Всё для тебя</div>
           <h2 className="s-title">Возможности центра</h2>
