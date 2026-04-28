@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import localFont from 'next/font/local';
 import AxiosConfig from "./components/AxiosConfig";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const sbLight = localFont({
   src: '../public/fonts/SBSansDisplay-Light.ttf',
@@ -21,12 +15,6 @@ const sbSemibold = localFont({
   variable: '--font-sb-semibold',
   weight: '600',
   display: 'swap',
-});
-
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {

@@ -164,6 +164,54 @@ const faqItems = [
   }
 ];
 
+const loyaltyCategories = [
+  {
+    id: 'health', label: '🏋️ Здоровье', items: [
+      { icon:'🏋️', name:'Спортзал (в хабе)', addr:'ул. Костина, 6, 2 этаж', badge:'Бесплатно', desc:'Пн–Пт 12:00–13:00 группы, 07:00–21:00 индивидуально', contact:'Записаться в группу в телеграм' },
+      { icon:'🏊', name:'ФОК', addr:'ул. Октябрьская, 35', badge:'Скидка', desc:'Бассейн для сотрудников со скидкой', contact:'+7 (960) 174-16-67 Светлана' },
+      { icon:'💪', name:'Фитнес-студия Rush', addr:'ул. Костина, 3', badge:'Скидка', desc:'Скидки на посещение студии для сотрудников', contact:'+7 (910) 798-84-54 Ирина' },
+      { icon:'🥇', name:'Gold Fitness', addr:'ул. Казанское шоссе, 11', badge:'Скидка до 22%', desc:'По кодовому слову «СБ». Зависит от срока действия абонемента', contact:'+7 (910) 798-84-54 Ирина' },
+      { icon:'🧘', name:'Fitness House', addr:'ул. Московское шоссе, 4.12', badge:'Скидка 7%', desc:'По кодовому слову «СБ». При покупке бонус: заморозка / 50 мин солярий', contact:'+7 (930) 812-45-59 Катерина' },
+      { icon:'🧠', name:'Психолог', addr:'ул. Костина, 6, 4 этаж', badge:'По записи', desc:'На платформе Пульс → раздел «Психологическая поддержка»', contact:'Пульс → «НН Здоровье»' },
+      { icon:'🏄', name:'SUP-клуб Cristal SUP', addr:'Нижегородская область', badge:'Скидка 15%', desc:'Промокод «ХАБСБЕРА» на все сплавы', contact:'+7 (902) 302-02-88 Игнат' },
+    ]
+  },
+  {
+    id: 'leisure', label: '🎭 Досуг', items: [
+      { icon:'🌌', name:'Планетарий', addr:'пр. Гагарина, 32Б', badge:'Скидка 15%', desc:'По промокоду «ЗИБИНИ» на посещение для сотрудников', contact:'+7 (996) 851-50-54 Анна' },
+      { icon:'📚', name:'Библиотека', addr:'ул. Костина, 6, 3 этаж', badge:'Бесплатно', desc:'Взять книги, заказать или принести свои (буккроссинг)', contact:'Лифтовый холл' },
+      { icon:'🏨', name:'Клубный отель «Акватория»', addr:'пос. Турбаза 3Л', badge:'Скидка 20%', desc:'По промокоду «СБ»', contact:'+7 (915) 938-38-60 Ксения' },
+      { icon:'🏺', name:'Ceramica Lepka', addr:'Варварская 32, 5 этаж', badge:'Скидка 20%', desc:'По промокоду «СберКерамика»', contact:'+7 (920) 293-30-52 Мария' },
+      { icon:'🎵', name:'8 Нот', addr:'Онлайн', badge:'Скидка 200 ₽', desc:'Промокод SBERSTAFF при бронировании музыкально-развлекательной игры на сайте', contact:'8notaquiz.ru' },
+      { icon:'🎓', name:'Онлайн-школа Нины Зверевой', addr:'Онлайн', badge:'Скидка 25%', desc:'На все курсы кроме «Тайны тренера». Промокод «ХАБ»', contact:'zvereva-online.ru' },
+    ]
+  },
+  {
+    id: 'beauty', label: '💅 Красота', items: [
+      { icon:'✂️', name:'Салон красоты', addr:'ул. Октябрьская, 35', badge:'Акции', desc:'Маникюр, ламинирование и окрашивание ресниц, архитектура бровей', contact:'Вступить в группу в телеграм' },
+      { icon:'💐', name:'Цветочный магазин LiLL', addr:'ул. Славянская 35, к.1', badge:'Скидка 10%', desc:'При предъявлении пропуска Сбера', contact:'Группа контакт' },
+      { icon:'💈', name:'Барбершоп «Мужская гармония»', addr:'ул. Белинского, 41', badge:'Скидка 15%', desc:'По промокоду «СБ»', contact:'+7 (953) 552-96-76' },
+      { icon:'🌿', name:'Спа-салон RAVAI SPA', addr:'ул. Б. Покровская, 29', badge:'Скидка 15%', desc:'На все услуги при предъявлении пропуска Сбера', contact:'+7 (953) 552-96-76' },
+    ]
+  },
+  {
+    id: 'care', label: '🛠 Забота', items: [
+      { icon:'👟', name:'Ремонт обуви', addr:'ул. Костина, 6, 2 этаж', badge:'Скидка 15%', desc:'По промокоду «СБ». Мастер сам принесёт и заберёт изделие', contact:'+7 (903) 052-61-29 Виталий' },
+    ]
+  },
+  {
+    id: 'food', label: '🍽 Еда', items: [
+      { icon:'🍱', name:'Вендинг «Обед Store»', addr:'ул. Костина, 6, 3 этаж (лифтовый холл)', badge:'Готовая еда', desc:'Рацион правильного питания в быстром доступе', contact:'kurtsevo.com' },
+      { icon:'☕', name:'Кофейня «Чёртова»', addr:'ул. Рождественская, 32 и ещё 2 точки', badge:'Скидка 10%', desc:'По промокоду «СБ» (произнести на кассе)', contact:'+7 (910) 145-72-78 Дмитрий' },
+      { icon:'🍺', name:'Бар-кафе «Горькая»', addr:'ул. Рождественская, 32', badge:'Скидка 10%', desc:'По промокоду «СБ НН Костина»', contact:'vk.ru/gorkayabar' },
+      { icon:'🍵', name:'Чайная «Горьков чай»', addr:'ул. Б. Покровская, 4, д. 93', badge:'Скидка 10%', desc:'При предъявлении пропуска Сбера', contact:'gorkovchay.ru' },
+      { icon:'🥘', name:'Шаурма у мангала за стеклом', addr:'ул. Костина, 13, к.1', badge:'Скидка 10%', desc:'При заказе от 1500 по промокоду «СБ» (произнести на кассе)', contact:'u-mangala-nn.ru' },
+      { icon:'🍃', name:'Китайский чай', addr:'ул. Рождественская, 185', badge:'Скидка 10%', desc:'На всю продукцию при предъявлении пропуска Сбера', contact:'shoptea.pro' },
+      { icon:'🫙', name:'Городецкая сыроварня «Курцево»', addr:'д. Курцево, 26', badge:'Скидка 15%', desc:'По промокоду «Сбер»', contact:'+7 (906) 361-59-60 Виктория' },
+    ]
+  },
+];
+
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
   const [isClient, setIsClient] = useState(false);
@@ -183,6 +231,7 @@ export default function Home() {
   const [aiMessage, setAiMessage] = useState('');
   const [aiChat, setAiChat] = useState<{ role: 'user' | 'assistant'; text: string }[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>('health');
   // Новая модалка "Оставить вопрос"
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
   const [questionForm, setQuestionForm] = useState({ name: '', contact: '', text: '' });
@@ -510,7 +559,7 @@ export default function Home() {
         setReviewSubmitted(false);
         setReviewModalOpen(false);
         setReviewForm({ rating: 5, text: '' });
-      }, 2000);
+      }, 2500);
     } catch (error) {
       setAuthError('Ошибка отправки отзыва');
     }
@@ -788,21 +837,91 @@ export default function Home() {
         <div className="divider-peach" />
         <section id="life" className="sec sec-alt">
           <div className="anim" style={{ textAlign: 'center', marginBottom: 64 }}>
-            <div className="s-label">Мероприятия</div>
+            <div className="s-label">Программа лояльности</div>
             <h2 className="s-title">Жизнь внутри центра</h2>
-            <p className="s-sub" style={{ maxWidth: 500, margin: '14px auto 0' }}>Не только работа — каждую неделю что-то интересное</p>
+            <p className="s-sub" style={{ maxWidth: 500, margin: '14px auto 0' }}>Скидки и бонусы для сотрудников ХАБа — просто покажи пропуск Сбера</p>
           </div>
-          <div className="grid-2">
-            {lifeEvents.map((ev, i) => (
-              <div className="card anim" key={i} style={{ transitionDelay: `${i * 0.08}s` }}>
-                <div style={{ fontSize: 48, marginBottom: 20 }}>{ev.emoji}</div>
-                <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 12 }}>{ev.title}</h3>
-                <p style={{ color: 'var(--muted)', lineHeight: 1.65, fontSize: 14 }}>{ev.desc}</p>
-              </div>
+          <div style={{ display:'flex', gap:10, flexWrap:'wrap', justifyContent:'center', marginBottom:36 }}>
+            {loyaltyCategories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                style={{
+                  display:'flex', alignItems:'center', gap:8,
+                  padding:'10px 22px', borderRadius:100, fontSize:13, fontWeight:700,
+                  cursor:'pointer', transition:'all .25s', border:'1px solid',
+                  borderColor: activeCategory === cat.id ? 'rgba(244,165,130,.6)' : 'rgba(255,255,255,.1)',
+                  background: activeCategory === cat.id ? 'rgba(244,165,130,.15)' : 'rgba(255,255,255,.04)',
+                  color: activeCategory === cat.id ? '#f4a582' : 'rgba(240,238,248,.55)',
+                  fontFamily:'Manrope,sans-serif',
+                }}
+              >
+                {cat.label}
+              </button>
             ))}
           </div>
-          <div style={{ textAlign: 'center', marginTop: 48 }}>
-            <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">Записаться через бот →</a>
+          {/* ── Карточки активной категории ── */}
+          <div
+            key={activeCategory}
+            style={{
+              display:'grid',
+              gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))',
+              gap:20,
+              maxWidth:1100,
+              margin:'0 auto',
+              animation:'fadeInUp .35s ease',
+            }}
+          >
+            {loyaltyCategories
+              .find(c => c.id === activeCategory)?.items
+              .map((item, i) => (
+                <div
+                  key={i}
+                  className="card"
+                  style={{ display:'flex', flexDirection:'column', gap:12, padding:24 }}>
+                  {/* Шапка */}
+                  <div style={{ display:'flex', alignItems:'flex-start', gap:14 }}>
+                    <span style={{ fontSize:36, flexShrink:0 }}>{item.icon}</span>
+                    <div>
+                      <div style={{ fontSize:15, fontWeight:700, lineHeight:1.3 }}>{item.name}</div>
+                      <div style={{ fontSize:12, color:'var(--muted)', marginTop:3 }}>📍 {item.addr}</div>
+                    </div>
+                  </div>
+                  {/* Бейдж скидки */}
+                  <div style={{
+                    display:'inline-flex', alignItems:'center', gap:6,
+                    padding:'5px 14px', borderRadius:100, fontSize:12, fontWeight:700,
+                    background:'rgba(244,165,130,.12)', border:'1px solid rgba(244,165,130,.35)',
+                    color:'#f4a582', width:'fit-content',
+                  }}>
+                    🎁 {item.badge}
+                  </div>
+                  {/* Описание */}
+                  <p style={{ fontSize:13, color:'var(--muted)', lineHeight:1.6, flex:1 }}>{item.desc}</p>
+                  {/* Контакт */}
+                  <div style={{ fontSize:12, color:'#5bc8f5', fontWeight:600 }}>📞 {item.contact}</div>
+                </div>
+              ))
+            }
+          </div>
+          {/* Ивенты */}
+          <div style={{ maxWidth:1100, margin:'48px auto 0' }}>
+            <div style={{ textAlign:'center', marginBottom:28 }}>
+              <div className="s-label">Мероприятия</div>
+              <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:24, fontWeight:700 }}>Каждую неделю — что-то новое</h3>
+            </div>
+            <div className="grid-2">
+              {lifeEvents.map((ev, i) => (
+                <div className="card anim" key={i} style={{ transitionDelay:`${i*0.08}s` }}>
+                  <div style={{ fontSize:48, marginBottom:16 }}>{ev.emoji}</div>
+                  <h3 style={{ fontFamily:'Unbounded,sans-serif', fontSize:17, fontWeight:700, marginBottom:10 }}>{ev.title}</h3>
+                  <p style={{ color:'var(--muted)', lineHeight:1.65, fontSize:14 }}>{ev.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign:'center', marginTop:36 }}>
+              <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот</a>
+            </div>
           </div>
         </section>
 
@@ -1065,7 +1184,11 @@ export default function Home() {
         <div className={`modal-ov${reviewModalOpen ? ' open' : ''}`} onClick={() => setReviewModalOpen(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
             {reviewSubmitted ? (
-              <div style={{ textAlign: 'center', padding: '20px 0' }}><div style={{ fontSize: 56, marginBottom: 16 }}>❤️</div><h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Спасибо за отзыв!</h3><p style={{ color: 'var(--muted)' }}>Ваше мнение очень важно для нас.</p></div>
+              <div style={{ textAlign: 'center', padding: '20px 0' }}><div style={{ fontSize: 56, marginBottom: 16 }}>
+                <video src="/sber_cat_loves.webm" autoPlay muted loop playsInline style={{ width: '50%', height: '50%', objectFit: 'contain' }}/>
+              </div>
+              <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Спасибо за отзыв!</h3>
+              <p style={{ color: 'var(--muted)' }}>Ваше мнение очень важно для нас.</p></div>
             ) : (
               <>
                 <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Оставить отзыв</h3>
