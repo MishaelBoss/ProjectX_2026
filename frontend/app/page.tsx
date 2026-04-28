@@ -564,6 +564,28 @@ export default function Home() {
         </div>
       </section>
 
+      {/* КАРТА С ВИДЕО-ПЕРЕХОДОМ */}
+      <div style={{ padding:'0 60px 60px' }}>
+        <div className="map-wrap">
+          {showVideo ? (
+            <video
+              ref={videoRef}
+              src="/per.mp4"
+              autoPlay
+              muted
+              playsInline
+              onEnded={handleVideoEnd}
+              style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:'24px', display:'block' }}
+            />
+          ) : (
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617"
+              width="100%" height="100%" style={{ border:0, display:'block', borderRadius:'24px' }} allowFullScreen
+            />
+          )}
+        </div>
+      </div>
+
       {/* ДЕКОР МЕЖДУ HERO И ОФИСОМ */}
       <div style={{ position:'relative', height:0, overflow:'visible', zIndex:10 }}>
         <img
