@@ -571,7 +571,7 @@ export default function Home() {
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="#possibilities" className="btn-p" onClick={(e) => { e.preventDefault(); scrollTo('possibilities'); }}>Исследовать →</a>
             <a href="#booking" className="btn-s" onClick={(e) => { e.preventDefault(); setBookingModalOpen(true); }}>Забронировать</a>
-            <button onClick={() => { if (!currentUser) setAuthModalOpen('login'); else setReviewModalOpen(true); }} className="btn-s" style={{ marginLeft: '8px' }}>📝 Оставить отзыв</button>
+            <button onClick={() => { if (!currentUser) setAuthModalOpen('login'); else setReviewModalOpen(true); }} className="btn-s" style={{ marginLeft: '8px' }}>Оставить отзыв</button>
           </div>
         </div>
 
@@ -659,7 +659,7 @@ export default function Home() {
           ))}
         </div>
         <div style={{ textAlign: 'center', marginTop: 48 }}>
-          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот →</a>
+          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">Записаться через бот →</a>
         </div>
       </section>
 
