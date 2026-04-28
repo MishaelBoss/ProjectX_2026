@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
-import { createReview, getReviews, login, register } from './lib/api';
+import { createReview, getReviews, login, register, sendQuestion } from './lib/api';
 import { Review } from './types/review.types';
 
 function ThemeSwitcher({ isDark, onToggle }: { isDark: boolean; onToggle: () => void }) {
@@ -183,6 +183,10 @@ export default function Home() {
   const [aiMessage, setAiMessage] = useState('');
   const [aiChat, setAiChat] = useState<{ role: 'user' | 'assistant'; text: string }[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
+  // Новая модалка "Оставить вопрос"
+  const [questionModalOpen, setQuestionModalOpen] = useState(false);
+  const [questionForm, setQuestionForm] = useState({ name: '', contact: '', text: '' });
+  const [questionSubmitted, setQuestionSubmitted] = useState(false);
 
   // Auth & Review states
   const [authModalOpen, setAuthModalOpen] = useState<'login' | 'register' | null>(null);
@@ -210,25 +214,131 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const handleVideoEnd = () => setShowVideo(false);
 
+  const [isSending, setIsSending] = useState(false); 
+
   const [isLoadingPage, setIsLoadingPage] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoadingPage(false);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
+  // Автопереключение слайдов для офиса
+  const autoSlideInterval = useRef<NodeJS.Timeout | null>(null);
+  const startAutoSlide = () => {
+    if (autoSlideInterval.current) clearInterval(autoSlideInterval.current);
+    autoSlideInterval.current = setInterval(() => {
+      setOfficeIdx((prev) => (prev + 1) % officePhotos.length);
+    }, 3000);
+  };
+  const stopAutoSlide = () => {
+    if (autoSlideInterval.current) clearInterval(autoSlideInterval.current);
+    autoSlideInterval.current = null;
+  };
+  // Автопереключение для отзывов (комбинированные: api + статические)
+  const testimonialTotal = apiReviews.length + testimonials.length;
+  const autoTestimonialInterval = useRef<NodeJS.Timeout | null>(null);
+  const startAutoTestimonial = () => {
+    if (autoTestimonialInterval.current) clearInterval(autoTestimonialInterval.current);
+    autoTestimonialInterval.current = setInterval(() => {
+      setTestimonialIdx((prev) => (prev + 1) % testimonialTotal);
+    }, 4000);
+  };
+  const stopAutoTestimonial = () => {
+    if (autoTestimonialInterval.current) clearInterval(autoTestimonialInterval.current);
+    autoTestimonialInterval.current = null;
+  };
 
-  // Единая инициализация: тема, чек-лист, пользователь, отзывы
+  // Запускаем автопрокрутку после загрузки данных
+  useEffect(() => {
+    if (!isLoadingPage) {
+      startAutoSlide();
+      startAutoTestimonial();
+    }
+    return () => {
+      stopAutoSlide();
+      stopAutoTestimonial();
+    };
+  }, [isLoadingPage, apiReviews.length]);
+
+  // При ручном переключении слайдов – сброс таймера
+  const handleOfficeManual = (newIdx: number) => {
+    setOfficeIdx(newIdx);
+    stopAutoSlide();
+    startAutoSlide();
+  };
+  const handleTestimonialManual = (newIdx: number) => {
+    setTestimonialIdx(newIdx);
+    stopAutoTestimonial();
+    startAutoTestimonial();
+  };
+
+  // AI агент – расширенный ответ на базовые вопросы
+  const getAiResponse = (question: string): string => {
+    const q = question.toLowerCase();
+    if (q.includes('спортзал') || q.includes('тренажер') || q.includes('зал')) {
+      return 'Спортзал открыт ежедневно с 07:00 до 21:00, вход свободный. Есть беговые дорожки, велотренажёры, силовая рама, гантели до 50 кг, раздевалки и душевые.';
+    }
+    if (q.includes('бронировать') || q.includes('переговорная') || q.includes('коворкинг')) {
+      return 'Забронировать переговорную или коворкинг можно через внутренний портал или у Ирины Кузнецовой в Telegram: @irina_booking.';
+    }
+    if (q.includes('адаптация') || q.includes('новичок') || q.includes('первый день')) {
+      return 'Адаптация длится 1 неделю. За вами закрепят бадди-наставника. Необходимо пройти инструктажи и заполнить анкету новичка.';
+    }
+    if (q.includes('мероприятие') || q.includes('мастер-класс') || q.includes('дегустация')) {
+      return 'Расписание мероприятий публикуется в канале «Hub События» каждый понедельник. Запись через бот @HubEventMatch_bot.';
+    }
+    if (q.includes('лояльность') || q.includes('бонус')) {
+      return 'Программа лояльности даёт скидки у партнёров и бонусы за активность. Подробнее на внутреннем портале.';
+    }
+    if (q.includes('обед') || q.includes('кушать') || q.includes('столовая')) {
+      return 'Обед — 50 минут. В столовой горячие обеды с 12:00 до 14:00. Есть микроволновки, холодильник, кофемашина.';
+    }
+    if (q.includes('печать') || q.includes('канцтовары')) {
+      return 'Бесплатная печать до 20 страниц в день в зоне коворкинга. Канцтовары можно взять на ресепшене.';
+    }
+    return 'Я AI-помощник хаба. Напишите свой вопрос подробнее, или обратитесь к нашим контактам в разделе "К кому обратиться".';
+  };
+
+  const handleAiSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiMessage.trim()) return;
+    const userMsg = aiMessage.trim();
+    setAiChat(prev => [...prev, { role: 'user', text: userMsg }]);
+    setAiMessage('');
+    setAiLoading(true);
+    setTimeout(() => {
+      const answer = getAiResponse(userMsg);
+      setAiChat(prev => [...prev, { role: 'assistant', text: answer }]);
+      setAiLoading(false);
+    }, 800);
+  };
+
+  // Обработка формы вопроса
+  const handleQuestionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSending) return;
+
+    setIsSending(true);
+    try {
+        await sendQuestion(questionForm);
+        setQuestionSubmitted(true);
+        setTimeout(() => {
+            setQuestionSubmitted(false);
+            setQuestionModalOpen(false);
+            setQuestionForm({ name: '', contact: '', text: '' });
+        }, 2500);
+    } catch (err: any) {
+        console.error(err);
+        alert(err.response?.data?.error || 'Не удалось отправить вопрос. Попробуйте позже.');
+    } finally {
+        setIsSending(false);
+    }
+  };
+
+  // Единая инициализация
   useEffect(() => {
     const init = async () => {
-      // 1. Тема из localStorage
       const savedTheme = localStorage.getItem('hubTheme');
       if (savedTheme === 'light') setIsDark(false);
       else if (savedTheme === 'dark') setIsDark(true);
       else setIsDark(true);
 
-      // 2. Чек-лист из localStorage
       const savedChecklist = localStorage.getItem('hubChecklistGrouped');
       if (savedChecklist) {
         try {
@@ -239,13 +349,11 @@ export default function Home() {
         } catch (e) {}
       }
 
-      // 3. Пользователь из localStorage
       const savedUser = localStorage.getItem('hubUser');
       if (savedUser) {
         try { setCurrentUser(JSON.parse(savedUser)); } catch {}
       }
 
-      // 4. Отзывы из API (асинхронно, ждём)
       try {
         const reviews = await getReviews();
         setApiReviews(reviews);
@@ -254,18 +362,19 @@ export default function Home() {
       }
 
       setIsClient(true);
+      
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      setIsLoadingPage(false);
     };
     init();
   }, []);
 
-  // Применение темы при её изменении (только когда клиент готов)
   useEffect(() => {
     if (!isClient) return;
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     localStorage.setItem('hubTheme', isDark ? 'dark' : 'light');
   }, [isDark, isClient]);
 
-  // Определение мобильного устройства
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -273,7 +382,6 @@ export default function Home() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Прогресс скролла
   useEffect(() => {
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
@@ -283,7 +391,6 @@ export default function Home() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Активная секция меню
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) setActiveSection(e.target.id); }),
@@ -293,7 +400,6 @@ export default function Home() {
     return () => obs.disconnect();
   }, []);
 
-  // Анимация появления элементов
   useEffect(() => {
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } }),
@@ -303,7 +409,6 @@ export default function Home() {
     return () => obs.disconnect();
   }, []);
 
-  // Сохранение чек-листа при изменении
   useEffect(() => {
     if (!isClient) return;
     localStorage.setItem('hubChecklistGrouped', JSON.stringify(checklistState));
@@ -339,22 +444,6 @@ export default function Home() {
       if (p < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
-  };
-
-  const handleAiSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!aiMessage.trim()) return;
-    const userMsg = aiMessage.trim();
-    setAiChat(prev => [...prev, { role: 'user', text: userMsg }]);
-    setAiMessage('');
-    setAiLoading(true);
-    setTimeout(() => {
-      setAiChat(prev => [...prev, {
-        role: 'assistant',
-        text: `Спасибо за вопрос! Я AI-помощник хаба. Отвечу так: «${userMsg}». Обратитесь также к нашим контактам в разделе "К кому обратиться".`
-      }]);
-      setAiLoading(false);
-    }, 1000);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -464,512 +553,602 @@ export default function Home() {
 
   return (
     <>
-      {isLoadingPage ? (
-        <div className="page-loader">
-          <div className="loader-content">
-            <div className="cat-loader">
-              <video src="/cat_flying.webm" autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-              <div className="cat-shadow"></div>
+      {isLoadingPage && (
+        <div className="page-loader" style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 9999,
+          background: 'var(--bg)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <div className="loader-content" style={{ textAlign: 'center' }}>
+            <div className="cat-loader" style={{ width: '180px', height: '180px', margin: '0 auto 24px' }}>
+              <video 
+                src="/cat_flying.webm" 
+                autoPlay 
+                muted 
+                loop 
+                playsInline 
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+              />
             </div>
-            <p className="loader-text">Загружаем космические возможности...</p>
+            <p className="loader-text" style={{ color: 'var(--text)', fontSize: '18px' }}>
+              Загружаем космические возможности...
+            </p>
           </div>
         </div>
-      ) : (
-        <>
-          {/* AI‑Оверлей */}
-          {aiOpen && (
-            <div
-              onClick={() => setAiOpen(false)}
-              style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 102, transition: 'opacity 0.3s' }}
-            />
-          )}
+      )}
 
-          {/* Плавающая кнопка AI */}
-          <button
-            onClick={() => setAiOpen(true)}
-            style={{
-              position: 'fixed', bottom: '24px', right: '24px', width: '56px', height: '56px', borderRadius: '50%',
-              background: 'linear-gradient(135deg, var(--peach), var(--pink))', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-              border: 'none', cursor: 'pointer', zIndex: 103, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '28px', transition: 'transform 0.2s', overflow: 'hidden',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
-          >
-            <Image src="/bot-chat.png" alt="bot-chat" width={60} height={50} style={{ objectFit: 'cover' }} />
-          </button>
-
-          {/* AI-модалка */}
+      <div style={{
+        opacity: isLoadingPage ? 0 : 1,
+        transition: 'opacity 0.8s ease',
+        pointerEvents: isLoadingPage ? 'none' : 'auto',
+      }}>
+        {/* AI‑Оверлей */}
+        {aiOpen && (
           <div
-            style={{
-              position: 'fixed', bottom: 0, right: 0, left: 'auto', width: 'min(90%, 400px)',
-              backgroundColor: 'var(--bg3)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px',
-              boxShadow: '0 -4px 30px rgba(0,0,0,0.3)', zIndex: 104,
-              transform: aiOpen ? 'translateY(0)' : 'translateY(100%)',
-              transition: 'transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1)',
-              display: 'flex', flexDirection: 'column', maxHeight: '80vh', border: '1px solid var(--border)', borderBottom: 'none',
-            }}
-          >
-            <div style={{ padding: '16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}>
-              <span style={{ fontWeight: 600, fontFamily: 'Unbounded, sans-serif', fontSize: '16px' }}>AI‑помощник</span>
-              <button onClick={() => setAiOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }}>✕</button>
-            </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '60vh' }}>
-              {aiChat.length === 0 && (
-                <div style={{ color: 'var(--muted)', textAlign: 'center', fontSize: '14px', padding: '20px 0' }}>
-                  Задайте вопрос о хабе, мероприятиях, бронировании и т.д.
-                </div>
-              )}
-              {aiChat.map((msg, idx) => (
-                <div key={idx} style={{
-                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                  background: msg.role === 'user' ? 'linear-gradient(135deg, var(--peach), var(--pink))' : 'var(--card)',
-                  color: msg.role === 'user' ? '#12001a' : 'var(--text)',
-                  padding: '10px 14px', borderRadius: '18px', maxWidth: '85%', fontSize: '14px', wordBreak: 'break-word',
-                  border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none',
-                }}>{msg.text}</div>
-              ))}
-              {aiLoading && <div style={{ alignSelf: 'flex-start', background: 'var(--card)', padding: '10px 14px', borderRadius: '18px', fontSize: '14px', color: 'var(--muted)' }}>Печатает...</div>}
-            </div>
-            <form onSubmit={handleAiSend} style={{ padding: '16px', borderTop: '1px solid var(--border)', display: 'flex', gap: '12px', background: 'var(--bg2)' }}>
-              <input type="text" placeholder="Спросите что-нибудь..." value={aiMessage} onChange={(e) => setAiMessage(e.target.value)} style={{ flex: 1, padding: '10px 16px', borderRadius: '100px', border: '1px solid var(--border)', background: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', outline: 'none' }} />
-              <button type="submit" disabled={aiLoading} style={{ background: 'linear-gradient(135deg, var(--peach), var(--pink))', border: 'none', borderRadius: '100px', padding: '0 20px', fontWeight: 600, cursor: 'pointer', color: '#12001a' }}>Отправить</button>
-            </form>
+            onClick={() => setAiOpen(false)}
+            style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 102, transition: 'opacity 0.3s' }}
+          />
+        )}
+
+        {/* Плавающая кнопка AI */}
+        <button
+          onClick={() => setAiOpen(true)}
+          style={{
+            position: 'fixed', bottom: '24px', right: '24px', width: '56px', height: '56px', borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--peach), var(--pink))', boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            border: 'none', cursor: 'pointer', zIndex: 103, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '28px', transition: 'transform 0.2s', overflow: 'hidden',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          <Image src="/bot-chat.png" alt="bot-chat" width={60} height={50} style={{ objectFit: 'cover' }} />
+        </button>
+
+        {/* AI-модалка */}
+        <div
+          style={{
+            position: 'fixed', bottom: 0, right: 0, left: 'auto', width: 'min(90%, 400px)',
+            backgroundColor: 'var(--bg3)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px',
+            boxShadow: '0 -4px 30px rgba(0,0,0,0.3)', zIndex: 104,
+            transform: aiOpen ? 'translateY(0)' : 'translateY(100%)',
+            transition: 'transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1)',
+            display: 'flex', flexDirection: 'column', maxHeight: '80vh', border: '1px solid var(--border)', borderBottom: 'none',
+          }}
+        >
+          <div style={{ padding: '16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}>
+            <span style={{ fontWeight: 600, fontFamily: 'Unbounded, sans-serif', fontSize: '16px' }}>AI‑помощник</span>
+            <button onClick={() => setAiOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }}>✕</button>
           </div>
-
-          <div className="progress"><div className="progress-fill" style={{ height: `${scrollProgress}%` }} /></div>
-
-          <nav className="nav">
-            <a href="#hero" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }} className="nav-logo">ХАБ</a>
-            <ul className="nav-links">
-              {navLinks.map((l) => (
-                <li key={l.id}><a href={`#${l.id}`} className={activeSection === l.id ? 'act' : ''} onClick={(e) => { e.preventDefault(); scrollTo(l.id); }}>{l.label}</a></li>
-              ))}
-            </ul>
-            <div className="nav-right">
-              <ThemeSwitcher isDark={isDark} onToggle={() => setIsDark((p) => !p)} />
-              {currentUser ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)', padding: '9px 16px', background: 'rgba(244,165,130,0.1)', borderRadius: '100px', border: '1px solid rgba(244,165,130,0.3)' }}>👤 {currentUser.name}</span>
-                  <button onClick={() => { setCurrentUser(null); localStorage.removeItem('hubUser'); }} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 16px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--muted)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}>Выйти</button>
-                </div>
-              ) : (
-                <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 22px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--text)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}>Войти</button>
-              )}
-              <a href="#booking" className="nav-cta" onClick={(e) => { e.preventDefault(); setBookingModalOpen(true); }}>Забронировать</a>
-            </div>
-          </nav>
-
-          <div className="mobile-bar">
-            {[
-              { id: 'hero', ico: '🏠' }, { id: 'possibilities', ico: '⚡' }, { id: 'checklist', ico: '✅' }, { id: 'contacts', ico: '👥' }, { id: 'faq', ico: '❓' },
-            ].map((b) => (
-              <button key={b.id} className={activeSection === b.id ? 'act' : ''} onClick={() => scrollTo(b.id)}>{b.ico}</button>
-            ))}
-          </div>
-
-          <section id="hero" className="sec" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-              <div style={{ position: 'absolute', width: 600, height: 600, top: -150, right: -150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(244,165,130,0.18) 0%, transparent 70%)', filter: 'blur(70px)', animation: 'float1 12s ease-in-out infinite' }} />
-              <div style={{ position: 'absolute', width: 500, height: 500, bottom: -80, left: -100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(232,96,154,0.15) 0%, transparent 70%)', filter: 'blur(70px)', animation: 'float2 16s ease-in-out infinite' }} />
-              <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {[320, 560, 800].map((size, i) => (
-                  <div key={i} style={{ position: 'absolute', width: size, height: size, borderRadius: '50%', border: `1px solid rgba(244,165,130,${0.12 - i * 0.03})`, animation: `spin${i + 1} ${30 + i * 20}s linear infinite${i % 2 === 1 ? ' reverse' : ''}` }} />
-                ))}
-              </div>
-              <div className="deco" style={{ width: 420, height: 420, top: '5%', right: '-80px', opacity: 0.55, animation: 'deco-float 10s ease-in-out infinite' }}><img src="/brandbook/20.png" alt="" /></div>
-              <div className="deco" style={{ width: 320, height: 320, bottom: '10%', left: '-60px', opacity: 0.2, animation: 'deco-spin 40s linear infinite' }}><img src="/brandbook/22.png" alt="" /></div>
-              <div className="deco" style={{ width: 180, height: 180, top: '12%', left: '8%', opacity: 0.22, animation: 'deco-float 14s ease-in-out infinite 2s' }}><img src="/brandbook/34.png" alt="" /></div>
-              <div className="deco" style={{ width: 80, height: 80, top: '18%', right: '18%', opacity: 0.28, animation: 'deco-float 8s ease-in-out infinite 1s' }}><img src="/brandbook/16.png" alt="" /></div>
-              <div className="deco" style={{ width: 420, height: 420, top: '18%', right: '-60px', opacity: 0.75, animation: 'deco-float 11s ease-in-out infinite', zIndex: 2 }}><img src="/brandbook/IMG_0339.png" alt="Котик-астронавт" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /></div>
-              <div className="deco" style={{ width: 580, height: 580, top: '-120px', left: '50%', transform: 'translateX(-50%)', opacity: 0.22, animation: 'deco-spin 75s linear infinite', zIndex: 1 }}><img src="/brandbook/33.png" alt="Космическая планета" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /></div>
-            </div>
-
-            <style>{`
-              @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-35px,35px)} }
-              @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(28px,-28px)} }
-              @keyframes spin1 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-              @keyframes spin2 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-              @keyframes spin3 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-            `}</style>
-
-            <div className="anim" style={{ textAlign: 'center', maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-              <div className="hero-badge"><div className="badge-dot" /> 📍 ул. Костина, 6 · Нижний Новгород</div>
-              <h1 className="hero-title">ХАБ<br /><span className="hero-grad">новых возможностей</span></h1>
-              <p style={{ fontSize: 18, color: 'var(--muted)', lineHeight: 1.75, maxWidth: 560, margin: '0 auto 48px' }}>Мы запускаем проекты для развития региона. Современные технологии, инновационные сервисы и комфортное пространство — всё здесь.</p>
-              <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <a href="#possibilities" className="btn-p" onClick={(e) => { e.preventDefault(); scrollTo('possibilities'); }}>Исследовать →</a>
-                <a href="#booking" className="btn-s" onClick={(e) => { e.preventDefault(); setBookingModalOpen(true); }}>Забронировать</a>
-                <button onClick={() => { if (!currentUser) setAuthModalOpen('login'); else setReviewModalOpen(true); }} className="btn-s" style={{ marginLeft: '8px' }}>Оставить отзыв</button>
-              </div>
-            </div>
-
-            <div className="anim" style={{ maxWidth: 1100, margin: '64px auto 0', width: '100%', padding: '0 60px' }}>
-              <div className="map-wrap">
-                {showVideo ? (
-                  <video ref={videoRef} src="/per.mp4" autoPlay muted playsInline onEnded={handleVideoEnd} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                ) : (
-                  <iframe src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617" width="100%" height="100%" style={{ border: 0, display: 'block' }} allowFullScreen />
-                )}
-              </div>
-            </div>
-          </section>
-
-          <div style={{ position: 'relative', height: 0, overflow: 'visible', zIndex: 10 }}>
-            <img src="/brandbook/22.png" alt="" style={{ position: 'absolute', right: 60, top: -120, width: 240, opacity: 0.45, pointerEvents: 'none', animation: 'deco-float 12s ease-in-out infinite' }} />
-          </div>
-
-          <div className="divider-peach" />
-          <section id="office" className="sec sec-alt">
-            <div className="anim" style={{ textAlign: 'center', marginBottom: 56 }}>
-              <div className="s-label">Пространство</div>
-              <h2 className="s-title">Офис Сбера на Костина, 6</h2>
-              <p className="s-sub" style={{ maxWidth: 520, margin: '14px auto 0' }}>Современные интерьеры, комфортные зоны для работы и отдыха</p>
-            </div>
-            <div className="slider-wrap anim">
-              <div style={{ position: 'relative', borderRadius: 24, overflow: 'hidden' }}>
-                <img className="slide-img" src={officePhotos[officeIdx].url} alt={officePhotos[officeIdx].title} />
-                <div className="slide-caption">{officePhotos[officeIdx].title}</div>
-              </div>
-              <button className="sl-btn sl-l" onClick={() => setOfficeIdx((p) => (p - 1 + officePhotos.length) % officePhotos.length)}>←</button>
-              <button className="sl-btn sl-r" onClick={() => setOfficeIdx((p) => (p + 1) % officePhotos.length)}>→</button>
-              <div className="dots">
-                {officePhotos.map((_, i) => (
-                  <div key={i} className={`dot ${i === officeIdx ? 'act' : ''}`} onClick={() => setOfficeIdx(i)} />
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <div className="divider-blue" />
-          <section id="possibilities" className="sec" style={{ position: 'relative', overflow: 'hidden' }}>
-            <div className="deco" style={{ width: 500, height: 500, top: -100, right: -100, opacity: 0.08, animation: 'deco-spin 60s linear infinite reverse' }}><img src="/brandbook/37.png" alt="" /></div>
-            <div className="anim" style={{ textAlign: 'center', marginBottom: 64 }}>
-              <div className="s-label">Всё для тебя</div>
-              <h2 className="s-title">Возможности центра</h2>
-            </div>
-            <div className="grid-3">
-              {[
-                { img: 'sber_present.png', name: 'Программа лояльности', desc: 'Бонусы, скидки у партнёров и приоритетное бронирование за активность' },
-                { img: 'sber_food.png', name: 'Снеки и напитки', desc: 'Бесплатный кофе, фрукты, яблоки, груши, сливы каждый день' },
-                { img: 'sber_rest.png', name: 'Массажное кресло', desc: 'Relax-зона с профессиональными массажными креслами' },
-                { img: 'sber_man_sport.png', name: 'Спортзал', desc: 'Открыт 07:00–21:00, современное оборудование, душевые' },
-                { img: 'sber_suitcase.png', name: 'Коворкинг', desc: 'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
-                { img: 'sber_books.png', name: 'Обучение', desc: 'Мастер-классы, тренинги, курсы на Пульсе — постоянный рост' },
-                { img: 'sber_a_man_is_resting_in_a_chair.png', name: 'Удобное расположение', desc: 'Центр города, рядом с метро Горьковская' },
-                { img: 'sber_printer.png', name: 'Печать и канцтовары', desc: 'Цветной МФУ в коворкинге, всё необходимое на ресепшене' },
-              ].map((f, i) => (
-                <div className="card anim" key={i} style={{ transitionDelay: `${i * 0.06}s` }}>
-                  <img src={f.img} alt={f.name} style={{ width: 48, height: 48, objectFit: 'contain', marginBottom: 20, display: 'block' }} />
-                  <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontSize: 16, fontWeight: 700, marginBottom: 10 }}>{f.name}</h3>
-                  <p style={{ color: 'var(--muted)', lineHeight: 1.6, fontSize: 14 }}>{f.desc}</p>
-                </div>
-              ))}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 52 }}>
-              <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную →</button>
-            </div>
-          </section>
-
-          <div className="divider-peach" />
-          <section id="life" className="sec sec-alt">
-            <div className="anim" style={{ textAlign: 'center', marginBottom: 64 }}>
-              <div className="s-label">Мероприятия</div>
-              <h2 className="s-title">Жизнь внутри центра</h2>
-              <p className="s-sub" style={{ maxWidth: 500, margin: '14px auto 0' }}>Не только работа — каждую неделю что-то интересное</p>
-            </div>
-            <div className="grid-2">
-              {lifeEvents.map((ev, i) => (
-                <div className="card anim" key={i} style={{ transitionDelay: `${i * 0.08}s` }}>
-                  <div style={{ fontSize: 48, marginBottom: 20 }}>{ev.emoji}</div>
-                  <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 12 }}>{ev.title}</h3>
-                  <p style={{ color: 'var(--muted)', lineHeight: 1.65, fontSize: 14 }}>{ev.desc}</p>
-                </div>
-              ))}
-            </div>
-            <div style={{ textAlign: 'center', marginTop: 48 }}>
-              <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">Записаться через бот →</a>
-            </div>
-          </section>
-
-          <div className="divider-blue" />
-          <section id="testimonials" className="sec">
-            <div className="anim" style={{ textAlign: 'center', marginBottom: 16 }}>
-              <div className="s-label">Что говорят</div>
-              <h2 className="s-title">Отзывы сотрудников</h2>
-              <div style={{ fontSize: 28, color: '#f59e0b', marginTop: 16 }}>★★★★★ <span style={{ color: 'var(--muted)', fontSize: 18 }}>5.0 / 5</span></div>
-            </div>
-
-            <div className="testimonial-slider">
-              <div className="testimonial-track" style={{ transform: `translateX(-${testimonialIdx * 100}%)` }}>
-                {[...apiReviews.map(r => ({ name: r.author_name, role: 'Сотрудник', text: r.text, avatar: '👤' })), ...testimonials].map((t, idx) => (
-                  <div className="testimonial-slide" key={idx}>
-                    <div className="card test-card" style={{ margin: 0, width: '100%' }}>
-                      <div className="test-avatar">{t.avatar}</div>
-                      <p className="test-text">«{t.text}»</p>
-                      <div className="test-stars">★★★★★</div>
-                      <h4 style={{ fontFamily: 'Unbounded,sans-serif', fontSize: 16, fontWeight: 700 }}>{t.name}</h4>
-                      <p style={{ color: 'var(--muted)', marginTop: 6 }}>{t.role}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <button className="sl-btn sl-l" onClick={() => setTestimonialIdx((p) => (p - 1 + (apiReviews.length + testimonials.length)) % (apiReviews.length + testimonials.length))}>←</button>
-              <button className="sl-btn sl-r" onClick={() => setTestimonialIdx((p) => (p + 1) % (apiReviews.length + testimonials.length))}>→</button>
-              <div className="dots">
-                {[...apiReviews, ...testimonials].map((_, i) => (
-                  <div key={i} className={`dot ${i === testimonialIdx ? 'act' : ''}`} onClick={() => setTestimonialIdx(i)} />
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* ── КАРТА-ЛИНИЯ С ПРОГРЕССОМ (чек-лист) ── */}
-          <div className="divider-peach" />
-          <section id="checklist" className="sec sec-alt" style={{ position: 'relative', overflow: 'hidden' }}>
-            <div className="deco" style={{ width: 300, height: 300, bottom: 0, left: -80, opacity: 0.2, animation: 'deco-float 16s ease-in-out infinite' }}><img src="/brandbook/23.png" alt="" /></div>
-            <div className="anim" style={{ textAlign: 'center', marginBottom: 40 }}>
-              <div className="s-label">Адаптация</div>
-              <h2 className="s-title">Карта пути новичка</h2>
-              <p className="s-sub">Нажми на точку, чтобы отметить задачу. Прогресс виден сразу</p>
-            </div>
-
-            <div style={{ maxWidth: '100%', margin: '0 auto', padding: '20px 0 30px', overflowX: 'auto' }}>
-              {!isMobile ? (
-                <svg viewBox="0 0 900 90" style={{ width: '100%', height: 'auto', display: 'block', minWidth: '600px' }}>
-                  <path d="M 60 45 L 760 45" stroke="var(--muted)" strokeWidth="1.5" fill="none" strokeDasharray="5 5" strokeLinecap="round" />
-                  <path d="M 60 45 Q 200 70, 300 45 T 540 45 T 760 55" stroke="var(--peach)" strokeWidth="3" fill="none" strokeLinecap="round" />
-                  {[
-                    { x: 80, title: 'День 1', icon: '1', fill: '#f4a582', dayIndex: 0 },
-                    { x: 300, title: 'День 2', icon: '2', fill: '#5bc8f5', dayIndex: 1 },
-                    { x: 520, title: 'День 3', icon: '3', fill: '#b388f7', dayIndex: 2 },
-                    { x: 740, title: 'Доп. день', icon: '4', fill: '#e8609a', dayIndex: 3 },
-                  ].map((point) => {
-                    const done = checklistState[point.dayIndex].filter(Boolean).length;
-                    const total = checklistGrouped[point.dayIndex].items.length;
-                    return (
-                      <g key={point.dayIndex} style={{ cursor: 'pointer' }} onClick={() => setSelectedDay(point.dayIndex)}>
-                        <circle cx={point.x} cy={45} r="18" fill={point.fill} stroke="#fff" strokeWidth="2.5" />
-                        <text x={point.x} y={50} textAnchor="middle" fill="#12001a" fontWeight="bold" fontSize="14">{point.icon}</text>
-                        <text x={point.x} y="70" textAnchor="middle" fill="var(--text)" fontSize="10" fontWeight="500">{point.title}</text>
-                        <text x={point.x} y="82" textAnchor="middle" fill="var(--peach)" fontSize="9" fontWeight="600">{done}/{total}</text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              ) : (
-                <svg viewBox="0 0 320 420" style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}>
-                  <path d="M 160 30 L 160 390" stroke="var(--muted)" strokeWidth="1.5" fill="none" strokeDasharray="5 5" strokeLinecap="round" />
-                  <path d="M 160 30 C 200 50, 200 80, 160 100 C 120 120, 120 150, 160 170 C 200 190, 200 220, 160 240 C 120 260, 120 290, 160 310 C 190 330, 190 360, 160 380" stroke="var(--peach)" strokeWidth="3" fill="none" strokeLinecap="round" />
-                  {[
-                    { y: 40, title: 'День 1', icon: '1', fill: '#f4a582', dayIndex: 0 },
-                    { y: 110, title: 'День 2', icon: '2', fill: '#5bc8f5', dayIndex: 1 },
-                    { y: 180, title: 'День 3', icon: '3', fill: '#b388f7', dayIndex: 2 },
-                    { y: 260, title: 'Доп. день', icon: '4', fill: '#e8609a', dayIndex: 3 },
-                  ].map((point) => {
-                    const done = checklistState[point.dayIndex].filter(Boolean).length;
-                    const total = checklistGrouped[point.dayIndex].items.length;
-                    return (
-                      <g key={point.dayIndex} style={{ cursor: 'pointer' }} onClick={() => setSelectedDay(point.dayIndex)}>
-                        <circle cx="160" cy={point.y} r="20" fill={point.fill} stroke="#fff" strokeWidth="2.5" />
-                        <text x="160" y={point.y + 5} textAnchor="middle" fill="#12001a" fontWeight="bold" fontSize="15">{point.icon}</text>
-                        <text x="160" y={point.y + 28} textAnchor="middle" fill="var(--text)" fontSize="11" fontWeight="500">{point.title}</text>
-                        <text x="160" y={point.y + 42} textAnchor="middle" fill="var(--peach)" fontSize="10" fontWeight="600">{done}/{total}</text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              )}
-            </div>
-
-            {selectedDay !== null && (
-              <div className="checklist-modal-overlay" onClick={() => setSelectedDay(null)}>
-                <div className="checklist-modal" onClick={(e) => e.stopPropagation()}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: '22px', margin: 0 }}>{checklistGrouped[selectedDay].day}</h3>
-                    <button onClick={() => setSelectedDay(null)} style={{ background: 'none', border: 'none', fontSize: '26px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }}>✕</button>
-                  </div>
-                  <div>
-                    {checklistGrouped[selectedDay].items.map((item, idx) => (
-                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 16px', background: 'var(--card)', borderRadius: '16px', marginBottom: '12px', cursor: 'pointer', transition: '0.2s' }}
-                        onClick={() => toggleChecklistItem(selectedDay, idx)}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(244,165,130,0.1)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--card)')}>
-                        <div className={`cl-box${checklistState[selectedDay][idx] ? ' done' : ''}`}>{checklistState[selectedDay][idx] && '✓'}</div>
-                        <span style={{ flex: 1, textDecoration: checklistState[selectedDay][idx] ? 'line-through' : 'none', opacity: checklistState[selectedDay][idx] ? 0.6 : 1 }}>{item}</span>
-                      </div>
-                    ))}
-                    <div style={{ marginTop: '20px', padding: '12px', background: 'rgba(244,165,130,0.08)', borderRadius: '12px', textAlign: 'center' }}>
-                      📊 Прогресс: {checklistState[selectedDay].filter(Boolean).length} / {checklistGrouped[selectedDay].items.length}
-                    </div>
-                  </div>
-                </div>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '60vh' }}>
+            {aiChat.length === 0 && (
+              <div style={{ color: 'var(--muted)', textAlign: 'center', fontSize: '14px', padding: '20px 0' }}>
+                Задайте вопрос о хабе, мероприятиях, бронировании и т.д.
               </div>
             )}
+            {aiChat.map((msg, idx) => (
+              <div key={idx} style={{
+                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                background: msg.role === 'user' ? 'linear-gradient(135deg, var(--peach), var(--pink))' : 'var(--card)',
+                color: msg.role === 'user' ? '#12001a' : 'var(--text)',
+                padding: '10px 14px', borderRadius: '18px', maxWidth: '85%', fontSize: '14px', wordBreak: 'break-word',
+                border: msg.role === 'assistant' ? '1px solid var(--border)' : 'none',
+              }}>{msg.text}</div>
+            ))}
+            {aiLoading && <div style={{ alignSelf: 'flex-start', background: 'var(--card)', padding: '10px 14px', borderRadius: '18px', fontSize: '14px', color: 'var(--muted)' }}>Печатает...</div>}
+          </div>
+          <form onSubmit={handleAiSend} style={{ padding: '16px', borderTop: '1px solid var(--border)', display: 'flex', gap: '12px', background: 'var(--bg2)' }}>
+            <input type="text" placeholder="Спросите что-нибудь..." value={aiMessage} onChange={(e) => setAiMessage(e.target.value)} style={{ flex: 1, padding: '10px 16px', borderRadius: '100px', border: '1px solid var(--border)', background: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', outline: 'none' }} />
+            <button type="submit" disabled={aiLoading} style={{ background: 'linear-gradient(135deg, var(--peach), var(--pink))', border: 'none', borderRadius: '100px', padding: '0 20px', fontWeight: 600, cursor: 'pointer', color: '#12001a' }}>Отправить</button>
+          </form>
+        </div>
 
-            <div style={{ textAlign: 'center', marginTop: 40 }}>
-              <div style={{ display: 'inline-block', padding: '8px 20px', borderRadius: 100, background: 'rgba(244,165,130,0.12)', color: 'var(--peach)', fontSize: 13, fontWeight: 600 }}>
-                🗺️ Общий прогресс: {getCheckedCount()} / {getTotalCount()}
+        <div className="progress"><div className="progress-fill" style={{ height: `${scrollProgress}%` }} /></div>
+
+        <nav className="nav">
+          <a href="#hero" onClick={(e) => { e.preventDefault(); scrollTo('hero'); }} className="nav-logo">ХАБ</a>
+          <ul className="nav-links">
+            {navLinks.map((l) => (
+              <li key={l.id}><a href={`#${l.id}`} className={activeSection === l.id ? 'act' : ''} onClick={(e) => { e.preventDefault(); scrollTo(l.id); }}>{l.label}</a></li>
+            ))}
+          </ul>
+          <div className="nav-right">
+            <ThemeSwitcher isDark={isDark} onToggle={() => setIsDark((p) => !p)} />
+            {currentUser ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)', padding: '9px 16px', background: 'rgba(244,165,130,0.1)', borderRadius: '100px', border: '1px solid rgba(244,165,130,0.3)' }}>👤 {currentUser.name}</span>
+                <button onClick={() => { setCurrentUser(null); localStorage.removeItem('hubUser'); }} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 16px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--muted)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}>Выйти</button>
               </div>
-            </div>
-            <p style={{ marginTop: 24, color: 'var(--muted)', fontSize: 12, fontStyle: 'italic', textAlign: 'center' }}>
-              * Период адаптации — 1 неделя. После прохождения курсов на «Пульсе» открываются все бонусы.
-            </p>
-          </section>
+            ) : (
+              <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 22px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--text)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}>Войти</button>
+            )}
+            <a href="#booking" className="nav-cta" onClick={(e) => { e.preventDefault(); setBookingModalOpen(true); }}>Забронировать</a>
+          </div>
+        </nav>
 
-          <div className="divider-blue" />
-          <section id="contacts" className="sec">
-            <div className="anim" style={{ textAlign: 'center', marginBottom: 60 }}>
-              <div className="s-label">Команда поддержки</div>
-              <h2 className="s-title">К кому обратиться?</h2>
+        <div className="mobile-bar">
+          {[
+            { id: 'hero', ico: '🏠' }, { id: 'possibilities', ico: '⚡' }, { id: 'checklist', ico: '✅' }, { id: 'contacts', ico: '👥' }, { id: 'faq', ico: '❓' },
+          ].map((b) => (
+            <button key={b.id} className={activeSection === b.id ? 'act' : ''} onClick={() => scrollTo(b.id)}>{b.ico}</button>
+          ))}
+        </div>
+
+        <section id="hero" className="sec" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--bg)', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            <div style={{ position: 'absolute', width: 600, height: 600, top: -150, right: -150, borderRadius: '50%', background: 'radial-gradient(circle, rgba(244,165,130,0.18) 0%, transparent 70%)', filter: 'blur(70px)', animation: 'float1 12s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', width: 500, height: 500, bottom: -80, left: -100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(232,96,154,0.15) 0%, transparent 70%)', filter: 'blur(70px)', animation: 'float2 16s ease-in-out infinite' }} />
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {[320, 560, 800].map((size, i) => (
+                <div key={i} style={{ position: 'absolute', width: size, height: size, borderRadius: '50%', border: `1px solid rgba(244,165,130,${0.12 - i * 0.03})`, animation: `spin${i + 1} ${30 + i * 20}s linear infinite${i % 2 === 1 ? ' reverse' : ''}` }} />
+              ))}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 24, maxWidth: 1100, margin: '0 auto' }}>
-              {contacts.map((c, i) => (
-                <div className="card anim" key={i} style={{ textAlign: 'center', transitionDelay: `${i * 0.07}s`, display: 'flex', flexDirection: 'column', height: '100%', padding: '36px 28px' }}>
-                  <div className="contact-avatar">
-                    {c.avatarImg ? <img src={c.avatarImg} alt={c.name} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} /> : <span>{c.emoji}</span>}
+            <div className="deco" style={{ width: 420, height: 420, top: '5%', right: '-80px', opacity: 0.55, animation: 'deco-float 10s ease-in-out infinite' }}><img src="/brandbook/20.png" alt="" /></div>
+            <div className="deco" style={{ width: 320, height: 320, bottom: '10%', left: '-60px', opacity: 0.2, animation: 'deco-spin 40s linear infinite' }}><img src="/brandbook/22.png" alt="" /></div>
+            <div className="deco" style={{ width: 180, height: 180, top: '12%', left: '8%', opacity: 0.22, animation: 'deco-float 14s ease-in-out infinite 2s' }}><img src="/brandbook/34.png" alt="" /></div>
+            <div className="deco" style={{ width: 80, height: 80, top: '18%', right: '18%', opacity: 0.28, animation: 'deco-float 8s ease-in-out infinite 1s' }}><img src="/brandbook/16.png" alt="" /></div>
+            <div className="deco" style={{ width: 420, height: 420, top: '18%', right: '-60px', opacity: 0.75, animation: 'deco-float 11s ease-in-out infinite', zIndex: 2 }}><img src="/brandbook/IMG_0339.png" alt="Котик-астронавт" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /></div>
+            <div className="deco" style={{ width: 580, height: 580, top: '-120px', left: '50%', transform: 'translateX(-50%)', opacity: 0.22, animation: 'deco-spin 75s linear infinite', zIndex: 1 }}><img src="/brandbook/33.png" alt="Космическая планета" style={{ width: '100%', height: '100%', objectFit: 'contain' }} /></div>
+          </div>
+
+          <style>{`
+            @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-35px,35px)} }
+            @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(28px,-28px)} }
+            @keyframes spin1 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+            @keyframes spin2 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+            @keyframes spin3 { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+          `}</style>
+
+          <div className="anim" style={{ textAlign: 'center', maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 2 }}>
+            <div className="hero-badge"><div className="badge-dot" /> 📍 ул. Костина, 6 · Нижний Новгород</div>
+            <h1 className="hero-title">ХАБ<br /><span className="hero-grad">новых возможностей</span></h1>
+            <p style={{ fontSize: 18, color: 'var(--muted)', lineHeight: 1.75, maxWidth: 560, margin: '0 auto 48px' }}>Мы запускаем проекты для развития региона. Современные технологии, инновационные сервисы и комфортное пространство — всё здесь.</p>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href="#possibilities" className="btn-p" onClick={(e) => { e.preventDefault(); scrollTo('possibilities'); }}>Исследовать →</a>
+              <a href="#booking" className="btn-s" onClick={(e) => { e.preventDefault(); setBookingModalOpen(true); }}>Забронировать</a>
+              <button onClick={() => { if (!currentUser) setAuthModalOpen('login'); else setReviewModalOpen(true); }} className="btn-s" style={{ marginLeft: '8px' }}>Оставить отзыв</button>
+              <button onClick={() => setQuestionModalOpen(true)} className="btn-s" style={{ marginLeft: '8px' }}>Задать вопрос</button>
+            </div>
+          </div>
+
+          <div className="anim" style={{ maxWidth: 1100, margin: '64px auto 0', width: '100%', padding: '0 60px' }}>
+            <div className="map-wrap">
+              {showVideo ? (
+                <video ref={videoRef} src="/per.mp4" autoPlay muted playsInline onEnded={handleVideoEnd} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <iframe src="https://yandex.ru/map-widget/v1/?ll=44.005775%2C56.328617&z=16&pt=44.005775,56.328617" width="100%" height="100%" style={{ border: 0, display: 'block' }} allowFullScreen />
+              )}
+            </div>
+          </div>
+        </section>
+
+        <div style={{ position: 'relative', height: 0, overflow: 'visible', zIndex: 10 }}>
+          <img src="/brandbook/22.png" alt="" style={{ position: 'absolute', right: 60, top: -120, width: 240, opacity: 0.45, pointerEvents: 'none', animation: 'deco-float 12s ease-in-out infinite' }} />
+        </div>
+
+        <div className="divider-peach" />
+        <section id="office" className="sec sec-alt">
+          <div className="anim" style={{ textAlign: 'center', marginBottom: 56 }}>
+            <div className="s-label">Пространство</div>
+            <h2 className="s-title">Офис Сбера на Костина, 6</h2>
+            <p className="s-sub" style={{ maxWidth: 520, margin: '14px auto 0' }}>Современные интерьеры, комфортные зоны для работы и отдыха</p>
+          </div>
+          <div className="slider-wrap anim"
+            onMouseEnter={stopAutoSlide}
+            onMouseLeave={startAutoSlide}
+          >
+            <div style={{ position: 'relative', borderRadius: 24, overflow: 'hidden' }}>
+              <img className="slide-img" src={officePhotos[officeIdx].url} alt={officePhotos[officeIdx].title} />
+              <div className="slide-caption">{officePhotos[officeIdx].title}</div>
+            </div>
+            <button className="sl-btn sl-l" onClick={() => handleOfficeManual((officeIdx - 1 + officePhotos.length) % officePhotos.length)}>←</button>
+            <button className="sl-btn sl-r" onClick={() => handleOfficeManual((officeIdx + 1) % officePhotos.length)}>→</button>
+            <div className="dots">
+              {officePhotos.map((_, i) => (
+                <div key={i} className={`dot ${i === officeIdx ? 'act' : ''}`} onClick={() => handleOfficeManual(i)} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div className="divider-blue" />
+        <section id="possibilities" className="sec" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div className="deco" style={{ width: 500, height: 500, top: -100, right: -100, opacity: 0.08, animation: 'deco-spin 60s linear infinite reverse' }}><img src="/brandbook/37.png" alt="" /></div>
+          <div className="anim" style={{ textAlign: 'center', marginBottom: 64 }}>
+            <div className="s-label">Всё для тебя</div>
+            <h2 className="s-title">Возможности центра</h2>
+          </div>
+          <div className="grid-3">
+            {[
+              { img: 'sber_present.png', name: 'Программа лояльности', desc: 'Бонусы, скидки у партнёров и приоритетное бронирование за активность' },
+              { img: 'sber_food.png', name: 'Снеки и напитки', desc: 'Бесплатный кофе, фрукты, яблоки, груши, сливы каждый день' },
+              { img: 'sber_rest.png', name: 'Массажное кресло', desc: 'Relax-зона с профессиональными массажными креслами' },
+              { img: 'sber_man_sport.png', name: 'Спортзал', desc: 'Открыт 07:00–21:00, современное оборудование, душевые' },
+              { img: 'sber_suitcase.png', name: 'Коворкинг', desc: 'Светлые рабочие места и переговорные с 4K-экранами и Wi-Fi 6' },
+              { img: 'sber_books.png', name: 'Обучение', desc: 'Мастер-классы, тренинги, курсы на Пульсе — постоянный рост' },
+              { img: 'sber_a_man_is_resting_in_a_chair.png', name: 'Удобное расположение', desc: 'Центр города, рядом с метро Горьковская' },
+              { img: 'sber_printer.png', name: 'Печать и канцтовары', desc: 'Цветной МФУ в коворкинге, всё необходимое на ресепшене' },
+            ].map((f, i) => (
+              <div className="card anim" key={i} style={{ transitionDelay: `${i * 0.06}s` }}>
+                <img src={f.img} alt={f.name} style={{ width: 48, height: 48, objectFit: 'contain', marginBottom: 20, display: 'block' }} />
+                <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontSize: 16, fontWeight: 700, marginBottom: 10 }}>{f.name}</h3>
+                <p style={{ color: 'var(--muted)', lineHeight: 1.6, fontSize: 14 }}>{f.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: 52 }}>
+            <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную →</button>
+          </div>
+        </section>
+
+        <div className="divider-peach" />
+        <section id="life" className="sec sec-alt">
+          <div className="anim" style={{ textAlign: 'center', marginBottom: 64 }}>
+            <div className="s-label">Мероприятия</div>
+            <h2 className="s-title">Жизнь внутри центра</h2>
+            <p className="s-sub" style={{ maxWidth: 500, margin: '14px auto 0' }}>Не только работа — каждую неделю что-то интересное</p>
+          </div>
+          <div className="grid-2">
+            {lifeEvents.map((ev, i) => (
+              <div className="card anim" key={i} style={{ transitionDelay: `${i * 0.08}s` }}>
+                <div style={{ fontSize: 48, marginBottom: 20 }}>{ev.emoji}</div>
+                <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 12 }}>{ev.title}</h3>
+                <p style={{ color: 'var(--muted)', lineHeight: 1.65, fontSize: 14 }}>{ev.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: 48 }}>
+            <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">Записаться через бот →</a>
+          </div>
+        </section>
+
+        <div className="divider-blue" />
+        <section id="testimonials" className="sec">
+          <div className="anim" style={{ textAlign: 'center', marginBottom: 16 }}>
+            <div className="s-label">Что говорят</div>
+            <h2 className="s-title">Отзывы сотрудников</h2>
+            <div style={{ fontSize: 28, color: '#f59e0b', marginTop: 16 }}>★★★★★ <span style={{ color: 'var(--muted)', fontSize: 18 }}>5.0 / 5</span></div>
+          </div>
+
+          <div className="testimonial-slider"
+            onMouseEnter={stopAutoTestimonial}
+            onMouseLeave={startAutoTestimonial}
+          >
+            <div className="testimonial-track" style={{ transform: `translateX(-${testimonialIdx * 100}%)` }}>
+              {[...apiReviews.map(r => ({ name: r.author_name, role: 'Сотрудник', text: r.text, avatar: '👤' })), ...testimonials].map((t, idx) => (
+                <div className="testimonial-slide" key={idx}>
+                  <div className="card test-card" style={{ margin: 0, width: '100%' }}>
+                    <div className="test-avatar">{t.avatar}</div>
+                    <p className="test-text">«{t.text}»</p>
+                    <div className="test-stars">★★★★★</div>
+                    <h4 style={{ fontFamily: 'Unbounded,sans-serif', fontSize: 16, fontWeight: 700 }}>{t.name}</h4>
+                    <p style={{ color: 'var(--muted)', marginTop: 6 }}>{t.role}</p>
                   </div>
-                  <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{c.name}</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4 }}>{c.role}</p>
-                  <a href={`https://t.me/${c.tg}`} target="_blank" rel="noreferrer" className="btn-s" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textAlign: 'center' }}>✈️ Telegram</a>
                 </div>
               ))}
-              <div className="card anim" style={{ textAlign: 'center', cursor: 'pointer', display: 'flex', flexDirection: 'column', height: '100%', padding: '36px 28px' }} onClick={() => setApplyOpen(true)}>
-                <div className="contact-avatar"><img src="add.png" alt="add" /></div>
-                <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Хочу в команду</h3>
-                <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4 }}>Присоединяйтесь к нам!</p>
-                <button className="btn-p" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Заявка →</button>
-              </div>
             </div>
-          </section>
-
-          <div className="divider-peach" />
-          <section id="faq" className="sec sec-alt" style={{ position: 'relative', overflow: 'hidden' }}>
-            <div className="deco" style={{ width: 260, height: 260, top: 40, right: -60, opacity: 0.12, animation: 'deco-spin 50s linear infinite' }}><img src="/brandbook/33.png" alt="" /></div>
-            <div className="anim" style={{ textAlign: 'center', marginBottom: 56 }}>
-              <div className="s-label">Ответы</div>
-              <h2 className="s-title">Часто задаваемые вопросы</h2>
+            <button className="sl-btn sl-l" onClick={() => handleTestimonialManual((testimonialIdx - 1 + testimonialTotal) % testimonialTotal)}>←</button>
+            <button className="sl-btn sl-r" onClick={() => handleTestimonialManual((testimonialIdx + 1) % testimonialTotal)}>→</button>
+            <div className="dots">
+              {[...apiReviews, ...testimonials].map((_, i) => (
+                <div key={i} className={`dot ${i === testimonialIdx ? 'act' : ''}`} onClick={() => handleTestimonialManual(i)} />
+              ))}
             </div>
-            <div style={{ maxWidth: 820, margin: '0 auto' }}>
-              {faqItems.map((item, i) => {
-                const isOpen = openFaq === i;
-                return (
-                  <div className="faq-item anim" key={i} style={{ transitionDelay: `${i * 0.04}s` }}>
-                    <div className="faq-q" onClick={() => setOpenFaq(isOpen ? null : i)}>
-                      <span>{item.q}</span>
-                      <span className={`faq-icon${isOpen ? ' open' : ''}`}>+</span>
-                    </div>
-                    <div className="faq-body" style={{ maxHeight: isOpen ? '300px' : '0px', padding: isOpen ? '0 28px 22px 28px' : '0 28px' }}>{item.a}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+          </div>
+        </section>
 
-          <footer style={{ padding: '32px 60px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, background: 'var(--bg)' }}>
-            <div style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 14 }}>ХАБ · Сбер</div>
-            <div style={{ color: 'var(--muted)', fontSize: 13 }}>ул. Костина, 6, Нижний Новгород · © 2026 Сбер</div>
-          </footer>
+        {/* ── КАРТА-ЛИНИЯ С ПРОГРЕССОМ (чек-лист) ── */}
+        <div className="divider-peach" />
+        <section id="checklist" className="sec sec-alt" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div className="deco" style={{ width: 300, height: 300, bottom: 0, left: -80, opacity: 0.2, animation: 'deco-float 16s ease-in-out infinite' }}><img src="/brandbook/23.png" alt="" /></div>
+          <div className="anim" style={{ textAlign: 'center', marginBottom: 40 }}>
+            <div className="s-label">Адаптация</div>
+            <h2 className="s-title">Карта пути новичка</h2>
+            <p className="s-sub">Нажми на точку, чтобы отметить задачу. Прогресс виден сразу</p>
+          </div>
 
-          {/* Модалка бронирования */}
-          <div className={`modal-ov${bookingModalOpen ? ' open' : ''}`} onClick={() => setBookingModalOpen(false)}>
-            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-              <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 16 }}>Бронирование</h3>
-              <form onSubmit={handleBookingSubmit}>
-                <label className="modal-label">Имя *</label>
-                <input className="modal-input" required placeholder="Иван Иванов" value={bookingForm.name} onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })} />
-                <label className="modal-label">Дата *</label>
-                <input className="modal-input" type="date" required value={bookingForm.date} onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })} />
-                <label className="modal-label">Время *</label>
-                <select className="modal-input" required value={bookingForm.time} onChange={(e) => setBookingForm({ ...bookingForm, time: e.target.value })} style={{ cursor: 'pointer' }}>
-                  <option value="" disabled>Выберите время</option>
-                  {timeSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
-                </select>
-                <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
-                  <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center' }}>Отправить</button>
-                  <button type="button" className="btn-s" onClick={() => setBookingModalOpen(false)}>Отмена</button>
+          <div style={{ maxWidth: '100%', margin: '0 auto', padding: '20px 0 30px', overflowX: 'auto' }}>
+            {!isMobile ? (
+              <svg viewBox="0 0 900 90" style={{ width: '100%', height: 'auto', display: 'block', minWidth: '600px' }}>
+                <path d="M 60 45 L 760 45" stroke="var(--muted)" strokeWidth="1.5" fill="none" strokeDasharray="5 5" strokeLinecap="round" />
+                <path d="M 60 45 Q 200 70, 300 45 T 540 45 T 760 55" stroke="var(--peach)" strokeWidth="3" fill="none" strokeLinecap="round" />
+                {[
+                  { x: 80, title: 'День 1', icon: '1', fill: '#f4a582', dayIndex: 0 },
+                  { x: 300, title: 'День 2', icon: '2', fill: '#5bc8f5', dayIndex: 1 },
+                  { x: 520, title: 'День 3', icon: '3', fill: '#b388f7', dayIndex: 2 },
+                  { x: 740, title: 'Доп. день', icon: '4', fill: '#e8609a', dayIndex: 3 },
+                ].map((point) => {
+                  const done = checklistState[point.dayIndex].filter(Boolean).length;
+                  const total = checklistGrouped[point.dayIndex].items.length;
+                  return (
+                    <g key={point.dayIndex} style={{ cursor: 'pointer' }} onClick={() => setSelectedDay(point.dayIndex)}>
+                      <circle cx={point.x} cy={45} r="18" fill={point.fill} stroke="#fff" strokeWidth="2.5" />
+                      <text x={point.x} y={50} textAnchor="middle" fill="#12001a" fontWeight="bold" fontSize="14">{point.icon}</text>
+                      <text x={point.x} y="70" textAnchor="middle" fill="var(--text)" fontSize="10" fontWeight="500">{point.title}</text>
+                      <text x={point.x} y="82" textAnchor="middle" fill="var(--peach)" fontSize="9" fontWeight="600">{done}/{total}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            ) : (
+              <svg viewBox="0 0 320 420" style={{ width: '100%', height: 'auto', display: 'block', margin: '0 auto' }}>
+                <path d="M 160 30 L 160 390" stroke="var(--muted)" strokeWidth="1.5" fill="none" strokeDasharray="5 5" strokeLinecap="round" />
+                <path d="M 160 30 C 200 50, 200 80, 160 100 C 120 120, 120 150, 160 170 C 200 190, 200 220, 160 240 C 120 260, 120 290, 160 310 C 190 330, 190 360, 160 380" stroke="var(--peach)" strokeWidth="3" fill="none" strokeLinecap="round" />
+                {[
+                  { y: 40, title: 'День 1', icon: '1', fill: '#f4a582', dayIndex: 0 },
+                  { y: 110, title: 'День 2', icon: '2', fill: '#5bc8f5', dayIndex: 1 },
+                  { y: 180, title: 'День 3', icon: '3', fill: '#b388f7', dayIndex: 2 },
+                  { y: 260, title: 'Доп. день', icon: '4', fill: '#e8609a', dayIndex: 3 },
+                ].map((point) => {
+                  const done = checklistState[point.dayIndex].filter(Boolean).length;
+                  const total = checklistGrouped[point.dayIndex].items.length;
+                  return (
+                    <g key={point.dayIndex} style={{ cursor: 'pointer' }} onClick={() => setSelectedDay(point.dayIndex)}>
+                      <circle cx="160" cy={point.y} r="20" fill={point.fill} stroke="#fff" strokeWidth="2.5" />
+                      <text x="160" y={point.y + 5} textAnchor="middle" fill="#12001a" fontWeight="bold" fontSize="15">{point.icon}</text>
+                      <text x="160" y={point.y + 28} textAnchor="middle" fill="var(--text)" fontSize="11" fontWeight="500">{point.title}</text>
+                      <text x="160" y={point.y + 42} textAnchor="middle" fill="var(--peach)" fontSize="10" fontWeight="600">{done}/{total}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            )}
+          </div>
+
+          {selectedDay !== null && (
+            <div className="checklist-modal-overlay" onClick={() => setSelectedDay(null)}>
+              <div className="checklist-modal" onClick={(e) => e.stopPropagation()}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: '22px', margin: 0 }}>{checklistGrouped[selectedDay].day}</h3>
+                  <button onClick={() => setSelectedDay(null)} style={{ background: 'none', border: 'none', fontSize: '26px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }}>✕</button>
                 </div>
-              </form>
-            </div>
-          </div>
-
-          {/* Модалка "Хочу в команду" */}
-          <div className={`modal-ov${applyOpen ? ' open' : ''}`} onClick={() => { setApplyOpen(false); setApplyDone(false); }}>
-            <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-              {applyDone ? (
-                <div style={{ textAlign: 'center', padding: '20px 0' }}><div style={{ fontSize: 64, marginBottom: 20 }}>🎉</div><h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Заявка отправлена!</h3><p style={{ color: 'var(--muted)' }}>Мы свяжемся с вами в ближайшее время.</p></div>
-              ) : (
-                <>
-                  <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Хочу в команду</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 28 }}>Заполните форму — мы свяжемся с вами!</p>
-                  <form onSubmit={handleApply}>
-                    <label className="modal-label">Имя *</label><input className="modal-input" required placeholder="Иван Иванов" value={applyForm.name} onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })} />
-                    <label className="modal-label">Направление / роль *</label><input className="modal-input" required placeholder="Разработчик, аналитик..." value={applyForm.role} onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })} />
-                    <label className="modal-label">Telegram</label><input className="modal-input" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })} />
-                    <label className="modal-label">О себе</label><textarea className="modal-input" rows={3} placeholder="Расскажите немного о себе..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} style={{ resize: 'none' }} />
-                    <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
-                      <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer', padding: '13px 0' }}>Отправить</button>
-                      <button type="button" className="btn-s" style={{ padding: '13px 20px', cursor: 'pointer' }} onClick={() => setApplyOpen(false)}>Отмена</button>
+                <div>
+                  {checklistGrouped[selectedDay].items.map((item, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 16px', background: 'var(--card)', borderRadius: '16px', marginBottom: '12px', cursor: 'pointer', transition: '0.2s' }}
+                      onClick={() => toggleChecklistItem(selectedDay, idx)}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(244,165,130,0.1)')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--card)')}>
+                      <div className={`cl-box${checklistState[selectedDay][idx] ? ' done' : ''}`}>{checklistState[selectedDay][idx] && '✓'}</div>
+                      <span style={{ flex: 1, textDecoration: checklistState[selectedDay][idx] ? 'line-through' : 'none', opacity: checklistState[selectedDay][idx] ? 0.6 : 1 }}>{item}</span>
                     </div>
-                  </form>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Модалка авторизации */}
-          <div className={`modal-ov${authModalOpen ? ' open' : ''}`} onClick={() => setAuthModalOpen(null)}>
-            <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', borderBottom: '1px solid var(--border)' }}>
-                <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'login' ? 700 : 400, color: authModalOpen === 'login' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'login' ? '2px solid var(--peach)' : 'none' }}>Вход</button>
-                <button onClick={() => setAuthModalOpen('register')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'register' ? 700 : 400, color: authModalOpen === 'register' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'register' ? '2px solid var(--peach)' : 'none' }}>Регистрация</button>
+                  ))}
+                  <div style={{ marginTop: '20px', padding: '12px', background: 'rgba(244,165,130,0.08)', borderRadius: '12px', textAlign: 'center' }}>
+                    📊 Прогресс: {checklistState[selectedDay].filter(Boolean).length} / {checklistGrouped[selectedDay].items.length}
+                  </div>
+                </div>
               </div>
-              {authModalOpen === 'login' && (
-                <form onSubmit={handleLogin}>
-                  <label className="modal-label">Имя</label><input className="modal-input" required placeholder="Иван Иванов" value={loginForm.login} onChange={(e) => setLoginForm({ ...loginForm, login: e.target.value })} />
-                  <label className="modal-label">Пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
-                  {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
-                  <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Войти</button>
-                </form>
-              )}
-              {authModalOpen === 'register' && (
-                <form onSubmit={handleRegister}>
-                  <label className="modal-label">Имя (только русские буквы)</label><input className="modal-input" required placeholder="Иван Иванов" value={registerForm.login} onChange={(e) => setRegisterForm({ ...registerForm, login: e.target.value })} />
-                  <label className="modal-label">Пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
-                  <label className="modal-label">Повторите пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })} />
-                  {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
-                  <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Зарегистрироваться</button>
-                </form>
-              )}
             </div>
-          </div>
+          )}
 
-          {/* Модалка отзыва */}
-          <div className={`modal-ov${reviewModalOpen ? ' open' : ''}`} onClick={() => setReviewModalOpen(false)}>
-            <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
-              {reviewSubmitted ? (
-                <div style={{ textAlign: 'center', padding: '20px 0' }}><div style={{ fontSize: 56, marginBottom: 16 }}>❤️</div><h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Спасибо за отзыв!</h3><p style={{ color: 'var(--muted)' }}>Ваше мнение очень важно для нас.</p></div>
-              ) : (
-                <>
-                  <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Оставить отзыв</h3>
-                  <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>Поделитесь впечатлениями о хабе{currentUser && <span style={{ display: 'block', marginTop: 8, color: 'var(--peach)', fontWeight: 600 }}>От имени: {currentUser.name}</span>}</p>
-                  <form onSubmit={handleReviewSubmit}>
-                    <label className="modal-label">Оценка</label>
-                    <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', fontSize: '28px' }}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} onClick={() => setReviewForm({ ...reviewForm, rating: star })} style={{ cursor: 'pointer', color: star <= reviewForm.rating ? '#f59e0b' : '#ccc' }}>★</span>
-                      ))}
-                    </div>
-                    <label className="modal-label">Ваш отзыв</label>
-                    <textarea className="modal-input" rows={4} required placeholder="Расскажите о своём опыте..." value={reviewForm.text} onChange={(e) => setReviewForm({ ...reviewForm, text: e.target.value })} style={{ resize: 'none' }} />
-                    <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Отправить отзыв</button>
-                  </form>
-                </>
-              )}
+          <div style={{ textAlign: 'center', marginTop: 40 }}>
+            <div style={{ display: 'inline-block', padding: '8px 20px', borderRadius: 100, background: 'rgba(244,165,130,0.12)', color: 'var(--peach)', fontSize: 13, fontWeight: 600 }}>
+              🗺️ Общий прогресс: {getCheckedCount()} / {getTotalCount()}
             </div>
           </div>
-        </>
-      )}
+          <p style={{ marginTop: 24, color: 'var(--muted)', fontSize: 12, fontStyle: 'italic', textAlign: 'center' }}>
+            * Период адаптации — 1 неделя. После прохождения курсов на «Пульсе» открываются все бонусы.
+          </p>
+        </section>
+
+        <div className="divider-blue" />
+        <section id="contacts" className="sec">
+          <div className="anim" style={{ textAlign: 'center', marginBottom: 60 }}>
+            <div className="s-label">Команда поддержки</div>
+            <h2 className="s-title">К кому обратиться?</h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 24, maxWidth: 1100, margin: '0 auto' }}>
+            {contacts.map((c, i) => (
+              <div className="card anim" key={i} style={{ textAlign: 'center', transitionDelay: `${i * 0.07}s`, display: 'flex', flexDirection: 'column', height: '100%', padding: '36px 28px' }}>
+                <div className="contact-avatar">
+                  {c.avatarImg ? <img src={c.avatarImg} alt={c.name} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} /> : <span>{c.emoji}</span>}
+                </div>
+                <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{c.name}</h3>
+                <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4 }}>{c.role}</p>
+                <a href={`https://t.me/${c.tg}`} target="_blank" rel="noreferrer" className="btn-s" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textAlign: 'center' }}>✈️ Telegram</a>
+              </div>
+            ))}
+            <div className="card anim" style={{ textAlign: 'center', cursor: 'pointer', display: 'flex', flexDirection: 'column', height: '100%', padding: '36px 28px' }} onClick={() => setApplyOpen(true)}>
+              <div className="contact-avatar"><img src="add.png" alt="add" /></div>
+              <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Хочу в команду</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4 }}>Присоединяйтесь к нам!</p>
+              <button className="btn-p" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Заявка →</button>
+            </div>
+          </div>
+        </section>
+
+        <div className="divider-peach" />
+        <section id="faq" className="sec sec-alt" style={{ position: 'relative', overflow: 'hidden' }}>
+          <div className="deco" style={{ width: 260, height: 260, top: 40, right: -60, opacity: 0.12, animation: 'deco-spin 50s linear infinite' }}><img src="/brandbook/33.png" alt="" /></div>
+          <div className="anim" style={{ textAlign: 'center', marginBottom: 56 }}>
+            <div className="s-label">Ответы</div>
+            <h2 className="s-title">Часто задаваемые вопросы</h2>
+          </div>
+          <div style={{ maxWidth: 820, margin: '0 auto' }}>
+            {faqItems.map((item, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <div className="faq-item anim" key={i} style={{ transitionDelay: `${i * 0.04}s` }}>
+                  <div className="faq-q" onClick={() => setOpenFaq(isOpen ? null : i)}>
+                    <span>{item.q}</span>
+                    <span className={`faq-icon${isOpen ? ' open' : ''}`}>+</span>
+                  </div>
+                  <div className="faq-body" style={{ maxHeight: isOpen ? '300px' : '0px', padding: isOpen ? '0 28px 22px 28px' : '0 28px' }}>{item.a}</div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <footer style={{ padding: '32px 60px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, background: 'var(--bg)' }}>
+          <div style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 14 }}>ХАБ · Сбер</div>
+          <div style={{ color: 'var(--muted)', fontSize: 13 }}>ул. Костина, 6, Нижний Новгород · © 2026 Сбер</div>
+        </footer>
+
+        {/* Модалка бронирования */}
+        <div className={`modal-ov${bookingModalOpen ? ' open' : ''}`} onClick={() => setBookingModalOpen(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 16 }}>Бронирование</h3>
+            <form onSubmit={handleBookingSubmit}>
+              <label className="modal-label">Имя *</label>
+              <input className="modal-input" required placeholder="Иван Иванов" value={bookingForm.name} onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })} />
+              <label className="modal-label">Дата *</label>
+              <input className="modal-input" type="date" required value={bookingForm.date} onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })} />
+              <label className="modal-label">Время *</label>
+              <select className="modal-input" required value={bookingForm.time} onChange={(e) => setBookingForm({ ...bookingForm, time: e.target.value })} style={{ cursor: 'pointer' }}>
+                <option value="" disabled>Выберите время</option>
+                {timeSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
+              </select>
+              <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+                <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center' }}>Отправить</button>
+                <button type="button" className="btn-s" onClick={() => setBookingModalOpen(false)}>Отмена</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {/* Модалка "Хочу в команду" */}
+        <div className={`modal-ov${applyOpen ? ' open' : ''}`} onClick={() => { setApplyOpen(false); setApplyDone(false); }}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            {applyDone ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}><div style={{ fontSize: 64, marginBottom: 20 }}>🎉</div><h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Заявка отправлена!</h3><p style={{ color: 'var(--muted)' }}>Мы свяжемся с вами в ближайшее время.</p></div>
+            ) : (
+              <>
+                <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Хочу в команду</h3>
+                <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 28 }}>Заполните форму — мы свяжемся с вами!</p>
+                <form onSubmit={handleApply}>
+                  <label className="modal-label">Имя *</label><input className="modal-input" required placeholder="Иван Иванов" value={applyForm.name} onChange={(e) => setApplyForm({ ...applyForm, name: e.target.value })} />
+                  <label className="modal-label">Направление / роль *</label><input className="modal-input" required placeholder="Разработчик, аналитик..." value={applyForm.role} onChange={(e) => setApplyForm({ ...applyForm, role: e.target.value })} />
+                  <label className="modal-label">Telegram</label><input className="modal-input" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })} />
+                  <label className="modal-label">О себе</label><textarea className="modal-input" rows={3} placeholder="Расскажите немного о себе..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} style={{ resize: 'none' }} />
+                  <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
+                    <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer', padding: '13px 0' }}>Отправить</button>
+                    <button type="button" className="btn-s" style={{ padding: '13px 20px', cursor: 'pointer' }} onClick={() => setApplyOpen(false)}>Отмена</button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Модалка авторизации */}
+        <div className={`modal-ov${authModalOpen ? ' open' : ''}`} onClick={() => setAuthModalOpen(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', borderBottom: '1px solid var(--border)' }}>
+              <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'login' ? 700 : 400, color: authModalOpen === 'login' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'login' ? '2px solid var(--peach)' : 'none' }}>Вход</button>
+              <button onClick={() => setAuthModalOpen('register')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'register' ? 700 : 400, color: authModalOpen === 'register' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'register' ? '2px solid var(--peach)' : 'none' }}>Регистрация</button>
+            </div>
+            {authModalOpen === 'login' && (
+              <form onSubmit={handleLogin}>
+                <label className="modal-label">Имя</label><input className="modal-input" required placeholder="Иван Иванов" value={loginForm.login} onChange={(e) => setLoginForm({ ...loginForm, login: e.target.value })} />
+                <label className="modal-label">Пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
+                {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
+                <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Войти</button>
+              </form>
+            )}
+            {authModalOpen === 'register' && (
+              <form onSubmit={handleRegister}>
+                <label className="modal-label">Имя (только русские буквы)</label><input className="modal-input" required placeholder="Иван Иванов" value={registerForm.login} onChange={(e) => setRegisterForm({ ...registerForm, login: e.target.value })} />
+                <label className="modal-label">Пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
+                <label className="modal-label">Повторите пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })} />
+                {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
+                <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Зарегистрироваться</button>
+              </form>
+            )}
+          </div>
+        </div>
+
+        {/* Модалка отзыва */}
+        <div className={`modal-ov${reviewModalOpen ? ' open' : ''}`} onClick={() => setReviewModalOpen(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
+            {reviewSubmitted ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}><div style={{ fontSize: 56, marginBottom: 16 }}>❤️</div><h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Спасибо за отзыв!</h3><p style={{ color: 'var(--muted)' }}>Ваше мнение очень важно для нас.</p></div>
+            ) : (
+              <>
+                <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Оставить отзыв</h3>
+                <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>Поделитесь впечатлениями о хабе{currentUser && <span style={{ display: 'block', marginTop: 8, color: 'var(--peach)', fontWeight: 600 }}>От имени: {currentUser.name}</span>}</p>
+                <form onSubmit={handleReviewSubmit}>
+                  <label className="modal-label">Оценка</label>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', fontSize: '28px' }}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span key={star} onClick={() => setReviewForm({ ...reviewForm, rating: star })} style={{ cursor: 'pointer', color: star <= reviewForm.rating ? '#f59e0b' : '#ccc' }}>★</span>
+                    ))}
+                  </div>
+                  <label className="modal-label">Ваш отзыв</label>
+                  <textarea className="modal-input" rows={4} required placeholder="Расскажите о своём опыте..." value={reviewForm.text} onChange={(e) => setReviewForm({ ...reviewForm, text: e.target.value })} style={{ resize: 'none' }} />
+                  <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Отправить отзыв</button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Новая модалка "Оставить вопрос" */}
+        <div className={`modal-ov${questionModalOpen ? ' open' : ''}`} onClick={() => setQuestionModalOpen(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
+            {questionSubmitted ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <div style={{ fontSize: 56, marginBottom: 16 }}>📨</div>
+                <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Вопрос отправлен!</h3>
+                <p style={{ color: 'var(--muted)' }}>Мы ответим вам в ближайшее время.</p>
+              </div>
+            ) : (
+              <>
+                <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Задать вопрос</h3>
+                <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>Напишите, и мы обязательно ответим</p>
+                <form onSubmit={handleQuestionSubmit}>
+                  <label className="modal-label">Ваше имя (необязательно)</label>
+                  <input
+                    className="modal-input"
+                    placeholder="Иван Иванов"
+                    value={questionForm.name}
+                    onChange={(e) => setQuestionForm({ ...questionForm, name: e.target.value })}
+                  />
+                  <label className="modal-label">Email или телефон *</label>
+                  <input
+                    className="modal-input"
+                    required
+                    placeholder="email@example.com или +7(123)456-78-90"
+                    value={questionForm.contact}
+                    onChange={(e) => setQuestionForm({ ...questionForm, contact: e.target.value })}
+                  />
+                  <label className="modal-label">Ваш вопрос *</label>
+                  <textarea
+                    className="modal-input"
+                    rows={4}
+                    required
+                    placeholder="Расскажите, что вас интересует..."
+                    value={questionForm.text}
+                    onChange={(e) => setQuestionForm({ ...questionForm, text: e.target.value })}
+                    style={{ resize: 'none' }}
+                  />
+                  <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+                    <button 
+                      type="submit" 
+                      className="btn-p" 
+                      style={{ flex: 1, justifyContent: 'center' }}
+                      disabled={isSending}
+                    >
+                      {isSending ? 'Отправка...' : 'Отправить'}
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn-s" 
+                      onClick={() => setQuestionModalOpen(false)}
+                      disabled={isSending}
+                    >
+                      Отмена
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </>
   );
 }
