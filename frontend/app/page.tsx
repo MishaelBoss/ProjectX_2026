@@ -158,6 +158,21 @@ export default function Home() {
   const [aiChat, setAiChat] = useState<{ role: 'user' | 'assistant'; text: string }[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
 
+  // Auth & Review states
+  const [authModalOpen, setAuthModalOpen] = useState<'login' | 'register' | null>(null);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [loginForm, setLoginForm] = useState({ login: '', password: '' });
+  const [registerForm, setRegisterForm] = useState({ login: '', password: '', confirmPassword: '' });
+  const [reviewForm, setReviewForm] = useState({ rating: 5, text: '' });
+  const [authError, setAuthError] = useState('');
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  // API state
+  const [currentUser, setCurrentUser] = useState<{ name: string; token: string } | null>(null);
+  const [apiReviews, setApiReviews] = useState<{ id: number; author_name: string; text: string; rating: number; created_at: string }[]>([]);
+
+  const API = 'http://localhost:8000/api';
+
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [showVideo, setShowVideo] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -168,6 +183,18 @@ export default function Home() {
     const saved = localStorage.getItem('hubTheme');
     if (saved === 'light') setIsDark(false);
     else if (saved === 'dark') setIsDark(true);
+
+    // Load reviews from API
+    fetch('http://localhost:8000/api/reviews/')
+      .then(res => res.json())
+      .then(data => setApiReviews(data))
+      .catch(() => {});
+
+    // Load user from localStorage
+    const savedUser = localStorage.getItem('hubUser');
+    if (savedUser) {
+      try { setCurrentUser(JSON.parse(savedUser)); } catch {}
+    }
   }, []);
 
   useEffect(() => {
@@ -253,6 +280,100 @@ export default function Home() {
       }]);
       setAiLoading(false);
     }, 1000);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    if (!loginForm.login || !loginForm.password) {
+      setAuthError('Заполните все поля');
+      return;
+    }
+    try {
+      const res = await fetch(`${API}/login/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: loginForm.login, password: loginForm.password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setAuthError(data.error || 'Ошибка входа');
+        return;
+      }
+      setCurrentUser({ name: data.name, token: data.token });
+      localStorage.setItem('hubUser', JSON.stringify({ name: data.name, token: data.token }));
+      setAuthModalOpen(null);
+      setLoginForm({ login: '', password: '' });
+    } catch {
+      setAuthError('Ошибка соединения с сервером');
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    if (!registerForm.login || !registerForm.password || !registerForm.confirmPassword) {
+      setAuthError('Заполните все поля');
+      return;
+    }
+    if (registerForm.password !== registerForm.confirmPassword) {
+      setAuthError('Пароли не совпадают');
+      return;
+    }
+    try {
+      const res = await fetch(`${API}/register/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: registerForm.login,
+          password: registerForm.password,
+          confirm_password: registerForm.confirmPassword,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const firstError = Object.values(data)[0];
+        setAuthError(Array.isArray(firstError) ? firstError[0] as string : String(firstError));
+        return;
+      }
+      setCurrentUser({ name: data.name, token: data.token });
+      localStorage.setItem('hubUser', JSON.stringify({ name: data.name, token: data.token }));
+      setAuthModalOpen(null);
+      setRegisterForm({ login: '', password: '', confirmPassword: '' });
+    } catch {
+      setAuthError('Ошибка соединения с сервером');
+    }
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) {
+      setReviewModalOpen(false);
+      setAuthModalOpen('login');
+      return;
+    }
+    try {
+      const res = await fetch(`${API}/reviews/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Token ${currentUser.token}`,
+        },
+        body: JSON.stringify({ text: reviewForm.text, rating: reviewForm.rating }),
+      });
+      if (res.ok) {
+        const newReview = await res.json();
+        setApiReviews(prev => [newReview, ...prev]);
+        setReviewSubmitted(true);
+        setTimeout(() => {
+          setReviewSubmitted(false);
+          setReviewModalOpen(false);
+          setReviewForm({ rating: 5, text: '' });
+        }, 2000);
+      }
+    } catch {
+      setAuthError('Ошибка отправки отзыва');
+    }
   };
 
 
@@ -483,6 +604,63 @@ export default function Home() {
         </ul>
         <div className="nav-right">
           <ThemeSwitcher isDark={isDark} onToggle={() => setIsDark((p) => !p)} />
+          {currentUser ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ 
+                fontSize: '12px', 
+                fontWeight: 600, 
+                color: 'var(--text)',
+                padding: '9px 16px',
+                background: 'rgba(244,165,130,0.1)',
+                borderRadius: '100px',
+                border: '1px solid rgba(244,165,130,0.3)'
+              }}>
+                👤 {currentUser.name}
+              </span>
+              <button
+                onClick={() => {
+                  setCurrentUser(null);
+                  localStorage.removeItem('hubUser');
+                }}
+                style={{
+                  background: 'none',
+                  border: '1px solid var(--border)',
+                  borderRadius: '100px',
+                  padding: '9px 16px',
+                  fontFamily: 'inherit',
+                  fontWeight: 600,
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  color: 'var(--muted)',
+                  transition: '0.3s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+              >
+                Выйти
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAuthModalOpen('login')}
+              style={{
+                background: 'none',
+                border: '1px solid var(--border)',
+                borderRadius: '100px',
+                padding: '9px 22px',
+                fontFamily: 'inherit',
+                fontWeight: 600,
+                fontSize: '12px',
+                cursor: 'pointer',
+                color: 'var(--text)',
+                transition: '0.3s',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+            >
+              Войти
+            </button>
+          )}
           <a
             href="#booking"
             className="nav-cta"
@@ -554,6 +732,19 @@ export default function Home() {
           <div style={{ display:'flex', gap:16, justifyContent:'center', flexWrap:'wrap' }}>
             <a href="#possibilities" className="btn-p" onClick={(e) => { e.preventDefault(); scrollTo('possibilities'); }}>Исследовать →</a>
             <a href="#booking" className="btn-s" onClick={(e) => { e.preventDefault(); openModal('Бронирование', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking.'); }}>Забронировать</a>
+            <button
+              onClick={() => {
+                if (!currentUser) {
+                  setAuthModalOpen('login');
+                } else {
+                  setReviewModalOpen(true);
+                }
+              }}
+              className="btn-s"
+              style={{ marginLeft: '8px' }}
+            >
+              📝 Оставить отзыв
+            </button>
           </div>
         </div>
 
@@ -665,7 +856,7 @@ export default function Home() {
           ))}
         </div>
         <div style={{ textAlign:'center', marginTop:48 }}>
-          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noreferrer" className="btn-s">📅 Записаться через бот</a>
+          <a href="https://t.me/HubEventMatch_bot" target="_blank" rel="noopener noreferrer" className="btn-s">📅 Записаться через бот</a>
         </div>
       </section>
 
@@ -679,7 +870,7 @@ export default function Home() {
 
         <div className="testimonial-slider">
           <div className="testimonial-track" style={{ transform: `translateX(-${testimonialIdx * 100}%)` }}>
-            {testimonials.map((t, idx) => (
+            {[...apiReviews.map(r => ({ name: r.author_name, role: 'Сотрудник', text: r.text, avatar: '👤' })), ...testimonials].map((t, idx) => (
               <div className="testimonial-slide" key={idx}>
                 <div className="card test-card" style={{ margin:0, width:'100%' }}>
                   <div className="test-avatar">{t.avatar}</div>
@@ -692,11 +883,11 @@ export default function Home() {
             ))}
           </div>
 
-          <button className="sl-btn sl-l" onClick={() => setTestimonialIdx((p) => (p - 1 + testimonials.length) % testimonials.length)}>←</button>
-          <button className="sl-btn sl-r" onClick={() => setTestimonialIdx((p) => (p + 1) % testimonials.length)}>→</button>
+          <button className="sl-btn sl-l" onClick={() => setTestimonialIdx((p) => (p - 1 + (apiReviews.length + testimonials.length)) % (apiReviews.length + testimonials.length))}>←</button>
+          <button className="sl-btn sl-r" onClick={() => setTestimonialIdx((p) => (p + 1) % (apiReviews.length + testimonials.length))}>→</button>
 
           <div className="dots">
-            {testimonials.map((_, i) => (
+            {[...apiReviews, ...testimonials].map((_, i) => (
               <div key={i} className={`dot ${i === testimonialIdx ? 'act' : ''}`} onClick={() => setTestimonialIdx(i)} />
             ))}
           </div>
@@ -754,7 +945,7 @@ export default function Home() {
               </div>
               <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{c.name}</h3>
               <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20,flexGrow: 1, lineHeight: 1.4}}>{c.role}</p>
-              <a href={`https://t.me/${c.tg}`} target="_blank" rel="noreferrer" className="btn-s" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textAlign: 'center' }}>✈️ Telegram</a>
+              <a href={`https://t.me/${c.tg}`} target="_blank" rel="noopener noreferrer" className="btn-s" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', textAlign: 'center' }}>✈️ Telegram</a>
             </div>
           ))}
 
@@ -842,6 +1033,157 @@ export default function Home() {
                   <button type="submit" className="btn-p" style={{ flex:1, justifyContent:'center', border:'none', cursor:'pointer', padding:'13px 0' }}>Отправить</button>
                   <button type="button" className="btn-s" style={{ padding:'13px 20px', cursor:'pointer' }} onClick={() => setApplyOpen(false)}>Отмена</button>
                 </div>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Модалка авторизации (вход/регистрация) */}
+      <div className={`modal-ov${authModalOpen ? ' open' : ''}`} onClick={() => setAuthModalOpen(null)}>
+        <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', borderBottom: '1px solid var(--border)' }}>
+            <button
+              onClick={() => setAuthModalOpen('login')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '8px 0',
+                fontSize: '18px',
+                fontWeight: authModalOpen === 'login' ? 700 : 400,
+                color: authModalOpen === 'login' ? 'var(--peach)' : 'var(--muted)',
+                cursor: 'pointer',
+                borderBottom: authModalOpen === 'login' ? '2px solid var(--peach)' : 'none',
+              }}
+            >
+              Вход
+            </button>
+            <button
+              onClick={() => setAuthModalOpen('register')}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: '8px 0',
+                fontSize: '18px',
+                fontWeight: authModalOpen === 'register' ? 700 : 400,
+                color: authModalOpen === 'register' ? 'var(--peach)' : 'var(--muted)',
+                cursor: 'pointer',
+                borderBottom: authModalOpen === 'register' ? '2px solid var(--peach)' : 'none',
+              }}
+            >
+              Регистрация
+            </button>
+          </div>
+
+          {authModalOpen === 'login' && (
+            <form onSubmit={handleLogin}>
+              <label className="modal-label">Имя</label>
+              <input
+                className="modal-input"
+                required
+                placeholder="Иван Иванов"
+                value={loginForm.login}
+                onChange={(e) => setLoginForm({ ...loginForm, login: e.target.value })}
+              />
+              <label className="modal-label">Пароль</label>
+              <input
+                className="modal-input"
+                type="password"
+                required
+                placeholder="••••••"
+                value={loginForm.password}
+                onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+              />
+              {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
+              <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
+                Войти
+              </button>
+            </form>
+          )}
+
+          {authModalOpen === 'register' && (
+            <form onSubmit={handleRegister}>
+              <label className="modal-label">Имя (только русские буквы)</label>
+              <input
+                className="modal-input"
+                required
+                placeholder="Иван Иванов"
+                value={registerForm.login}
+                onChange={(e) => setRegisterForm({ ...registerForm, login: e.target.value })}
+              />
+              <label className="modal-label">Пароль</label>
+              <input
+                className="modal-input"
+                type="password"
+                required
+                placeholder="••••••"
+                value={registerForm.password}
+                onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })}
+              />
+              <label className="modal-label">Повторите пароль</label>
+              <input
+                className="modal-input"
+                type="password"
+                required
+                placeholder="••••••"
+                value={registerForm.confirmPassword}
+                onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })}
+              />
+              {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
+              <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
+                Зарегистрироваться
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+
+      {/* Модалка отзыва */}
+      <div className={`modal-ov${reviewModalOpen ? ' open' : ''}`} onClick={() => setReviewModalOpen(false)}>
+        <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
+          {reviewSubmitted ? (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ fontSize: 56, marginBottom: 16 }}>❤️</div>
+              <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Спасибо за отзыв!</h3>
+              <p style={{ color: 'var(--muted)' }}>Ваше мнение очень важно для нас.</p>
+            </div>
+          ) : (
+            <>
+              <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 6 }}>Оставить отзыв</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>
+                Поделитесь впечатлениями о хабе
+                {currentUser && (
+                  <span style={{ display: 'block', marginTop: 8, color: 'var(--peach)', fontWeight: 600 }}>
+                    От имени: {currentUser.name}
+                  </span>
+                )}
+              </p>
+              <form onSubmit={handleReviewSubmit}>
+                <label className="modal-label">Оценка</label>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', fontSize: '28px' }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                      style={{ cursor: 'pointer', color: star <= reviewForm.rating ? '#f59e0b' : '#ccc' }}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <label className="modal-label">Ваш отзыв</label>
+                <textarea
+                  className="modal-input"
+                  rows={4}
+                  required
+                  placeholder="Расскажите о своём опыте..."
+                  value={reviewForm.text}
+                  onChange={(e) => setReviewForm({ ...reviewForm, text: e.target.value })}
+                  style={{ resize: 'none' }}
+                />
+                <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
+                  Отправить отзыв
+                </button>
               </form>
             </>
           )}
