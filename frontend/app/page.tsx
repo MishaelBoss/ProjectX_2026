@@ -274,7 +274,6 @@ export default function Home() {
 
   return (
     <>
-
       {/* AI‑Оверлей (затемнение) */}
       {aiOpen && (
         <div
