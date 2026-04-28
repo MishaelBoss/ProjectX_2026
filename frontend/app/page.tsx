@@ -167,47 +167,267 @@ const faqItems = [
 const loyaltyCategories = [
   {
     id: 'health', label: '🏋️ Здоровье', items: [
-      { icon:'🏋️', name:'Спортзал (в хабе)', addr:'ул. Костина, 6, 2 этаж', badge:'Бесплатно', desc:'Пн–Пт 12:00–13:00 группы, 07:00–21:00 индивидуально', contact:'Записаться в группу в телеграм' },
-      { icon:'🏊', name:'ФОК', addr:'ул. Октябрьская, 35', badge:'Скидка', desc:'Бассейн для сотрудников со скидкой', contact:'+7 (960) 174-16-67 Светлана' },
-      { icon:'💪', name:'Фитнес-студия Rush', addr:'ул. Костина, 3', badge:'Скидка', desc:'Скидки на посещение студии для сотрудников', contact:'+7 (910) 798-84-54 Ирина' },
-      { icon:'🥇', name:'Gold Fitness', addr:'ул. Казанское шоссе, 11', badge:'Скидка до 22%', desc:'По кодовому слову «СБ». Зависит от срока действия абонемента', contact:'+7 (910) 798-84-54 Ирина' },
-      { icon:'🧘', name:'Fitness House', addr:'ул. Московское шоссе, 4.12', badge:'Скидка 7%', desc:'По кодовому слову «СБ». При покупке бонус: заморозка / 50 мин солярий', contact:'+7 (930) 812-45-59 Катерина' },
-      { icon:'🧠', name:'Психолог', addr:'ул. Костина, 6, 4 этаж', badge:'По записи', desc:'На платформе Пульс → раздел «Психологическая поддержка»', contact:'Пульс → «НН Здоровье»' },
-      { icon:'🏄', name:'SUP-клуб Cristal SUP', addr:'Нижегородская область', badge:'Скидка 15%', desc:'Промокод «ХАБСБЕРА» на все сплавы', contact:'+7 (902) 302-02-88 Игнат' },
+      {
+        icon:'🏋️', name:'Спортзал (в хабе)', addr:'ул. Костина, 6, 2 этаж',
+        badge:'Бесплатно',
+        desc:'Пн–Пт 12:00–13:00 группы, 07:00–21:00 индивидуально',
+        contact:'+7 (960) 174-16-67 Светлана',
+        actions: [
+          { label:'Записаться в Telegram', tg:'https://t.me/SportBotVVB_bot' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Костина+6+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🏊', name:'ФОК', addr:'ул. Октябрьская, 35',
+        badge:'Скидка',
+        desc:'Бассейн для сотрудников со скидкой',
+        contact:'+7 (960) 174-16-67 Светлана',
+        actions: [
+          { label:'Записаться в Telegram', tg:'https://t.me/SportBotVVB_bot' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Октябрьская+35+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'💪', name:'Фитнес-студия Rush', addr:'ул. Костина, 3',
+        badge:'Скидка',
+        desc:'Скидки на посещение студии для сотрудников',
+        contact:'+7 (910) 798-84-54 Ирина',
+        actions: [
+          { label:'rush-nn.ru', site:'https://rush-nn.ru/' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Костина+3+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🥇', name:'Gold Fitness', addr:'ул. Казанское шоссе, 11 / ул. Коминтерна, 105А / ул. Н. Горького, 252',
+        badge:'Скидка до 22%',
+        desc:'По кодовому слову «СБ». Зависит от срока действия абонемента',
+        contact:'+7 (910) 798-84-54 Ирина',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=Gold+Fitness+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🧘', name:'Fitness House', addr:'ул. Московское шоссе, 4.12 / ул. Цветочная, 12',
+        badge:'Скидка 7%',
+        desc:'По кодовому слову «СБ». При покупке бонус: заморозка / 50 мин солярий',
+        contact:'+7 (930) 812-45-59 Катерина',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=Fitness+House+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🧠', name:'Психолог', addr:'ул. Костина, 6, 4 этаж',
+        badge:'По записи',
+        desc:'Запись через платформу Пульс → раздел «НН Здоровье» → «Психологическая поддержка»',
+        contact:'Пульс',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Костина+6+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🏄', name:'SUP-клуб Cristal SUP', addr:'Нижегородская область',
+        badge:'Скидка 15%',
+        desc:'Промокод «ХАБСБЕРА» на все сплавы',
+        contact:'+7 (902) 302-02-88 Игнат',
+        actions: [
+          { label:'cristalsup-nn.ru', site:'https://cristalsup-nn.ru' },
+        ]
+      },
+      {
+        icon:'🏃', name:'Беги, герой', addr:'Нижний Новгород',
+        badge:'Скидка',
+        desc:'Скидки на забеги для сотрудников по промокоду',
+        contact:'+7 (910) 798-84-54 Ирина',
+        actions: []
+      },
     ]
   },
   {
     id: 'leisure', label: '🎭 Досуг', items: [
-      { icon:'🌌', name:'Планетарий', addr:'пр. Гагарина, 32Б', badge:'Скидка 15%', desc:'По промокоду «ЗИБИНИ» на посещение для сотрудников', contact:'+7 (996) 851-50-54 Анна' },
-      { icon:'📚', name:'Библиотека', addr:'ул. Костина, 6, 3 этаж', badge:'Бесплатно', desc:'Взять книги, заказать или принести свои (буккроссинг)', contact:'Лифтовый холл' },
-      { icon:'🏨', name:'Клубный отель «Акватория»', addr:'пос. Турбаза 3Л', badge:'Скидка 20%', desc:'По промокоду «СБ»', contact:'+7 (915) 938-38-60 Ксения' },
-      { icon:'🏺', name:'Ceramica Lepka', addr:'Варварская 32, 5 этаж', badge:'Скидка 20%', desc:'По промокоду «СберКерамика»', contact:'+7 (920) 293-30-52 Мария' },
-      { icon:'🎵', name:'8 Нот', addr:'Онлайн', badge:'Скидка 200 ₽', desc:'Промокод SBERSTAFF при бронировании музыкально-развлекательной игры на сайте', contact:'8notaquiz.ru' },
-      { icon:'🎓', name:'Онлайн-школа Нины Зверевой', addr:'Онлайн', badge:'Скидка 25%', desc:'На все курсы кроме «Тайны тренера». Промокод «ХАБ»', contact:'zvereva-online.ru' },
+      {
+        icon:'🌌', name:'Планетарий', addr:'пр. Гагарина, 32Б (Парк «Швейцария»)',
+        badge:'Скидка 15%',
+        desc:'По промокоду «ЗИБИНИ» на посещение для сотрудников',
+        contact:'+7 (996) 851-50-54 Анна',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=Планетарий+Нижний+Новгород+Гагарина+32' },
+        ]
+      },
+      {
+        icon:'📚', name:'Библиотека', addr:'ул. Костина, 6, 3 этаж',
+        badge:'Бесплатно',
+        desc:'Взять книги, заказать или принести свои (буккроссинг)',
+        contact:'Лифтовый холл',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Костина+6+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🏨', name:'Клубный отель «Акватория»', addr:'пос. Турбаза 3Л',
+        badge:'Скидка 20%',
+        desc:'По промокоду «СБ»',
+        contact:'+7 (915) 938-38-60 Ксения',
+        actions: [
+          { label:'aquatori.ru', site:'http://aquatori.ru/' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=Акватория+Нижний+Новгород+Турбаза' },
+        ]
+      },
+      {
+        icon:'🏺', name:'Ceramica Lepka', addr:'ул. Варварская 32, 5 этаж',
+        badge:'Скидка 20%',
+        desc:'По промокоду «СберКерамика»',
+        contact:'+7 (920) 293-30-52 Мария',
+        actions: [
+          { label:'vk.com/ceramica_lepka', site:'https://vk.com/ceramica_lepka' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Варварская+32+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🎵', name:'8 Нот', addr:'Онлайн',
+        badge:'Скидка 200 ₽',
+        desc:'Промокод SBERSTAFF при бронировании музыкально-развлекательной игры',
+        contact:'8notaquiz.ru',
+        actions: [
+          { label:'8notaquiz.ru', site:'https://8notaquiz.ru/' },
+        ]
+      },
+      {
+        icon:'🎓', name:'Онлайн-школа Нины Зверевой', addr:'Онлайн',
+        badge:'Скидка 25%',
+        desc:'Промокод «ХАБ» на все курсы кроме «Тайны тренера»',
+        contact:'zvereva-online.ru',
+        actions: [
+          { label:'zvereva-online.ru', site:'https://zvereva-online.ru' },
+        ]
+      },
     ]
   },
   {
     id: 'beauty', label: '💅 Красота', items: [
-      { icon:'✂️', name:'Салон красоты', addr:'ул. Октябрьская, 35', badge:'Акции', desc:'Маникюр, ламинирование и окрашивание ресниц, архитектура бровей', contact:'Вступить в группу в телеграм' },
-      { icon:'💐', name:'Цветочный магазин LiLL', addr:'ул. Славянская 35, к.1', badge:'Скидка 10%', desc:'При предъявлении пропуска Сбера', contact:'Группа контакт' },
-      { icon:'💈', name:'Барбершоп «Мужская гармония»', addr:'ул. Белинского, 41', badge:'Скидка 15%', desc:'По промокоду «СБ»', contact:'+7 (953) 552-96-76' },
-      { icon:'🌿', name:'Спа-салон RAVAI SPA', addr:'ул. Б. Покровская, 29', badge:'Скидка 15%', desc:'На все услуги при предъявлении пропуска Сбера', contact:'+7 (953) 552-96-76' },
+      {
+        icon:'✂️', name:'Салон красоты', addr:'ул. Октябрьская, 35',
+        badge:'Акции',
+        desc:'Маникюр, ламинирование и окрашивание ресниц, архитектура бровей',
+        contact:'Вступить в группу в Telegram',
+        actions: [
+          { label:'Записаться в Telegram', tg:'https://t.me/' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Октябрьская+35+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'💐', name:'Цветочный магазин LiLL', addr:'ул. Славянская 35, к.1',
+        badge:'Скидка 10%',
+        desc:'При предъявлении пропуска Сбера',
+        contact:'Группа контакт',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Славянская+35+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'💈', name:'Барбершоп «Мужская гармония»', addr:'ул. Белинского, 41',
+        badge:'Скидка 15%',
+        desc:'По промокоду «СБ»',
+        contact:'+7 (953) 552-96-76',
+        actions: [
+          { label:'vk.com/mensgarmony', site:'https://vk.com/mensgarmony' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Белинского+41+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🌿', name:'Спа-салон RAVAI SPA', addr:'ул. Б. Покровская, 29',
+        badge:'Скидка 15%',
+        desc:'На все услуги при предъявлении пропуска Сбера',
+        contact:'+7 (953) 552-96-76',
+        actions: [
+          { label:'nn.rawaispa.ru', site:'https://nn.rawaispa.ru' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Покровская+29+Нижний+Новгород' },
+        ]
+      },
     ]
   },
   {
     id: 'care', label: '🛠 Забота', items: [
-      { icon:'👟', name:'Ремонт обуви', addr:'ул. Костина, 6, 2 этаж', badge:'Скидка 15%', desc:'По промокоду «СБ». Мастер сам принесёт и заберёт изделие', contact:'+7 (903) 052-61-29 Виталий' },
+      {
+        icon:'👟', name:'Ремонт обуви', addr:'ул. Костина, 6, 2 этаж',
+        badge:'Скидка 15%',
+        desc:'По промокоду «СБ». Мастер сам принесёт и заберёт изделие',
+        contact:'+7 (903) 052-61-29 Виталий',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Костина+6+Нижний+Новгород' },
+        ]
+      },
     ]
   },
   {
     id: 'food', label: '🍽 Еда', items: [
-      { icon:'🍱', name:'Вендинг «Обед Store»', addr:'ул. Костина, 6, 3 этаж (лифтовый холл)', badge:'Готовая еда', desc:'Рацион правильного питания в быстром доступе', contact:'kurtsevo.com' },
-      { icon:'☕', name:'Кофейня «Чёртова»', addr:'ул. Рождественская, 32 и ещё 2 точки', badge:'Скидка 10%', desc:'По промокоду «СБ» (произнести на кассе)', contact:'+7 (910) 145-72-78 Дмитрий' },
-      { icon:'🍺', name:'Бар-кафе «Горькая»', addr:'ул. Рождественская, 32', badge:'Скидка 10%', desc:'По промокоду «СБ НН Костина»', contact:'vk.ru/gorkayabar' },
-      { icon:'🍵', name:'Чайная «Горьков чай»', addr:'ул. Б. Покровская, 4, д. 93', badge:'Скидка 10%', desc:'При предъявлении пропуска Сбера', contact:'gorkovchay.ru' },
-      { icon:'🥘', name:'Шаурма у мангала за стеклом', addr:'ул. Костина, 13, к.1', badge:'Скидка 10%', desc:'При заказе от 1500 по промокоду «СБ» (произнести на кассе)', contact:'u-mangala-nn.ru' },
-      { icon:'🍃', name:'Китайский чай', addr:'ул. Рождественская, 185', badge:'Скидка 10%', desc:'На всю продукцию при предъявлении пропуска Сбера', contact:'shoptea.pro' },
-      { icon:'🫙', name:'Городецкая сыроварня «Курцево»', addr:'д. Курцево, 26', badge:'Скидка 15%', desc:'По промокоду «Сбер»', contact:'+7 (906) 361-59-60 Виктория' },
+      {
+        icon:'🍱', name:'Вендинг «Обед Store»', addr:'ул. Костина, 6, 3 этаж (лифтовый холл)',
+        badge:'Готовая еда',
+        desc:'Рацион правильного питания в быстром доступе',
+        contact:'kurtsevo.com',
+        actions: [
+          { label:'kurtsevo.com', site:'https://kurtsevo.com/' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Костина+6+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'☕', name:'Кофейня «Чёртова»', addr:'ул. Рождественская, 32 / ул. Б. Покровская, 10 / ул. Родионова, 187',
+        badge:'Скидка 10%',
+        desc:'По промокоду «СБ» (произнести на кассе)',
+        contact:'+7 (910) 145-72-78 Дмитрий',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=Кофейня+Чёртова+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🍺', name:'Бар-кафе «Горькая»', addr:'ул. Рождественская, 32',
+        badge:'Скидка 10%',
+        desc:'По промокоду «СБ НН Костина»',
+        contact:'vk.ru/gorkayabar',
+        actions: [
+          { label:'vk.ru/gorkayabar', site:'https://vk.ru/gorkayabar' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Рождественская+32+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🍵', name:'Чайная «Горьков чай»', addr:'ул. Б. Покровская, 4, д. 93',
+        badge:'Скидка 10%',
+        desc:'При предъявлении пропуска Сбера',
+        contact:'gorkovchay.ru',
+        actions: [
+          { label:'gorkovchay.ru', site:'https://gorkovchay.ru' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Покровская+4+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🥘', name:'Шаурма у мангала за стеклом', addr:'ул. Костина, 13, к.1',
+        badge:'Скидка 10%',
+        desc:'При заказе от 1500 по промокоду «СБ» (произнести на кассе)',
+        contact:'u-mangala-nn.ru',
+        actions: [
+          { label:'u-mangala-nn.ru', site:'https://u-mangala-nn.ru/' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Костина+13+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🍃', name:'Китайский чай', addr:'ул. Рождественская, 185 / ул. Цветочная, 12 ТЦ «Цветы»',
+        badge:'Скидка 10%',
+        desc:'На всю продукцию при предъявлении пропуска Сбера',
+        contact:'shoptea.pro',
+        actions: [
+          { label:'shoptea.pro', site:'https://www.shoptea.pro/' },
+          { label:'На карте', map:'https://yandex.ru/maps/?text=ул.+Рождественская+185+Нижний+Новгород' },
+        ]
+      },
+      {
+        icon:'🫙', name:'Городецкая сыроварня «Курцево»', addr:'д. Курцево, 26',
+        badge:'Скидка 15%',
+        desc:'По промокоду «Сбер»',
+        contact:'+7 (906) 361-59-60 Виктория',
+        actions: [
+          { label:'На карте', map:'https://yandex.ru/maps/?text=Курцево+Нижегородская+область' },
+        ]
+      },
     ]
   },
 ];
@@ -232,12 +452,10 @@ export default function Home() {
   const [aiChat, setAiChat] = useState<{ role: 'user' | 'assistant'; text: string }[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('health');
-  // Новая модалка "Оставить вопрос"
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
   const [questionForm, setQuestionForm] = useState({ name: '', contact: '', text: '' });
   const [questionSubmitted, setQuestionSubmitted] = useState(false);
 
-  // Auth & Review states
   const [authModalOpen, setAuthModalOpen] = useState<'login' | 'register' | null>(null);
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
   const [loginForm, setLoginForm] = useState({ login: '', password: '' });
@@ -246,15 +464,12 @@ export default function Home() {
   const [authError, setAuthError] = useState('');
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
-  // API state
   const [currentUser, setCurrentUser] = useState<{ name: string; token: string } | null>(null);
   const [apiReviews, setApiReviews] = useState<Review[]>([]);
 
-  // Booking state
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [bookingForm, setBookingForm] = useState({ name: '', date: '', time: '' });
 
-  // Checklist map state
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -264,10 +479,8 @@ export default function Home() {
   const handleVideoEnd = () => setShowVideo(false);
 
   const [isSending, setIsSending] = useState(false); 
-
   const [isLoadingPage, setIsLoadingPage] = useState(true);
 
-  // Автопереключение слайдов для офиса
   const autoSlideInterval = useRef<NodeJS.Timeout | null>(null);
   const startAutoSlide = () => {
     if (autoSlideInterval.current) clearInterval(autoSlideInterval.current);
@@ -279,7 +492,6 @@ export default function Home() {
     if (autoSlideInterval.current) clearInterval(autoSlideInterval.current);
     autoSlideInterval.current = null;
   };
-  // Автопереключение для отзывов (комбинированные: api + статические)
   const testimonialTotal = apiReviews.length + testimonials.length;
   const autoTestimonialInterval = useRef<NodeJS.Timeout | null>(null);
   const startAutoTestimonial = () => {
@@ -293,7 +505,6 @@ export default function Home() {
     autoTestimonialInterval.current = null;
   };
 
-  // Запускаем автопрокрутку после загрузки данных
   useEffect(() => {
     if (!isLoadingPage) {
       startAutoSlide();
@@ -305,7 +516,6 @@ export default function Home() {
     };
   }, [isLoadingPage, apiReviews.length]);
 
-  // При ручном переключении слайдов – сброс таймера
   const handleOfficeManual = (newIdx: number) => {
     setOfficeIdx(newIdx);
     stopAutoSlide();
@@ -317,7 +527,6 @@ export default function Home() {
     startAutoTestimonial();
   };
 
-  // AI агент – расширенный ответ на базовые вопросы
   const getAiResponse = (question: string): string => {
     const q = question.toLowerCase();
     if (q.includes('спортзал') || q.includes('тренажер') || q.includes('зал')) {
@@ -358,11 +567,9 @@ export default function Home() {
     }, 800);
   };
 
-  // Обработка формы вопроса
   const handleQuestionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSending) return;
-
     setIsSending(true);
     try {
         await sendQuestion(questionForm);
@@ -380,14 +587,12 @@ export default function Home() {
     }
   };
 
-  // Единая инициализация
   useEffect(() => {
     const init = async () => {
       const savedTheme = localStorage.getItem('hubTheme');
       if (savedTheme === 'light') setIsDark(false);
       else if (savedTheme === 'dark') setIsDark(true);
       else setIsDark(true);
-
       const savedChecklist = localStorage.getItem('hubChecklistGrouped');
       if (savedChecklist) {
         try {
@@ -397,21 +602,17 @@ export default function Home() {
           }
         } catch (e) {}
       }
-
       const savedUser = localStorage.getItem('hubUser');
       if (savedUser) {
         try { setCurrentUser(JSON.parse(savedUser)); } catch {}
       }
-
       try {
         const reviews = await getReviews();
         setApiReviews(reviews);
       } catch (error) {
         console.error('Failed to load reviews', error);
       }
-
       setIsClient(true);
-      
       await new Promise(resolve => setTimeout(resolve, 2500));
       setIsLoadingPage(false);
     };
@@ -635,7 +836,6 @@ export default function Home() {
         transition: 'opacity 0.8s ease',
         pointerEvents: isLoadingPage ? 'none' : 'auto',
       }}>
-        {/* AI‑Оверлей */}
         {aiOpen && (
           <div
             onClick={() => setAiOpen(false)}
@@ -643,7 +843,6 @@ export default function Home() {
           />
         )}
 
-        {/* Плавающая кнопка AI */}
         <button
           onClick={() => setAiOpen(true)}
           style={{
@@ -652,13 +851,13 @@ export default function Home() {
             border: 'none', cursor: 'pointer', zIndex: 103, display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '28px', transition: 'transform 0.2s', overflow: 'hidden',
           }}
+          aria-label="button"
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.1)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           <Image src="/bot-chat.png" alt="bot-chat" width={60} height={50} style={{ objectFit: 'cover' }} />
         </button>
 
-        {/* AI-модалка */}
         <div
           style={{
             position: 'fixed', bottom: 0, right: 0, left: 'auto', width: 'min(90%, 400px)',
@@ -671,7 +870,7 @@ export default function Home() {
         >
           <div style={{ padding: '16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}>
             <span style={{ fontWeight: 600, fontFamily: 'Unbounded, sans-serif', fontSize: '16px' }}>AI‑помощник</span>
-            <button onClick={() => setAiOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }}>✕</button>
+            <button onClick={() => setAiOpen(false)} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }} aria-label="close">✕</button>
           </div>
           <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '60vh' }}>
             {aiChat.length === 0 && (
@@ -692,7 +891,7 @@ export default function Home() {
           </div>
           <form onSubmit={handleAiSend} style={{ padding: '16px', borderTop: '1px solid var(--border)', display: 'flex', gap: '12px', background: 'var(--bg2)' }}>
             <input type="text" placeholder="Спросите что-нибудь..." value={aiMessage} onChange={(e) => setAiMessage(e.target.value)} style={{ flex: 1, padding: '10px 16px', borderRadius: '100px', border: '1px solid var(--border)', background: 'var(--input-bg)', color: 'var(--text)', fontSize: '14px', outline: 'none' }} />
-            <button type="submit" disabled={aiLoading} style={{ background: 'linear-gradient(135deg, var(--peach), var(--pink))', border: 'none', borderRadius: '100px', padding: '0 20px', fontWeight: 600, cursor: 'pointer', color: '#12001a' }}>Отправить</button>
+            <button type="submit" disabled={aiLoading} style={{ background: 'linear-gradient(135deg, var(--peach), var(--pink))', border: 'none', borderRadius: '100px', padding: '0 20px', fontWeight: 600, cursor: 'pointer', color: '#12001a' }} aria-label="отправить">Отправить</button>
           </form>
         </div>
 
@@ -710,10 +909,10 @@ export default function Home() {
             {currentUser ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text)', padding: '9px 16px', background: 'rgba(244,165,130,0.1)', borderRadius: '100px', border: '1px solid rgba(244,165,130,0.3)' }}>👤 {currentUser.name}</span>
-                <button onClick={() => { setCurrentUser(null); localStorage.removeItem('hubUser'); }} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 16px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--muted)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}>Выйти</button>
+                <button onClick={() => { setCurrentUser(null); localStorage.removeItem('hubUser'); }} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 16px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--muted)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')} aria-label="exit">Выйти</button>
               </div>
             ) : (
-              <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 22px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--text)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}>Войти</button>
+              <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '100px', padding: '9px 22px', fontFamily: 'inherit', fontWeight: 600, fontSize: '12px', cursor: 'pointer', color: 'var(--text)', transition: '0.3s' }} onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')} onMouseLeave={(e) => (e.currentTarget.style.background = 'none')} aria-label="войти">Войти</button>
             )}
             <a href="#booking" className="nav-cta" onClick={(e) => { e.preventDefault(); setBookingModalOpen(true); }}>Забронировать</a>
           </div>
@@ -721,9 +920,18 @@ export default function Home() {
 
         <div className="mobile-bar">
           {[
-            { id: 'hero', ico: '🏠' }, { id: 'possibilities', ico: '⚡' }, { id: 'checklist', ico: '✅' }, { id: 'contacts', ico: '👥' }, { id: 'faq', ico: '❓' },
+            { id: 'hero', ico: '/sber_home.jpg', label: 'Главная' },
+            { id: 'possibilities', ico: '/sber_lightning.jpg', label: 'Возможности' },
+            { id: 'checklist', ico: '/sber.jpg', label: 'Чек-лист' },
+            { id: 'contacts', ico: '/sber_people.jpg', label: 'Контакты' },
+            { id: 'faq', ico: '/sber_help.jpg', label: 'FAQ' },
           ].map((b) => (
-            <button key={b.id} className={activeSection === b.id ? 'act' : ''} onClick={() => scrollTo(b.id)}>{b.ico}</button>
+            <button key={b.id} className={activeSection === b.id ? 'act' : ''} onClick={() => scrollTo(b.id)} aria-label={b.label}>
+              <div className="mobile-bar-icon">
+                <Image src={b.ico} alt={b.label} width={28} height={28} />
+              </div>
+              <span className="mobile-bar-label">{b.label}</span>
+            </button>
           ))}
         </div>
 
@@ -759,8 +967,8 @@ export default function Home() {
             <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href="#possibilities" className="btn-p" onClick={(e) => { e.preventDefault(); scrollTo('possibilities'); }}>Исследовать →</a>
               <a href="#booking" className="btn-s" onClick={(e) => { e.preventDefault(); setBookingModalOpen(true); }}>Забронировать</a>
-              <button onClick={() => { if (!currentUser) setAuthModalOpen('login'); else setReviewModalOpen(true); }} className="btn-s" style={{ marginLeft: '8px' }}>Оставить отзыв</button>
-              <button onClick={() => setQuestionModalOpen(true)} className="btn-s" style={{ marginLeft: '8px' }}>Задать вопрос</button>
+              <button onClick={() => { if (!currentUser) setAuthModalOpen('login'); else setReviewModalOpen(true); }} className="btn-s" style={{ marginLeft: '8px' }} aria-label="оставить отзыв">Оставить отзыв</button>
+              <button onClick={() => setQuestionModalOpen(true)} className="btn-s" style={{ marginLeft: '8px' }} aria-label="задать вопрос">Задать вопрос</button>
             </div>
           </div>
 
@@ -794,8 +1002,8 @@ export default function Home() {
               <img className="slide-img" src={officePhotos[officeIdx].url} alt={officePhotos[officeIdx].title} />
               <div className="slide-caption">{officePhotos[officeIdx].title}</div>
             </div>
-            <button className="sl-btn sl-l" onClick={() => handleOfficeManual((officeIdx - 1 + officePhotos.length) % officePhotos.length)}>←</button>
-            <button className="sl-btn sl-r" onClick={() => handleOfficeManual((officeIdx + 1) % officePhotos.length)}>→</button>
+            <button className="sl-btn sl-l" onClick={() => handleOfficeManual((officeIdx - 1 + officePhotos.length) % officePhotos.length)} aria-label="назад">←</button>
+            <button className="sl-btn sl-r" onClick={() => handleOfficeManual((officeIdx + 1) % officePhotos.length)} aria-label="вперел">→</button>
             <div className="dots">
               {officePhotos.map((_, i) => (
                 <div key={i} className={`dot ${i === officeIdx ? 'act' : ''}`} onClick={() => handleOfficeManual(i)} />
@@ -830,7 +1038,7 @@ export default function Home() {
             ))}
           </div>
           <div style={{ textAlign: 'center', marginTop: 52 }}>
-            <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}>Забронировать переговорную →</button>
+            <button className="btn-p" onClick={() => openModal('Забронировать переговорную', 'Свяжитесь с Ириной Кузнецовой в Telegram: @irina_booking, или через внутренний портал.')}aria-label="забронировать переговорную">Забронировать переговорную →</button>
           </div>
         </section>
 
@@ -846,6 +1054,7 @@ export default function Home() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
+                aria-label={cat.label}
                 style={{
                   display:'flex', alignItems:'center', gap:8,
                   padding:'10px 22px', borderRadius:100, fontSize:13, fontWeight:700,
@@ -860,7 +1069,6 @@ export default function Home() {
               </button>
             ))}
           </div>
-          {/* ── Карточки активной категории ── */}
           <div
             key={activeCategory}
             style={{
@@ -875,11 +1083,7 @@ export default function Home() {
             {loyaltyCategories
               .find(c => c.id === activeCategory)?.items
               .map((item, i) => (
-                <div
-                  key={i}
-                  className="card"
-                  style={{ display:'flex', flexDirection:'column', gap:12, padding:24 }}>
-                  {/* Шапка */}
+                <div key={i} className="card" style={{ display:'flex', flexDirection:'column', gap:12, padding:24 }}>
                   <div style={{ display:'flex', alignItems:'flex-start', gap:14 }}>
                     <span style={{ fontSize:36, flexShrink:0 }}>{item.icon}</span>
                     <div>
@@ -887,24 +1091,54 @@ export default function Home() {
                       <div style={{ fontSize:12, color:'var(--muted)', marginTop:3 }}>📍 {item.addr}</div>
                     </div>
                   </div>
-                  {/* Бейдж скидки */}
                   <div style={{
                     display:'inline-flex', alignItems:'center', gap:6,
                     padding:'5px 14px', borderRadius:100, fontSize:12, fontWeight:700,
                     background:'rgba(244,165,130,.12)', border:'1px solid rgba(244,165,130,.35)',
-                    color:'#f4a582', width:'fit-content',
+                    color:'var(--peach)', width:'fit-content',
                   }}>
                     🎁 {item.badge}
                   </div>
-                  {/* Описание */}
                   <p style={{ fontSize:13, color:'var(--muted)', lineHeight:1.6, flex:1 }}>{item.desc}</p>
-                  {/* Контакт */}
-                  <div style={{ fontSize:12, color:'#5bc8f5', fontWeight:600 }}>📞 {item.contact}</div>
+                  <div style={{ fontSize:12, color:'var(--blue)', fontWeight:600 }}>📞 {item.contact}</div>
+                  {item.actions && item.actions.length > 0 && (
+                    <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginTop:4 }}>
+                      {item.actions.map((action, j) => {
+                        const href = action.tg || action.site || action.map || '#';
+                        const isTg = !!action.tg;
+                        const isMap = !!action.map;
+                        const prefix = isTg ? '✈️ ' : isMap ? '🗺 ' : '🔗 ';
+                        return (
+                          <a
+                            key={j}
+                            href={href}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              display:'inline-flex', alignItems:'center', gap:4,
+                              padding:'7px 14px', borderRadius:100, fontSize:12, fontWeight:600,
+                              textDecoration:'none', transition:'all .2s',
+                              background: isTg
+                                ? 'rgba(91,200,245,.1)'
+                                : isMap
+                                  ? 'rgba(179,136,247,.1)'
+                                  : 'rgba(244,165,130,.1)',
+                              border: `1px solid ${isTg ? 'rgba(91,200,245,.35)' : isMap ? 'rgba(179,136,247,.35)' : 'rgba(244,165,130,.35)'}`,
+                              color: isTg ? 'var(--blue)' : isMap ? 'var(--purple)' : 'var(--peach)',
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.opacity = '0.75')}
+                            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                          >
+                            {prefix}{action.label}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               ))
             }
           </div>
-          {/* Ивенты */}
           <div style={{ maxWidth:1100, margin:'48px auto 0' }}>
             <div style={{ textAlign:'center', marginBottom:28 }}>
               <div className="s-label">Мероприятия</div>
@@ -950,8 +1184,8 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <button className="sl-btn sl-l" onClick={() => handleTestimonialManual((testimonialIdx - 1 + testimonialTotal) % testimonialTotal)}>←</button>
-            <button className="sl-btn sl-r" onClick={() => handleTestimonialManual((testimonialIdx + 1) % testimonialTotal)}>→</button>
+            <button className="sl-btn sl-l" onClick={() => handleTestimonialManual((testimonialIdx - 1 + testimonialTotal) % testimonialTotal)} aria-label="вперед">←</button>
+            <button className="sl-btn sl-r" onClick={() => handleTestimonialManual((testimonialIdx + 1) % testimonialTotal)} aria-label="назад">→</button>
             <div className="dots">
               {[...apiReviews, ...testimonials].map((_, i) => (
                 <div key={i} className={`dot ${i === testimonialIdx ? 'act' : ''}`} onClick={() => handleTestimonialManual(i)} />
@@ -960,7 +1194,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── КАРТА-ЛИНИЯ С ПРОГРЕССОМ (чек-лист) ── */}
         <div className="divider-peach" />
         <section id="checklist" className="sec sec-alt" style={{ position: 'relative', overflow: 'hidden' }}>
           <div className="deco" style={{ width: 300, height: 300, bottom: 0, left: -80, opacity: 0.2, animation: 'deco-float 16s ease-in-out infinite' }}><img src="/brandbook/23.png" alt="" /></div>
@@ -1023,7 +1256,7 @@ export default function Home() {
               <div className="checklist-modal" onClick={(e) => e.stopPropagation()}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                   <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: '22px', margin: 0 }}>{checklistGrouped[selectedDay].day}</h3>
-                  <button onClick={() => setSelectedDay(null)} style={{ background: 'none', border: 'none', fontSize: '26px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }}>✕</button>
+                  <button onClick={() => setSelectedDay(null)} style={{ background: 'none', border: 'none', fontSize: '26px', cursor: 'pointer', color: 'var(--text)', opacity: 0.7 }} aria-label="закрыть">✕</button>
                 </div>
                 <div>
                   {checklistGrouped[selectedDay].items.map((item, idx) => (
@@ -1074,7 +1307,7 @@ export default function Home() {
               <div className="contact-avatar"><img src="add.png" alt="add" /></div>
               <h3 style={{ fontFamily: 'Unbounded, sans-serif', fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Хочу в команду</h3>
               <p style={{ color: 'var(--muted)', fontSize: 12, marginBottom: 20, flexGrow: 1, lineHeight: 1.4 }}>Присоединяйтесь к нам!</p>
-              <button className="btn-p" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Заявка →</button>
+              <button className="btn-p" style={{ fontSize: 12, padding: '11px 20px', marginTop: 'auto', width: '100%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-label="заявка">Заявка →</button>
             </div>
           </div>
         </section>
@@ -1107,7 +1340,6 @@ export default function Home() {
           <div style={{ color: 'var(--muted)', fontSize: 13 }}>ул. Костина, 6, Нижний Новгород · © 2026 Сбер</div>
         </footer>
 
-        {/* Модалка бронирования */}
         <div className={`modal-ov${bookingModalOpen ? ' open' : ''}`} onClick={() => setBookingModalOpen(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 16 }}>Бронирование</h3>
@@ -1122,14 +1354,13 @@ export default function Home() {
                 {timeSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
               </select>
               <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
-                <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center' }}>Отправить</button>
-                <button type="button" className="btn-s" onClick={() => setBookingModalOpen(false)}>Отмена</button>
+                <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center' }} aria-label="отправить">Отправить</button>
+                <button type="button" className="btn-s" onClick={() => setBookingModalOpen(false)} aria-label="отмена">Отмена</button>
               </div>
             </form>
           </div>
         </div>
 
-        {/* Модалка "Хочу в команду" */}
         <div className={`modal-ov${applyOpen ? ' open' : ''}`} onClick={() => { setApplyOpen(false); setApplyDone(false); }}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             {applyDone ? (
@@ -1144,8 +1375,8 @@ export default function Home() {
                   <label className="modal-label">Telegram</label><input className="modal-input" placeholder="@username" value={applyForm.tg} onChange={(e) => setApplyForm({ ...applyForm, tg: e.target.value })} />
                   <label className="modal-label">О себе</label><textarea className="modal-input" rows={3} placeholder="Расскажите немного о себе..." value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} style={{ resize: 'none' }} />
                   <div style={{ display: 'flex', gap: 12, marginTop: 4 }}>
-                    <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer', padding: '13px 0' }}>Отправить</button>
-                    <button type="button" className="btn-s" style={{ padding: '13px 20px', cursor: 'pointer' }} onClick={() => setApplyOpen(false)}>Отмена</button>
+                    <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: 'pointer', padding: '13px 0' }} aria-label="отправить">Отправить</button>
+                    <button type="button" className="btn-s" style={{ padding: '13px 20px', cursor: 'pointer' }} onClick={() => setApplyOpen(false)} aria-label="отмена">Отмена</button>
                   </div>
                 </form>
               </>
@@ -1153,19 +1384,18 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Модалка авторизации */}
         <div className={`modal-ov${authModalOpen ? ' open' : ''}`} onClick={() => setAuthModalOpen(null)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
             <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', borderBottom: '1px solid var(--border)' }}>
-              <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'login' ? 700 : 400, color: authModalOpen === 'login' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'login' ? '2px solid var(--peach)' : 'none' }}>Вход</button>
-              <button onClick={() => setAuthModalOpen('register')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'register' ? 700 : 400, color: authModalOpen === 'register' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'register' ? '2px solid var(--peach)' : 'none' }}>Регистрация</button>
+              <button onClick={() => setAuthModalOpen('login')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'login' ? 700 : 400, color: authModalOpen === 'login' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'login' ? '2px solid var(--peach)' : 'none' }} aria-label="вход">Вход</button>
+              <button onClick={() => setAuthModalOpen('register')} style={{ background: 'none', border: 'none', padding: '8px 0', fontSize: '18px', fontWeight: authModalOpen === 'register' ? 700 : 400, color: authModalOpen === 'register' ? 'var(--peach)' : 'var(--muted)', cursor: 'pointer', borderBottom: authModalOpen === 'register' ? '2px solid var(--peach)' : 'none' }} aria-label="регистрация">Регистрация</button>
             </div>
             {authModalOpen === 'login' && (
               <form onSubmit={handleLogin}>
                 <label className="modal-label">Имя</label><input className="modal-input" required placeholder="Иван Иванов" value={loginForm.login} onChange={(e) => setLoginForm({ ...loginForm, login: e.target.value })} />
                 <label className="modal-label">Пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
                 {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
-                <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Войти</button>
+                <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }} aria-label="войти">Войти</button>
               </form>
             )}
             {authModalOpen === 'register' && (
@@ -1174,13 +1404,12 @@ export default function Home() {
                 <label className="modal-label">Пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
                 <label className="modal-label">Повторите пароль</label><input className="modal-input" type="password" required placeholder="••••••" value={registerForm.confirmPassword} onChange={(e) => setRegisterForm({ ...registerForm, confirmPassword: e.target.value })} />
                 {authError && <div style={{ color: '#e8609a', fontSize: '13px', marginBottom: '16px' }}>{authError}</div>}
-                <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Зарегистрироваться</button>
+                <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }} aria-label="зарегистрироваться">Зарегистрироваться</button>
               </form>
             )}
           </div>
         </div>
 
-        {/* Модалка отзыва */}
         <div className={`modal-ov${reviewModalOpen ? ' open' : ''}`} onClick={() => setReviewModalOpen(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
             {reviewSubmitted ? (
@@ -1202,14 +1431,13 @@ export default function Home() {
                   </div>
                   <label className="modal-label">Ваш отзыв</label>
                   <textarea className="modal-input" rows={4} required placeholder="Расскажите о своём опыте..." value={reviewForm.text} onChange={(e) => setReviewForm({ ...reviewForm, text: e.target.value })} style={{ resize: 'none' }} />
-                  <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>Отправить отзыв</button>
+                  <button type="submit" className="btn-p" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }} aria-label="отправить отзыв">Отправить отзыв</button>
                 </form>
               </>
             )}
           </div>
         </div>
 
-        {/* Новая модалка "Оставить вопрос" */}
         <div className={`modal-ov${questionModalOpen ? ' open' : ''}`} onClick={() => setQuestionModalOpen(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 520 }}>
             {questionSubmitted ? (
@@ -1254,6 +1482,7 @@ export default function Home() {
                       className="btn-p" 
                       style={{ flex: 1, justifyContent: 'center' }}
                       disabled={isSending}
+                      aria-label={isSending ? 'Отправка...' : 'Отправить'}
                     >
                       {isSending ? 'Отправка...' : 'Отправить'}
                     </button>
@@ -1262,6 +1491,7 @@ export default function Home() {
                       className="btn-s" 
                       onClick={() => setQuestionModalOpen(false)}
                       disabled={isSending}
+                      aria-label="Отмена"
                     >
                       Отмена
                     </button>
