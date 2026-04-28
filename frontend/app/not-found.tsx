@@ -134,6 +134,7 @@ export default function NotFound() {
           alt=""
           style={{ position:'absolute', width:60, height:60, right:'22%', top:'15%', opacity:0.3, animation:'star-twinkle 3s ease-in-out infinite' }}
         />
+
         <img
           src="/brandbook/16.png"
           alt=""
@@ -186,7 +187,7 @@ export default function NotFound() {
 
         {/* SVG-кот (видео) */}
         <div style={{ animation:'float 4s ease-in-out infinite', marginBottom:32, filter:'drop-shadow(0 0 30px var(--peach))' }}>
-          <video src="sber_cat_error.webm" loop autoPlay muted playsInline style={{ maxWidth: '100%', height: 'auto' }} />
+          <video src="sber_cat_error.webm" loop autoPlay muted playsInline style={{ maxWidth: '80%', height: 'auto' }} />
         </div>
 
         {/* Текст */}
