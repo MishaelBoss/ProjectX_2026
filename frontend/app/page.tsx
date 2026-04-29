@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useEffect, useState, useRef } from 'react';
-import { createReview, getReviews, login, register, sendQuestion } from './lib/api';
+import { createReview, getReviews, login, register, sendQuestion, createBooking, getBookedSlots } from './lib/api';
 import { Review } from './types/review.types';
 import Link from 'next/link';
 
@@ -469,7 +469,11 @@ export default function Home() {
   const [apiReviews, setApiReviews] = useState<Review[]>([]);
 
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
-  const [bookingForm, setBookingForm] = useState({ name: '', date: '', time: '' });
+  const [bookingForm, setBookingForm] = useState({ name: '', date: '', time_start: '', time_end: '' });
+  const [bookingError, setBookingError] = useState('');
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState<{ time_start: string; time_end: string }[]>([]);
 
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -614,7 +618,7 @@ export default function Home() {
         console.error('Failed to load reviews', error);
       }
       setIsClient(true);
-      await new Promise(resolve => setTimeout(resolve, 2500));
+      await new Promise(resolve => setTimeout(resolve, 800));
       setIsLoadingPage(false);
     };
     init();
@@ -767,11 +771,43 @@ export default function Home() {
     }
   };
 
-  const handleBookingSubmit = (e: React.FormEvent) => {
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Бронирование:', bookingForm);
-    setBookingModalOpen(false);
-    setBookingForm({ name: '', date: '', time: '' });
+    setBookingError('');
+    setBookingLoading(true);
+    try {
+      await createBooking(bookingForm);
+      setBookingSuccess(true);
+      setTimeout(() => {
+        setBookingSuccess(false);
+        setBookingModalOpen(false);
+        setBookingForm({ name: '', date: '', time_start: '', time_end: '' });
+        setBookedSlots([]);
+      }, 3000);
+    } catch (err: any) {
+      if (err.response?.status === 409) {
+        setBookingError(err.response.data?.conflict || 'Коворкинг занят на это время');
+      } else {
+        setBookingError(err.response?.data?.detail || 'Ошибка при бронировании. Попробуйте ещё раз.');
+      }
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  const handleBookingDateChange = async (date: string) => {
+    setBookingForm(prev => ({ ...prev, date }));
+    setBookingError('');
+    if (date) {
+      try {
+        const slots = await getBookedSlots(date);
+        setBookedSlots(slots);
+      } catch {
+        setBookedSlots([]);
+      }
+    } else {
+      setBookedSlots([]);
+    }
   };
 
   const openModal = (title: string, body: string) => setModal({ open: true, title, body });
@@ -1343,24 +1379,87 @@ export default function Home() {
           <div style={{ color: 'var(--muted)', fontSize: 13 }}>ул. Костина, 6, Нижний Новгород · © 2026 Сбер</div>
         </footer>
 
-        <div className={`modal-ov${bookingModalOpen ? ' open' : ''}`} onClick={() => setBookingModalOpen(false)}>
+        <div className={`modal-ov${bookingModalOpen ? ' open' : ''}`} onClick={() => { setBookingModalOpen(false); setBookingError(''); setBookingSuccess(false); }}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 16 }}>Бронирование</h3>
-            <form onSubmit={handleBookingSubmit}>
-              <label className="modal-label">Имя *</label>
-              <input className="modal-input" required placeholder="Иван Иванов" value={bookingForm.name} onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })} />
-              <label className="modal-label">Дата *</label>
-              <input className="modal-input" type="date" required value={bookingForm.date} onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })} />
-              <label className="modal-label">Время *</label>
-              <select className="modal-input" required value={bookingForm.time} onChange={(e) => setBookingForm({ ...bookingForm, time: e.target.value })} style={{ cursor: 'pointer' }}>
-                <option value="" disabled>Выберите время</option>
-                {timeSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
-              </select>
-              <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
-                <button type="submit" className="btn-p" style={{ flex: 1, justifyContent: 'center' }} aria-label="отправить">Отправить</button>
-                <button type="button" className="btn-s" onClick={() => setBookingModalOpen(false)} aria-label="отмена">Отмена</button>
+            {bookingSuccess ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <div style={{ fontSize: 64, marginBottom: 20 }}>✅</div>
+                <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 20, marginBottom: 12 }}>Коворкинг забронирован!</h3>
+                <p style={{ color: 'var(--muted)' }}>Подтверждение отправлено на почту.</p>
               </div>
-            </form>
+            ) : (
+              <>
+                <h3 style={{ fontFamily: 'Unbounded,sans-serif', fontWeight: 700, fontSize: 22, marginBottom: 6 }}>Бронирование коворкинга</h3>
+                <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>Выберите дату и время — мы проверим доступность</p>
+                <form onSubmit={handleBookingSubmit}>
+                  <label className="modal-label">Имя *</label>
+                  <input
+                    className="modal-input" required placeholder="Иван Иванов"
+                    value={bookingForm.name}
+                    onChange={(e) => setBookingForm({ ...bookingForm, name: e.target.value })}
+                  />
+                  <label className="modal-label">Дата *</label>
+                  <input
+                    className="modal-input" type="date" required
+                    min={new Date().toISOString().split('T')[0]}
+                    value={bookingForm.date}
+                    onChange={(e) => handleBookingDateChange(e.target.value)}
+                  />
+                  {bookedSlots.length > 0 && (
+                    <div style={{ marginBottom: 16, padding: '10px 14px', borderRadius: 12, background: 'rgba(232,96,154,0.08)', border: '1px solid rgba(232,96,154,0.25)', fontSize: 13, color: 'var(--muted)' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--pink)' }}>⚠️ Занятые слоты:</span>
+                      <ul style={{ margin: '6px 0 0 16px', padding: 0 }}>
+                        {bookedSlots.map((s, i) => (
+                          <li key={i}>{s.time_start.slice(0, 5)} – {s.time_end.slice(0, 5)}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <div>
+                      <label className="modal-label">Начало *</label>
+                      <select
+                        className="modal-input" required
+                        value={bookingForm.time_start}
+                        onChange={(e) => { setBookingForm({ ...bookingForm, time_start: e.target.value }); setBookingError(''); }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <option value="" disabled>Выберите</option>
+                        {timeSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="modal-label">Конец *</label>
+                      <select
+                        className="modal-input" required
+                        value={bookingForm.time_end}
+                        onChange={(e) => { setBookingForm({ ...bookingForm, time_end: e.target.value }); setBookingError(''); }}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <option value="" disabled>Выберите</option>
+                        {timeSlots.map((slot) => <option key={slot} value={slot}>{slot}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  {bookingError && (
+                    <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 12, background: 'rgba(232,96,154,0.1)', border: '1px solid rgba(232,96,154,0.35)', color: 'var(--pink)', fontSize: 13, fontWeight: 600 }}>
+                      ❌ {bookingError}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
+                    <button
+                      type="submit" className="btn-p"
+                      style={{ flex: 1, justifyContent: 'center', border: 'none', cursor: bookingLoading ? 'not-allowed' : 'pointer', opacity: bookingLoading ? 0.7 : 1 }}
+                      disabled={bookingLoading}
+                      aria-label="забронировать"
+                    >
+                      {bookingLoading ? 'Проверяем...' : 'Забронировать →'}
+                    </button>
+                    <button type="button" className="btn-s" onClick={() => { setBookingModalOpen(false); setBookingError(''); }} aria-label="отмена">Отмена</button>
+                  </div>
+                </form>
+              </>
+            )}
           </div>
         </div>
 

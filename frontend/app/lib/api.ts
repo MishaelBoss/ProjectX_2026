@@ -1,7 +1,7 @@
-import axios from 'axios';
 import { ReviewData } from '../types/review.types';
 import { UserLogin, UserRegister } from '../types/user.types';
 import { QuestionData } from '../types/feedback.types';
+import axios from 'axios';
 
 export const getReviews = async () => {
     const res = await axios.get('/reviews/');
@@ -29,5 +29,22 @@ export const register = async (data: UserRegister) => {
 
 export const sendQuestion = async (data: QuestionData) => {
     const res = await axios.post('/send-email/', data);
+    return res.data;
+};
+
+export interface BookingData {
+    name: string;
+    date: string;
+    time_start: string;
+    time_end: string;
+}
+
+export const createBooking = async (data: BookingData) => {
+    const res = await axios.post('/coworking/booking/', data);
+    return res.data;
+};
+
+export const getBookedSlots = async (date: string): Promise<{ time_start: string; time_end: string }[]> => {
+    const res = await axios.get(`/coworking/booking/?date=${date}`);
     return res.data;
 };
