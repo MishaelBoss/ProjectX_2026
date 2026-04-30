@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -23,32 +24,8 @@ export default function NotFound() {
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
   }, [isDark, isClient]);
 
-  useEffect(() => {
-    const audio = document.getElementById('bgMusic') as HTMLAudioElement;
-    if (audio) {
-      audio.volume = 0.25;
-      
-      const tryPlay = () => {
-        audio.play().catch(() => {});
-      };
-
-      document.addEventListener('click', tryPlay, { once: true });
-      document.addEventListener('touchstart', tryPlay, { once: true });
-    }
-  }, []);
-
   return (
     <>
-      <audio
-        id="bgMusic"
-        loop
-        autoPlay
-        muted={false}   // можно сделать true сначала, если браузер блокирует
-        style={{ display: 'none' }}
-      >
-        <source src="/test.mp3" type="audio/mpeg" />
-        Твой браузер не поддерживает аудио.
-      </audio>
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@400;500;600&display=swap');
 
@@ -123,60 +100,56 @@ export default function NotFound() {
       `}</style>
 
       <div style={{ position:'fixed', inset:0, pointerEvents:'none', overflow:'hidden' }}>
-        {/* Орбы */}
         <div style={{ position:'absolute', width:700, height:700, top:-200, right:-200, borderRadius:'50%', background:`radial-gradient(circle, var(--orb-1) 0%, transparent 65%)`, filter:'blur(60px)', animation:'orb-pulse 8s ease-in-out infinite' }} />
         <div style={{ position:'absolute', width:500, height:500, bottom:-150, left:-100, borderRadius:'50%', background:`radial-gradient(circle, var(--orb-2) 0%, transparent 65%)`, filter:'blur(60px)', animation:'orb-pulse 11s ease-in-out infinite 3s' }} />
         <div style={{ position:'absolute', width:400, height:400, top:'40%', left:'20%', borderRadius:'50%', background:`radial-gradient(circle, var(--orb-3) 0%, transparent 65%)`, filter:'blur(60px)', animation:'orb-pulse 14s ease-in-out infinite 6s' }} />
 
-        {/* Сканлайн */}
         <div style={{ position:'absolute', inset:0, background:'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px)', pointerEvents:'none' }} />
-
-        {/* Голографический элемент из бренд-бука — справа */}
-        <img
+        <Image
           src="/brandbook/20.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:380, height:380, right:-60, top:'5%', opacity:0.35, animation:'float2 10s ease-in-out infinite', filter:'hue-rotate(20deg)' }}
         />
-
-        {/* Орбита — слева снизу */}
-        <img
+        <Image
           src="/brandbook/27.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:300, height:300, left:-80, bottom:-60, opacity:0.12, animation:'spin-slow 40s linear infinite' }}
         />
-
-        {/* Звёзды + солнце — вверху слева */}
-        <img
+        <Image
           src="/brandbook/34.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:160, height:160, left:'10%', top:'8%', opacity:0.2, animation:'float 12s ease-in-out infinite 2s' }}
         />
-
-        {/* Маленькая звезда */}
-        <img
+        <Image
           src="/brandbook/16.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:60, height:60, right:'22%', top:'15%', opacity:0.3, animation:'star-twinkle 3s ease-in-out infinite' }}
         />
-
-        <img
+        <Image
           src="/brandbook/16.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:40, height:40, left:'30%', bottom:'20%', opacity:0.2, animation:'star-twinkle 4s ease-in-out infinite 1s' }}
         />
-
-        {/* Блоб снизу справа */}
-        <img
+        <Image
           src="/brandbook/32.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:280, height:280, right:'5%', bottom:'-40px', opacity:0.25, animation:'float 16s ease-in-out infinite 4s' }}
         />
       </div>
 
-      {/* ── Контент ── */}
       <div style={{ position:'relative', zIndex:10, textAlign:'center', padding:'0 24px', display:'flex', flexDirection:'column', alignItems:'center', gap:0 }}>
-
-        {/* 404 с глитч эффектом */}
         <div style={{ position:'relative', marginBottom:8 }}>
           <div style={{
             fontFamily:'Unbounded,sans-serif',
@@ -192,7 +165,6 @@ export default function NotFound() {
             userSelect:'none',}}>
             404
           </div>
-          {/* Глитч копия */}
           <div style={{
             fontFamily:'Unbounded,sans-serif',
             fontSize:'clamp(100px, 18vw, 200px)',
@@ -208,13 +180,9 @@ export default function NotFound() {
             404
           </div>
         </div>
-
-        {/* SVG-кот (видео) */}
         <div style={{ animation:'float 4s ease-in-out infinite', marginBottom:32, filter:'drop-shadow(0 0 30px var(--peach))' }}>
           <video src="sber_cat_error.webm" loop autoPlay muted playsInline style={{ maxWidth: '80%', height: 'auto' }} />
         </div>
-
-        {/* Текст */}
         <h1 style={{
           fontFamily:'Unbounded,sans-serif',
           fontSize:'clamp(20px, 3vw, 32px)',
@@ -235,17 +203,17 @@ export default function NotFound() {
           Кот тоже расстроен — он уже ищет.
         </p>
 
-        {/* Кнопки */}
         <div style={{ display:'flex', gap:16, flexWrap:'wrap', justifyContent:'center' }}>
-          <Link href="/" style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            padding:'14px 32px', borderRadius:100,
-            background:'var(--btn-bg)',
-            color:'#12001a', fontWeight:700, fontSize:15,
-            textDecoration:'none', fontFamily:'Manrope,sans-serif',
-            boxShadow:'var(--btn-shadow)',
-            transition:'all .25s',
-          }}
+            <Link href="/" style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              padding:'14px 32px', borderRadius:100,
+              background:'var(--btn-bg)',
+              color:'#12001a', fontWeight:700, fontSize:15,
+              textDecoration:'none', fontFamily:'Manrope,sans-serif',
+              boxShadow:'var(--btn-shadow)',
+              transition:'all .25s',
+            }}
+            aria-label="Home"
             onMouseEnter={(e)=>e.currentTarget.style.transform='translateY(-3px)'}
             onMouseLeave={(e)=>e.currentTarget.style.transform='translateY(0)'}>
             На главную
@@ -262,8 +230,9 @@ export default function NotFound() {
               cursor:'pointer', fontFamily:'Manrope,sans-serif',
               transition:'all .25s',
             }}
-            onMouseEnter={(e)=>{ e.currentTarget.style.background='var(--secondary-hover-bg)'; e.currentTarget.style.transform='translateY(-2px)'; }}
-            onMouseLeave={(e)=>{ e.currentTarget.style.background='var(--secondary-bg)'; e.currentTarget.style.transform='translateY(0)'; }}>
+            aria-label="Back"
+            onMouseEnter={(e)=>e.currentTarget.style.transform='translateY(-3px)'}
+            onMouseLeave={(e)=>e.currentTarget.style.transform='translateY(0)'}>
             Назад
           </button>
         </div>
