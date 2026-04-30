@@ -107,31 +107,43 @@ export default function NotFound() {
         <div style={{ position:'absolute', inset:0, background:'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px)', pointerEvents:'none' }} />
         <Image
           src="/brandbook/20.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:380, height:380, right:-60, top:'5%', opacity:0.35, animation:'float2 10s ease-in-out infinite', filter:'hue-rotate(20deg)' }}
         />
         <Image
           src="/brandbook/27.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:300, height:300, left:-80, bottom:-60, opacity:0.12, animation:'spin-slow 40s linear infinite' }}
         />
         <Image
           src="/brandbook/34.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:160, height:160, left:'10%', top:'8%', opacity:0.2, animation:'float 12s ease-in-out infinite 2s' }}
         />
         <Image
           src="/brandbook/16.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:60, height:60, right:'22%', top:'15%', opacity:0.3, animation:'star-twinkle 3s ease-in-out infinite' }}
         />
         <Image
           src="/brandbook/16.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:40, height:40, left:'30%', bottom:'20%', opacity:0.2, animation:'star-twinkle 4s ease-in-out infinite 1s' }}
         />
         <Image
           src="/brandbook/32.png"
+          width={100}
+          height={100}
           alt=""
           style={{ position:'absolute', width:280, height:280, right:'5%', bottom:'-40px', opacity:0.25, animation:'float 16s ease-in-out infinite 4s' }}
         />
