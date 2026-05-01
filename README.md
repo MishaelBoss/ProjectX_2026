@@ -2,14 +2,13 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-XStackOverFlow — A modern open-source Q&A platform for developers that combines the best of StackOverflow with innovative features.
 ## 🛠 Stack
 
 | Components       | Technologies                          |
 |-----------------|-------------------------------------|
-| **Frontend**    | Next.js 15, TypeScript, Tailwind CSS |
+| **Frontend**    | Next.js 15, TypeScript, Tailwind CSS, Radix |
 | **Backend**     | Django, Django REST Framework      |
-| **Database** | PostgreSQL 17                       |
+| **Database** | sqlite3                       |
 | **Authentication** | JWT                    |
 | **Infrastructure** | GitHub      |
 
